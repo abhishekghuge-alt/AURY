@@ -106,7 +106,9 @@ def _require_auth(fn):
 
 
 # ── Core download logic ───────────────────────────────────────────────────────
-def _start_download_thread(url: str, quality: str, subtitles=False, audio_only=False) -> str:
+def _start_download_thread(url: str, quality: str, subtitles=False, audio_only=False,
+                           sub_langs=None, embed_subs=False, sub_only=False,
+                           private=False) -> str:
     q_key = quality
     if quality not in QUALITY_MAP:
         for k, (lbl, _) in QUALITY_MAP.items():
@@ -170,10 +172,15 @@ def _start_download_thread(url: str, quality: str, subtitles=False, audio_only=F
 
     def run():
         try:
+            # Resolve subtitle languages
+            _sub_langs = sub_langs or (['en'] if subtitles else None)
             worker = DownloadWorker(
                 session_id=session_id, url=url,
                 quality_label=quality_label, quality_format=quality_format,
                 progress_callback=on_progress,
+                sub_langs=_sub_langs,
+                embed_subs=embed_subs,
+                sub_only=sub_only,
             )
             result      = worker.run()
             final_status = "done" if result and result.status == "completed" else "error"
@@ -318,9 +325,18 @@ def api_download():
     quality    = (data.get("quality") or config.DEFAULT_QUALITY_KEY).strip()
     audio_only = data.get("audio_only", False)
     subtitles  = data.get("subtitles", False)
+    sub_langs  = data.get("sub_langs") or None       # list or None
+    embed_subs = data.get("embed_subs", False)
+    sub_only   = data.get("sub_only", False)
+    private    = data.get("private", False)
     if not url:
         return jsonify({"error": "URL is required"}), 400
-    key = _start_download_thread(url, quality, subtitles=subtitles, audio_only=audio_only)
+    key = _start_download_thread(
+        url, quality,
+        subtitles=subtitles, audio_only=audio_only,
+        sub_langs=sub_langs, embed_subs=embed_subs,
+        sub_only=sub_only, private=private,
+    )
     _add_notification("info", "Download queued", url[:60])
     return jsonify({"ok": True, "key": key})
 
@@ -355,7 +371,8 @@ def api_settings_get():
     db   = database.get_db()
     keys = ["download_dir", "default_quality", "max_workers", "audio_format",
             "turbo_mode", "auto_subtitles", "clip_watch", "theme",
-            "auth_enabled", "aria2c_mode"]
+            "auth_enabled", "aria2c_mode",
+            "private_dir", "private_enabled", "private_pin"]
     out = {}
     for k in keys:
         out[k] = db.get_setting(k)
@@ -370,6 +387,16 @@ def api_settings_post():
     db   = database.get_db()
     for k, v in data.items():
         db.set_setting(k, str(v))
+    # Update runtime download dir if changed
+    if "download_dir" in data and data["download_dir"]:
+        try:
+            new_dir = Path(data["download_dir"])
+            new_dir.mkdir(parents=True, exist_ok=True)
+            config.DOWNLOAD_DIR = new_dir
+            for _sub in ("video", "audio", "images", "documents", "archives", "others"):
+                (new_dir / _sub).mkdir(parents=True, exist_ok=True)
+        except Exception:
+            pass  # Keep existing dir if path is invalid (e.g. Windows path on Linux)
     init_config()
     return jsonify({"ok": True})
 
