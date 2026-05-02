@@ -1,0 +1,275 @@
+╔══════════════════════════════════════════════════════════════════════╗
+║    REPLIT AGENT TASK — AURY DESKTOP APP (Windows .exe)              ║
+║    Convert existing AURY Web → Standalone Desktop Application       ║
+╚══════════════════════════════════════════════════════════════════════╝
+
+EXISTING PROJECT: AURY Smart Media Downloader
+Current State:
+  - web_server.py     → Flask server (728 lines, 28+ endpoints)
+  - templates/index.html → Full SPA frontend (2026 lines)
+  - core/database.py  → AuryDB SQLite engine (789 lines)
+  - core/downloader.py → DownloadWorker, yt-dlp (395 lines)
+  - core/config.py    → Settings, QUALITY_MAP (192 lines)
+  - aury.db           → SQLite database
+  - downloads/        → video/ audio/ images/ documents/ archives/ others/
+
+TASK: Build a Windows Desktop App version of AURY that:
+1. Packages the ENTIRE existing web app into a desktop window
+2. Downloads go to Windows local path (Google Drive folder)
+3. Runs as a single .exe file (no Python needed on target machine)
+4. Looks and works EXACTLY like the web version but as a native window
+
+════════════════════════════════════════════════════════════════════════
+APPROACH: PyWebView (RECOMMENDED)
+════════════════════════════════════════════════════════════════════════
+
+USE pywebview library — it wraps the existing Flask app inside a
+native Windows WebView window. This means:
+  ✅ ZERO frontend changes needed (index.html stays 100% same)
+  ✅ ZERO backend changes needed (web_server.py stays same)
+  ✅ All 28 API endpoints work exactly as before
+  ✅ SSE real-time updates work
+  ✅ All features work: downloads, DB report, ER diagram, etc.
+  ✅ Looks like a real desktop app (no browser chrome visible)
+
+════════════════════════════════════════════════════════════════════════
+STEP 1 — CREATE: desktop_app.py (NEW FILE)
+════════════════════════════════════════════════════════════════════════
+
+Create file: desktop_app.py in project root
+
+```python
+import webview
+import threading
+import time
+import sys
+import os
+from pathlib import Path
+
+# Fix path for PyInstaller .exe
+if getattr(sys, 'frozen', False):
+    BASE_DIR = Path(sys._MEIPASS)
+    WORK_DIR = Path(sys.executable).parent
+else:
+    BASE_DIR = Path(__file__).parent
+    WORK_DIR = BASE_DIR
+
+# Change working directory to where aury.db and downloads/ should live
+os.chdir(WORK_DIR)
+
+# Import Flask app AFTER chdir
+from web_server import app as flask_app
+
+PORT = 5000
+
+def start_flask():
+    """Start Flask server in background thread."""
+    flask_app.run(
+        host='127.0.0.1',  # localhost only — desktop app security
+        port=PORT,
+        debug=False,
+        use_reloader=False,
+        threaded=True
+    )
+
+def wait_for_server():
+    """Wait until Flask is ready."""
+    import urllib.request
+    for _ in range(20):  # try 20 times, 0.5s each = 10s max
+        try:
+            urllib.request.urlopen(f'http://127.0.0.1:{PORT}/')
+            return True
+        except:
+            time.sleep(0.5)
+    return False
+
+def main():
+    # Start Flask in background
+    flask_thread = threading.Thread(target=start_flask, daemon=True)
+    flask_thread.start()
+
+    # Wait for server to be ready
+    print("Starting AURY...")
+    if not wait_for_server():
+        print("Server failed to start!")
+        sys.exit(1)
+
+    # Create desktop window using pywebview
+    window = webview.create_window(
+        title='AURY — Smart Media Downloader',
+        url=f'http://127.0.0.1:{PORT}/',
+        width=1280,
+        height=800,
+        min_size=(900, 600),
+        resizable=True,
+        text_select=True,
+        confirm_close=True,    # "Are you sure?" on close
+        background_color='#1a1614',  # matches dark theme bg
+    )
+
+    # Window events
+    def on_closed():
+        print("AURY closed.")
+        # Clean shutdown — stop any active downloads gracefully
+
+    window.events.closed += on_closed
+
+    # Start the window (blocking call)
+    webview.start(
+        debug=False,           # set True during development
+        private_mode=False,    # allow cookies/session
+        storage_path=str(WORK_DIR / '.webview_data')  # persistent storage
+    )
+
+if __name__ == '__main__':
+    main()
+```
+
+════════════════════════════════════════════════════════════════════════
+STEP 2 — CREATE: build_desktop.bat (Windows build script)
+════════════════════════════════════════════════════════════════════════
+
+Create file: build_desktop.bat
+
+```batch
+@echo off
+echo ================================================
+echo   AURY Desktop App Builder
+echo   Building .exe for Windows...
+echo ================================================
+
+REM Install build dependencies
+pip install pywebview pyinstaller
+
+REM Run PyInstaller
+pyinstaller ^
+  --name "AURY" ^
+  --onefile ^
+  --windowed ^
+  --icon "static/favicon.ico" ^
+  --add-data "templates;templates" ^
+  --add-data "static;static" ^
+  --add-data "core;core" ^
+  --hidden-import "webview" ^
+  --hidden-import "webview.platforms.winforms" ^
+  --hidden-import "clr" ^
+  --hidden-import "flask" ^
+  --hidden-import "yt_dlp" ^
+  --hidden-import "sqlite3" ^
+  desktop_app.py
+
+echo ================================================
+echo   Build complete!
+echo   Find your app at: dist\AURY.exe
+echo ================================================
+pause
+```
+
+════════════════════════════════════════════════════════════════════════
+STEP 3 — CREATE: install_desktop.bat (One-click installer for laptop)
+════════════════════════════════════════════════════════════════════════
+
+Create file: install_desktop.bat
+
+```batch
+@echo off
+echo ================================================
+echo   AURY — Desktop App Installer
+echo   Installing dependencies...
+echo ================================================
+
+REM Create virtual environment
+python -m venv venv_desktop
+
+REM Activate
+call venv_desktop\Scripts\activate.bat
+
+REM Install all requirements
+pip install -r requirements.txt
+pip install pywebview
+
+REM Create desktop shortcut
+echo Creating desktop shortcut...
+set SCRIPT="%TEMP%\CreateShortcut.vbs"
+echo Set oWS = WScript.CreateObject("WScript.Shell") >> %SCRIPT%
+echo sLinkFile = "%USERPROFILE%\Desktop\AURY.lnk" >> %SCRIPT%
+echo Set oLink = oWS.CreateShortcut(sLinkFile) >> %SCRIPT%
+echo oLink.TargetPath = "%CD%\venv_desktop\Scripts\python.exe" >> %SCRIPT%
+echo oLink.Arguments = "%CD%\desktop_app.py" >> %SCRIPT%
+echo oLink.WorkingDirectory = "%CD%" >> %SCRIPT%
+echo oLink.Description = "AURY Smart Media Downloader" >> %SCRIPT%
+echo oLink.Save >> %SCRIPT%
+cscript /nologo %SCRIPT%
+del %SCRIPT%
+
+echo ================================================
+echo   ✅ Installation Complete!
+echo   Desktop shortcut created: AURY
+echo   
+echo   To run: Double-click AURY on your Desktop
+echo   OR run: python desktop_app.py
+echo ================================================
+pause
+```
+
+════════════════════════════════════════════════════════════════════════
+STEP 4 — UPDATE: web_server.py (Small change needed)
+════════════════════════════════════════════════════════════════════════
+
+In web_server.py, find the bottom section where Flask runs:
+
+FIND this (likely at the bottom):
+```python
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000, debug=True)
+```
+
+REPLACE with:
+```python
+if __name__ == '__main__':
+    # Direct web server run (for browser access on LAN)
+    app.run(host='0.0.0.0', port=5000, debug=False, threaded=True)
+```
+
+This allows:
+- desktop_app.py to import `app` cleanly
+- Web mode still works: python web_server.py → http://localhost:5000
+- Desktop mode: python desktop_app.py → native window
+
+════════════════════════════════════════════════════════════════════════
+STEP 5 — UPDATE: core/config.py (Download path for Windows)
+════════════════════════════════════════════════════════════════════════
+
+In core/config.py, update the DOWNLOAD_DIR default:
+
+```python
+import sys
+import os
+from pathlib import Path
+
+# Detect if running as desktop app or web server
+IS_DESKTOP = getattr(sys, 'frozen', False) or \
+             os.environ.get('AURY_DESKTOP', '') == '1'
+
+# Default download path
+if IS_DESKTOP and sys.platform == 'win32':
+    # Windows desktop: default to Google Drive path
+    GOOGLE_DRIVE_PATH = Path(os.environ.get('USERPROFILE', 'C:/Users')) / \
+        'Google Drive Streaming' / 'My Drive' / 'cllg' / 'AURY' / 'downloads'
+    
+    # Use Google Drive path if it exists, else use local Downloads
+    if GOOGLE_DRIVE_PATH.exists():
+        DOWNLOAD_DIR = GOOGLE_DRIVE_PATH
+    else:
+        DOWNLOAD_DIR = Path(os.environ.get('USERPROFILE', '.')) / \
+                       'Downloads' / 'AURY'
+else:
+    # Replit / Web server / Linux: use local ./downloads
+    DOWNLOAD_DIR = BASE_DIR / 'downloads'
+```
+
+════════════════════════════════════════════════════════════════════════
+STEP 6 — UPDATE: requirements.txt (Add desktop dependency)
+════════════════════════════════════════════════════════════════════════
+
+Add to requirements.txt:

@@ -1,18 +1,40 @@
 import os
+import sys
 import shutil
+import tempfile
 from pathlib import Path
 
 # ─── App Info ────────────────────────────────────────────────────────────────
 APP_NAME = "AURY"
 APP_VERSION = "1.0"
 
+# ─── Desktop detection ───────────────────────────────────────────────────────
+# True when bundled as a PyInstaller .exe OR when AURY_DESKTOP=1 env var is set
+IS_DESKTOP = getattr(sys, 'frozen', False) or \
+             os.environ.get('AURY_DESKTOP', '') == '1'
+
 # ─── Paths ───────────────────────────────────────────────────────────────────
 BASE_DIR = Path(__file__).resolve().parent.parent
-DOWNLOAD_DIR = BASE_DIR / "downloads"
 DATABASE_PATH = BASE_DIR / "aury.db"
 
-# Local Temp Folder to avoid Google Drive file-locking
-import tempfile
+# ─── Download directory ───────────────────────────────────────────────────────
+# Desktop on Windows → try Google Drive path first, fall back to ~/Downloads/AURY
+# Web server / Replit / Linux → use ./downloads next to project root
+if IS_DESKTOP and sys.platform == 'win32':
+    _user = os.environ.get('USERPROFILE', 'C:/Users/Default')
+    _gdrive = (
+        Path(_user)
+        / 'Google Drive Streaming'
+        / 'My Drive'
+        / 'cllg'
+        / 'AURY'
+        / 'downloads'
+    )
+    DOWNLOAD_DIR = _gdrive if _gdrive.exists() else Path(_user) / 'Downloads' / 'AURY'
+else:
+    DOWNLOAD_DIR = BASE_DIR / 'downloads'
+
+# ─── Temp folder (avoids Google Drive sync locks while downloading) ───────────
 TEMP_DOWNLOAD_DIR = Path(tempfile.gettempdir()) / "aury_temp"
 TEMP_DOWNLOAD_DIR.mkdir(parents=True, exist_ok=True)
 

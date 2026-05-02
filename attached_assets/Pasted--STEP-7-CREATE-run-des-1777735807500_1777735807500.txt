@@ -1,0 +1,145 @@
+
+════════════════════════════════════════════════════════════════════════
+STEP 7 — CREATE: run_desktop.bat (Quick launch for laptop)
+════════════════════════════════════════════════════════════════════════
+
+Create file: run_desktop.bat
+
+```batch
+@echo off
+REM Quick launcher for AURY Desktop
+REM Double-click this to open AURY as a desktop app
+
+cd /d "%~dp0"
+
+REM Try venv first
+if exist "venv_desktop\Scripts\python.exe" (
+    venv_desktop\Scripts\python.exe desktop_app.py
+) else if exist "venv\Scripts\python.exe" (
+    venv\Scripts\python.exe desktop_app.py
+) else (
+    python desktop_app.py
+)
+```
+
+════════════════════════════════════════════════════════════════════════
+STEP 8 — UPDATE: Settings page in index.html
+════════════════════════════════════════════════════════════════════════
+
+In templates/index.html, in the Settings page section,
+find the "Drive Path" button and UPDATE fillGoogleDrivePath():
+
+```javascript
+function fillGoogleDrivePath() {
+    // Try multiple common Google Drive paths on Windows
+    const username = navigator.userAgent.includes('Windows') ? 
+        'DAR AL WEFAQ' : 'user';
+    
+    const paths = [
+        `C:\\Users\\DAR AL WEFAQ\\Google Drive Streaming\\My Drive\\cllg\\AURY\\downloads`,
+        `C:\\Users\\${username}\\Google Drive\\My Drive\\cllg\\AURY\\downloads`,
+        `G:\\My Drive\\cllg\\AURY\\downloads`,
+        `D:\\Google Drive\\cllg\\AURY\\downloads`,
+    ];
+    
+    // Set the first path (user can edit)
+    document.getElementById('set-dir').value = paths;
+    
+    // Show all options in a tooltip or small dropdown
+    showPathSuggestions(paths);
+}
+
+function showPathSuggestions(paths) {
+    const input = document.getElementById('set-dir');
+    // Create dropdown below input showing all path options
+    const dropdown = document.createElement('div');
+    dropdown.className = 'path-suggestions';
+    dropdown.innerHTML = paths.map(p => 
+        `<div class="path-opt" onclick="selectPath('${p}')">${p}</div>`
+    ).join('');
+    input.parentNode.appendChild(dropdown);
+    // Auto-remove after 5s
+    setTimeout(() => dropdown.remove(), 5000);
+}
+```
+
+════════════════════════════════════════════════════════════════════════
+STEP 9 — UPDATE: replit.md (Add desktop instructions)
+════════════════════════════════════════════════════════════════════════
+
+Add this section to replit.md:
+
+```markdown
+## Desktop App (Windows)
+
+### Quick Start (No Python needed — .exe version):
+1. Download AURY.exe from dist/ folder
+2. Double-click AURY.exe
+3. App opens as a native window
+4. Settings → Download Folder → paste your Google Drive path
+
+### Developer Start (Python needed):
+1. Clone repo on your Windows laptop
+2. Run: install_desktop.bat (one time only)
+3. Run: run_desktop.bat (every time)
+   OR: python desktop_app.py
+
+### Build .exe yourself:
+1. Run: build_desktop.bat
+2. Find .exe at: dist/AURY.exe
+3. Copy AURY.exe anywhere — fully portable
+
+### Google Drive Path (Windows):
+C:\Users\DAR AL WEFAQ\Google Drive Streaming\My Drive\cllg\AURY\downloads
+```
+
+════════════════════════════════════════════════════════════════════════
+FINAL FILE LIST — What to create/modify:
+════════════════════════════════════════════════════════════════════════
+
+CREATE (new files):
+  ✅ desktop_app.py              ← main desktop entry point
+  ✅ build_desktop.bat           ← build .exe (run on Windows)
+  ✅ install_desktop.bat         ← one-click installer
+  ✅ run_desktop.bat             ← quick launcher
+  ✅ requirements_desktop.txt    ← desktop dependencies
+
+MODIFY (existing files):
+  ✅ web_server.py               ← fix __main__ block
+  ✅ core/config.py              ← add IS_DESKTOP + Windows path
+  ✅ requirements.txt            ← add pywebview
+  ✅ templates/index.html        ← update fillGoogleDrivePath()
+  ✅ replit.md                   ← add desktop instructions
+
+DO NOT TOUCH:
+  ❌ core/database.py    (works perfectly as is)
+  ❌ core/downloader.py  (works perfectly as is)
+  ❌ Any other core/ files
+
+════════════════════════════════════════════════════════════════════════
+HOW IT WORKS ON YOUR LAPTOP (after setup):
+════════════════════════════════════════════════════════════════════════
+
+Double-click run_desktop.bat
+         ↓
+desktop_app.py starts
+         ↓
+Flask starts on localhost:5000 (background thread)
+         ↓
+pywebview opens native Windows window
+         ↓
+Window loads http://127.0.0.1:5000/
+         ↓
+Full AURY web app appears inside native window
+         ↓
+Downloads save to: Google Drive → cllg/AURY/downloads/
+         ↓
+aury.db saves in: same folder as desktop_app.py
+
+RESULT:
+  ✅ Looks like a real Windows app
+  ✅ No browser needed
+  ✅ No browser URL bar visible
+  ✅ Downloads go to Google Drive folder directly
+  ✅ All features work (SSE, DB report, ER diagram, etc.)
+  ✅ Same code as web version — zero duplication

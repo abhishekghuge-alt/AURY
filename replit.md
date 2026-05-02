@@ -120,9 +120,85 @@ A high-performance Python-based media downloader with three interfaces: V1 CLI, 
 7. `gui/db_report.py` — Replaced `ctk.CTkCanvas` → `tk.Canvas`; optional `ImageGrab`
 8. `web_server.py` — Fixed `get_filtered_history` param names (`search=` not `search_term=`)
 
+## Desktop App (Windows — V4)
+
+Uses `pywebview` to wrap the existing Flask app inside a native Windows window.
+Zero frontend changes — the same `index.html` runs inside the window.
+
+### Quick Start (Python required):
+```
+1. Clone repo to your Windows laptop
+2. Run: install_desktop.bat   ← one-time setup, creates virtual env + Desktop shortcut
+3. Run: run_desktop.bat       ← every time you want to open AURY
+   OR:  double-click "AURY" shortcut on Desktop
+```
+
+### Build standalone .exe (no Python on target machine):
+```
+1. Run: build_desktop.bat
+2. Find: dist\AURY.exe  (copy anywhere — fully portable)
+```
+
+### How it works:
+```
+run_desktop.bat
+    ↓ sets AURY_DESKTOP=1
+desktop_app.py
+    ↓ starts Flask on 127.0.0.1:5000 (background thread)
+    ↓ waits for server ready
+    ↓ opens pywebview native window → http://127.0.0.1:5000/
+Full AURY app appears in native window (no browser bar visible)
+Downloads → Google Drive path (auto-detected) or ~/Downloads/AURY
+```
+
+### Google Drive download path (Windows):
+```
+C:\Users\DAR AL WEFAQ\Google Drive Streaming\My Drive\cllg\AURY\downloads
+```
+The app auto-detects this path via `IS_DESKTOP` flag in `core/config.py`.
+If Google Drive Streaming isn't installed, falls back to `~/Downloads/AURY`.
+Settings page → "Drive Path" button → pick from common path suggestions → Save.
+
+### New files added:
+- `desktop_app.py`          ← main entry point for desktop mode
+- `build_desktop.bat`       ← builds dist/AURY.exe via PyInstaller
+- `install_desktop.bat`     ← one-click setup + Desktop shortcut creation
+- `run_desktop.bat`         ← quick launcher (double-click to open)
+- `requirements_desktop.txt` ← desktop-specific dependencies
+
+### Files modified for desktop support:
+- `core/config.py`         ← IS_DESKTOP flag + Windows download path logic
+- `requirements.txt`       ← added pywebview>=4.4.1
+- `templates/index.html`   ← Drive Path button now shows path suggestions dropdown
+
+---
+
+## Keyboard Shortcuts (Web UI)
+- `Ctrl+N` — New Download modal
+- `Ctrl+H` — History page
+- `Ctrl+,` — Settings page
+- `Ctrl+B` — Batch Download page
+- `Escape` — Close modal
+- `S` *(ER Diagram)* — Select tool
+- `H` / `Space` *(ER Diagram)* — Pan tool
+- `F` *(ER Diagram)* — Fit all nodes in view
+- `+` / `-` *(ER Diagram)* — Zoom in / out
+
+## Bug Fixes Applied (V1–V3)
+1. `core/database.py` — Added `get_history()` wrapper
+2. `core/config.py` — Added `init_config()` function
+3. `cli/ui.py` — Added `from rich import box`, format helpers
+4. `cli/main.py` — Fixed `platform` variable shadowing; fixed queue tuple index
+5. `gui/dashboard.py` — Fixed `start_download()` + `_handle_progress()`
+6. `gui_main.py` — Fixed tray icon callable
+7. `gui/db_report.py` — Replaced `ctk.CTkCanvas` → `tk.Canvas`; optional `ImageGrab`
+8. `web_server.py` — Fixed `get_filtered_history` param names (`search=` not `search_term=`)
+9. `core/downloader.py` — `_sort_destination()` now reads `config.DOWNLOAD_DIR` at call time (not import time) so runtime path changes take effect immediately
+
 ## Notes
 - YouTube downloads require browser cookies in Replit/cloud environments — use Dailymotion or other platforms for testing
 - ffmpeg is available in the environment for audio extraction and format merging
 - GUI (`gui_main.py`) requires a desktop display and runs on Windows/macOS/Linux only
 - aria2c turbo mode requires aria2c binary (not installed in this environment)
 - The scheduler background thread checks every 30 seconds for pending scheduled downloads
+- Desktop mode (`AURY_DESKTOP=1`) auto-selects the Google Drive download path on Windows
