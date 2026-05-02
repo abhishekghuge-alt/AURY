@@ -1,11 +1,17 @@
 import customtkinter as ctk
+import tkinter as tk
 import csv
 import io
 import zipfile
 import os
 from datetime import datetime
-from PIL import ImageGrab, Image
 from core import database
+
+try:
+    from PIL import ImageGrab, Image
+    _HAS_IMAGE_GRAB = True
+except ImportError:
+    _HAS_IMAGE_GRAB = False
 
 class DBReportPage(ctk.CTkFrame):
     def __init__(self, master, app):
@@ -117,7 +123,7 @@ class DBReportPage(ctk.CTkFrame):
         self.export_status.pack()
 
     def _build_er_tab(self):
-        self.er_canvas = ctk.CTkCanvas(self.tab_er, bg="#0d1117", highlightthickness=0)
+        self.er_canvas = tk.Canvas(self.tab_er, bg="#0d1117", highlightthickness=0)
         self.er_canvas.pack(fill="both", expand=True, padx=20, pady=20)
         
         btn_save = ctk.CTkButton(self.tab_er, text="📤 Save ER Diagram as PNG", command=self._save_er_as_png)
@@ -193,22 +199,22 @@ class DBReportPage(ctk.CTkFrame):
         c.create_text(t_pos[0]-20, t_pos[1]+30, text="1:N", fill=LINE_COLOR, font=("Consolas", 9))
 
     def _save_er_as_png(self):
+        if not _HAS_IMAGE_GRAB:
+            self.export_status.configure(text="⚠ Pillow ImageGrab not available on this platform.", text_color="#d29922")
+            return
         try:
-            # Get canvas coordinates relative to screen
             x = self.er_canvas.winfo_rootx()
             y = self.er_canvas.winfo_rooty()
             w = self.er_canvas.winfo_width()
             h = self.er_canvas.winfo_height()
-            
-            # Capture and save
-            img = ImageGrab.grab(bbox=(x, y, x+w, y+h))
+            img = ImageGrab.grab(bbox=(x, y, x + w, y + h))
             filename = f"er_diagram_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
             img.save(filename)
-            
             self.export_status.configure(text=f"✅ Saved ER Diagram to {filename}", text_color="#3fb950")
-            if os.name == 'nt': os.startfile(".")
+            if os.name == 'nt':
+                os.startfile(".")
         except Exception as e:
-            print(f"ER Export Error: {e}")
+            self.export_status.configure(text=f"❌ Export error: {e}", text_color="#f85149")
 
     def _run_custom_query(self):
         sql = self.sql_entry.get("1.0", "end").strip()

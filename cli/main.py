@@ -308,7 +308,7 @@ def _run_single_session() -> None:
             target_dt += timedelta(days=1)
 
     if target_dt:
-        q_label = queue[0][1] if queue else "Mixed"
+        q_label = queue[0][2] if queue else "Mixed"
         if not _wait_for_schedule(target_dt, len(queue), q_label):
             if ui.show_schedule_cancelled():
                 return
@@ -395,17 +395,17 @@ def _run_quick_download(prefilled_urls: list[str] = None) -> None:
 
 def _run_history() -> None:
     search = ""
-    platform = "All"
+    plat_filter = "All"
     status = "All"
     sort = "Newest"
     offset = 0
     limit = 15
     
     while True:
-        rows = database.db.get_filtered_history(search, platform, status, sort, limit, offset)
-        total = database.db.get_history_count(search, platform, status)
+        rows = database.db.get_filtered_history(search, plat_filter, status, sort, limit, offset)
+        total = database.db.get_history_count(search, plat_filter, status)
         
-        ui.show_history_table(rows, total, offset, limit, search, platform, status, sort)
+        ui.show_history_table(rows, total, offset, limit, search, plat_filter, status, sort)
         
         action = ui.prompt_history_action()
         if not action or action in ("B", "BACK", "EXIT", "X", "Q"):
@@ -427,9 +427,8 @@ def _run_history() -> None:
             
         if action == "F": # Filter Platform
             platforms = ["All"] + database.db.get_history_platforms()
-            # Simple cyclic filter for now or a prompt
-            p_idx = platforms.index(platform)
-            platform = platforms[(p_idx + 1) % len(platforms)]
+            p_idx = platforms.index(plat_filter) if plat_filter in platforms else 0
+            plat_filter = platforms[(p_idx + 1) % len(platforms)]
             offset = 0
             continue
 
@@ -496,10 +495,12 @@ def _run_history() -> None:
                     row = rows[local_idx]
                     path = row.get("file_path")
                     if path and os.path.exists(path):
-                        if platform.system() == "Windows": os.startfile(path)
-                        else: 
-                            import subprocess
-                            cmd = "open" if platform.system() == "Darwin" else "xdg-open"
+                        import platform as _platform
+                        import subprocess
+                        if _platform.system() == "Windows":
+                            os.startfile(path)
+                        else:
+                            cmd = "open" if _platform.system() == "Darwin" else "xdg-open"
                             subprocess.run([cmd, path])
                     else:
                         ui.show_file_missing(path or "Unknown")

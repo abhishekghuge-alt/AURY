@@ -9,6 +9,7 @@ import os
 from datetime import datetime
 from pathlib import Path
 
+from rich import box
 from rich.align import Align
 from rich.console import Console
 from rich.panel import Panel
@@ -50,6 +51,23 @@ def _fmt_bytes(num: int) -> str:
 
 def _fmt_secs(secs: float) -> str:
     return f"{float(secs):.1f}s"
+
+
+def format_size(num: int) -> str:
+    """Human-readable file size for the history table."""
+    if not num or num <= 0:
+        return "0 MB"
+    if num >= 1024 ** 3:
+        return f"{num / (1024 ** 3):.1f} GB"
+    return f"{num / (1024 ** 2):.1f} MB"
+
+
+def format_speed(bps: float) -> str:
+    """Human-readable speed for the history table."""
+    if not bps or bps <= 0:
+        return "—"
+    mbs = bps / (1024 * 1024)
+    return f"{mbs:.1f} MB/s"
 
 
 # ─── STEP 0: Banner ──────────────────────────────────────────────────────────

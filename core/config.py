@@ -142,6 +142,15 @@ def get_ydl_base_opts(quality_format: str) -> dict:
 
     return opts
 
+def init_config():
+    """Re-sync runtime config from the database (called after settings are saved in GUI)."""
+    try:
+        from core import database
+        database.db.sync_config_with_db()
+    except Exception:
+        pass
+
+
 def clean_url(raw: str) -> str:
     """
     Strip tracking parameters from YouTube and other URLs.

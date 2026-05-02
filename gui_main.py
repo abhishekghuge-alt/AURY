@@ -33,8 +33,8 @@ def create_tray_icon(app):
     draw.ellipse([8,8,56,56], fill="#1f6feb")
     
     def on_open():
-        app.after(0, app.deiconify())
-        app.after(0, app.focus_force())
+        app.after(0, app.deiconify)
+        app.after(0, app.focus_force)
 
     def on_quit():
         app.after(0, app.quit_app)

@@ -1,0 +1,3932 @@
+
+
+make this a detailed , structure prompt for clause sonnet 4.6 thinking model in google antigravity :
+
+# prompt :
+
+=====================================
+# YOUR WORK :
+
+- analyse all codes and files & folders .
+- if you find any bug or error correct it .
+- if need any necessary packages then install all of them.
+- create/add nessary new files .
+- ADD SQL data base in it so it stores users activities , (downloads and every things )
+- install or use al neccesary pacakages , libraries , extensions
+
+=====================================
+
+
+========================== ===========
+# FINAL OUTPUT :
+
+- it ask for urls or link from user ( input )
+-user paste url or multiple urls or playlist url .
+- it gave option ( that user have to select ) like : " you wan to select quality for (a/i) : user input "--> a or i ( a : all , i : indivisual )
+-next it ask for : " choose video / file quality :
+1.4k , 2.2k, 3.1440p ,4.1080p , 5.720p,6.576p,7.480p , 8.360p, 9.240p,10. 144p : user input like : 1,2,3...10 "
+- file start downloading in : quese ( 7 or 8 or 10 ) or chunks to boost download speed .
+-it shows downloading progess visual colured bar in cli to monitor download speed and completion progress in %
+- then , beautiful colured SQL databse for what processes done and files , etc
+- add pause , resume , stop option for file downloading .
+- last , ask user : " do you want to continue downloading (y/n) : user input y or n "
+
+=====================================
+
+Here is your detailed, well-structured system prompt for Claude Sonnet 4.6 (with adaptive thinking) in Google AI Studio, using proper XML structure per Anthropic and Google's official best practices:
+
+xml
+<role>
+You are an expert Python developer and CLI application architect specializing in
+media downloaders, database-driven automation tools, and rich terminal UI design.
+You write clean, production-ready, fully documented Python code. You think deeply
+before writing any code — analyzing the full project structure, dependencies, and
+edge cases first.
+</role>
+
+<context>
+The user has an existing project (files, folders, and code) that needs to be
+analyzed, debugged, enhanced, and extended into a fully featured media downloader
+CLI application. The project uses yt-dlp for downloading media content from URLs.
+</context>
+
+<task>
+Perform a full analysis, correction, and extension of the existing project. Then
+build the final application described in <final_output> below.
+</task>
+
+<instructions>
+
+  <step name="1_analyze">
+    Thoroughly analyze ALL existing files, folders, and code in the project.
+    - Identify every bug, error, broken import, or misconfiguration.
+    - List all missing dependencies or packages.
+    - Document the current project structure before making changes.
+  </step>
+
+  <step name="2_fix">
+    Fix every bug and error found during analysis.
+    - Correct all logical, syntax, and runtime errors.
+    - Replace deprecated or broken API calls with current equivalents.
+    - Ensure all existing functionality works correctly after fixes.
+  </step>
+
+  <step name="3_install_dependencies">
+    Identify and install ALL necessary packages, libraries, and extensions required
+    for the full application, including but not limited to:
+    - yt-dlp (media downloading)
+    - rich (colored CLI progress bars, tables, panels)
+    - SQLite3 or SQLAlchemy (database)
+    - questionary or InquirerPy (interactive CLI prompts)
+    - threading or asyncio (concurrent downloads)
+    - Any other packages needed for the features below.
+    Generate a complete requirements.txt file.
+  </step>
+
+  <step name="4_database">
+    Design and implement a SQLite database to log all user activity, including:
+    - Table: downloads (id, url, title, format, quality, file_size, status,
+      start_time, end_time, save_path)
+    - Table: sessions (id, session_start, session_end, total_downloads,
+      total_data_transferred)
+    - Table: errors (id, url, error_message, timestamp)
+    Use SQLAlchemy ORM or raw sqlite3 with proper schema migrations.
+    Display database records as a beautiful, colored Rich table after each session.
+  </step>
+
+  <step name="5_new_files">
+    Create all necessary new files to support modular architecture:
+    - main.py          → Entry point and session manager
+    - downloader.py    → Core download logic (yt-dlp wrapper)
+    - database.py      → All DB models, connection, and CRUD operations
+    - ui.py            → All CLI UI components (prompts, progress bars, tables)
+    - config.py        → App settings (default paths, queue size, quality map)
+    - requirements.txt → All dependencies with pinned versions
+    - README.md        → Setup and usage instructions
+  </step>
+
+</instructions>
+
+<final_output>
+The completed application must behave EXACTLY as described below, in this order:
+
+  1. URL INPUT
+     Prompt: "Enter URL(s) — paste one or more URLs or a playlist URL (comma-separated):"
+     Accept: single URL, multiple comma-separated URLs, or playlist URL.
+
+  2. QUALITY SCOPE SELECTION
+     Prompt: "Apply quality selection to: (a) All videos  (i) Individual videos — Enter a or i:"
+     If user enters 'i', ask quality separately for each video.
+     If user enters 'a', ask quality once and apply to all.
+
+  3. QUALITY SELECTION
+     Display the following numbered menu:
+       1. 4K (2160p)
+       2. 2K (1440p)  [Note: corrected label from original]
+       3. 1440p
+       4. 1080p
+       5. 720p
+       6. 576p
+       7. 480p
+       8. 360p
+       9. 240p
+      10. 144p
+     Prompt: "Choose quality (enter number 1–10):"
+     Map selected number to the correct yt-dlp format string.
+
+  4. DOWNLOAD QUEUE
+     Process downloads in a concurrent queue of 7–10 parallel workers.
+     Use threading or asyncio for parallel execution to maximize download speed.
+
+  5. PROGRESS DISPLAY
+     For each download, show a rich, colored progress bar in the terminal with:
+     - File name
+     - Download speed (MB/s)
+     - Completion percentage
+     - ETA (estimated time remaining)
+     - File size (downloaded / total)
+     Use the Rich library's Progress component with custom columns.
+
+  6. PAUSE / RESUME / STOP CONTROLS
+     During downloads, provide keyboard shortcuts:
+     - 'p' → Pause all active downloads
+     - 'r' → Resume paused downloads
+     - 's' → Stop all downloads immediately (with confirmation prompt)
+     Display current control options at the bottom of the terminal UI.
+
+  7. POST-SESSION DATABASE VIEW
+     After all downloads complete, display a beautiful Rich table showing:
+     - All downloads from the current session (filename, URL, quality, status,
+       file size, duration)
+     - Session summary (total files, total size, total time)
+     Use Rich Panel and colored Table with alternating row colors.
+
+  8. CONTINUE PROMPT
+     Prompt: "Do you want to download more files? (y/n):"
+     If 'y' → return to step 1 (URL input).
+     If 'n' → display final session summary and exit gracefully.
+</final_output>
+
+<constraints>
+- All terminal output must use Rich for colors, panels, and tables — no plain print().
+- Every download event (start, progress, complete, error, pause, stop) must be
+  logged to the SQLite database in real time.
+- Code must be modular: each file handles only its designated responsibility.
+- Handle errors gracefully: invalid URLs, unavailable qualities, and network
+  failures must show a rich error panel and log to the errors table.
+- Prefer general, intelligent code over overly prescribed step-by-step logic —
+  use best judgment where the specification is silent.
+- Write complete, runnable code — no placeholders, no TODOs, no stub functions.
+</constraints>
+
+<thinking>
+Think thoroughly about the full architecture before writing any code.
+Consider: module interdependencies, thread safety for DB writes, yt-dlp hook
+callbacks for progress tracking, and Rich's Live display context for concurrent
+progress bars.
+</thinking>
+Key Design Decisions in This Prompt
+XML tag structure is used throughout because Claude Sonnet 4.6 natively parses XML boundaries to cleanly separate role, context, instructions, and output specs.
+
+<thinking> tag at the end activates Claude 4.6's adaptive thinking mode, which dynamically decides how much internal reasoning to apply based on task complexity — this is ideal for agentic coding tasks.
+
+Modular file structure is specified in <step name="5_new_files"> to prevent Claude from dumping everything into one file, which is a common failure mode on complex projects.
+
+Positive instructions are used throughout (e.g., "write complete, runnable code") rather than negative ones like "don't write stubs" — Anthropic docs confirm this produces better compliance.
+
+Context is placed before the task (<context> → <instructions> → <final_output>) following Claude and Google's official guidance that long context should precede specific instructions.
+
+Prepared using Claude Sonnet 4.6
+README.md :
+## AURI V1 — Smart Media Downloader
+
+
+> **Version 2.0** | Python 3.11+ | yt-dlp powered | Rich terminal UI
+
+
+---
+
+
+### Features
+
+
+- ✅ 10 quality presets (4K → 144p)
+- ✅ Paste a single URL, multiple comma-separated URLs, or a full playlist URL
+- ✅ Per-video or bulk quality selection
+- ✅ 8 parallel download workers for maximum speed
+- ✅ Real-time Rich progress bars (speed, %, ETA, size)
+- ✅ Pause **P** / Resume **R** / Stop **S** keyboard controls
+- ✅ SQLite database logging (every download, session, and error)
+- ✅ Beautiful post-session report table
+- ✅ Loop: download more or exit gracefully
+
+
+---
+
+
+### Setup
+
+
+```bash
+# 1. Create & activate a virtual environment (recommended)
+python -m venv .venv
+.venv\\\\Scripts\\\\activate      # Windows
+# source .venv/bin/activate  # macOS/Linux
+
+
+# 2. Install dependencies
+pip install -r requirements.txt
+
+
+# 3. (Windows only) Install ffmpeg — required for video+audio merging
+# Download from https://ffmpeg.org/download.html and add to PATH
+```
+
+
+---
+
+
+### Usage
+
+
+```bash
+python main.py
+```
+
+
+**Flow:**
+1. Paste URL(s) — single, comma-separated, or playlist
+2. Choose quality scope: **(a)** all videos or **(i)** per-video
+3. Pick quality from the numbered menu (1–10)
+4. Watch downloads run in parallel with live progress bars
+5. Press **P** to pause, **R** to resume, **S** to stop
+6. View the session report table automatically when done
+7. Choose to download more or exit
+
+
+---
+
+
+### Project Structure
+
+
+```
+AURI V1/
+├── main.py          ← Entry point & session loop
+├── downloader.py    ← yt-dlp wrapper with Rich progress hooks
+├── database.py      ← SQLite3 models + CRUD (thread-safe)
+├── ui.py            ← All Rich UI components
+├── config.py        ← App settings and quality map
+├── requirements.txt ← All dependencies
+├── auri.db          ← SQLite database (auto-created on first run)
+└── downloads/       ← Default save location
+```
+
+
+---
+
+
+### Requirements
+
+
+See `requirements.txt`. Key packages:
+
+
+| Package   | Purpose                          |
+|-----------|----------------------------------|
+| yt-dlp    | Media downloading engine         |
+| rich      | Terminal UI, progress bars, tables|
+| keyboard  | p/r/s hotkey detection           |
+
+
+---
+
+
+### Notes
+
+
+- `auri.db` is created automatically on first run in the project folder.
+- If `keyboard` is not installed, hotkeys are disabled (downloads still work).
+- For best video quality, ensure **ffmpeg** is installed and on your PATH.
+
+==================================================================================================================================================
+# IMPLEMENTATION PLAN :
+# AURI V1 — Full Rebuild Implementation Plan
+
+## Analysis Summary
+
+### Existing Project State
+| File | State | Issues |
+|---|---|---|
+| `main.py` | Partial (141 lines) | Uses `tqdm` not Rich; plain `print()`; only 8 quality options; no DB; no pause/resume/stop; max 4 workers |
+| `AURI/config.py` | Stub (1 line) | Empty — comment only |
+| `AURI/requirements.txt` | Stub (1 line) | Empty — comment only |
+| `AURI/core/downloader_engine.py` | Stub | Empty |
+| `AURI/core/platform_detector.py` | Stub | Empty |
+| `AURI/core/queue_manager.py` | Stub | Empty |
+| `AURI/gui/desktop_gui.py` | Stub | Empty |
+| `AURI/web/dashboard.py` | Stub | Empty |
+| `AURI/ai/ai_commands.py` | Stub | Empty |
+| `telegram_downloader_bot.py` | Working | Separate concern, not touched |
+
+### Bugs in `main.py`
+1. Uses `tqdm` (not Rich) — violates constraints
+2. `print()` everywhere — violates constraints
+3. Only 8 quality options (spec requires 10: 4K, 2K, 1440p, 1080p, 720p, 576p, 480p, 360p, 240p, 144p)
+4. URL input order wrong (quality first, then URL) — spec requires URL first
+5. No SQLite database logging
+6. No pause/resume/stop controls
+7. No post-session Rich table view
+8. No continue prompt loop
+9. Max workers = 4 (spec requires 7–10)
+10. No error logging to DB
+
+---
+
+## Proposed Architecture
+
+```
+AURI V1/
+├── main.py ← Entry point & session loop
+├── downloader.py ← yt-dlp wrapper with Rich progress hooks
+├── database.py ← SQLite3 models + CRUD (thread-safe)
+├── ui.py ← All Rich UI: panels, tables, prompts, progress
+├── config.py ← Settings, quality map, paths
+├── requirements.txt ← Pinned dependencies
+└── README.md ← Setup & usage guide
+```
+
+---
+
+## Proposed Changes
+
+### `config.py` [OVERWRITE root-level]
+- `DOWNLOAD_FOLDER`, `MAX_WORKERS = 8`, `DB_PATH`
+- Full 10-entry `QUALITY_MAP` with correct yt-dlp format strings
+- App metadata (name, version)
+
+### `database.py` [NEW]
+- Raw `sqlite3` with `threading.Lock` for thread-safe writes
+- `init_db()` — creates all 3 tables on first run
+- Tables: `downloads`, `sessions`, `errors`
+- CRUD: `log_download_start`, `log_download_complete`, `log_error`, `start_session`, `end_session`, `get_session_downloads`
+
+### `ui.py` [NEW]
+- `show_banner()` — Rich Panel with AURI logo
+- `prompt_urls()` — URL input prompt
+- `prompt_quality_scope()` — a/i selection
+- `prompt_quality()` — numbered menu
+- `show_controls_hint()` — keyboard shortcut display
+- `show_session_table()` — post-session Rich Table with alternating rows
+- `show_error_panel()` — Red Rich Panel for errors
+- `show_final_summary()` — final session stats panel
+
+### `downloader.py` [NEW]
+- `DownloadWorker` class wrapping yt-dlp
+- yt-dlp `progress_hook` callback feeding into Rich `Progress`
+- Pause/resume via `threading.Event`
+- Stop via `threading.Event`
+- Thread-safe DB logging on every event
+- Returns `DownloadResult` dataclass
+
+### `main.py` [OVERWRITE]
+- `SessionManager` class
+- Main loop: URL → scope → quality → queue → progress → DB view → continue?
+- `keyboard` listener thread for p/r/s controls
+- `ThreadPoolExecutor` with `max_workers=8`
+- Rich `Live` context wrapping all parallel progress bars
+
+### `requirements.txt` [OVERWRITE]
+```
+yt-dlp>=2024.3.10
+rich>=13.7.0
+keyboard>=0.13.5
+```
+
+### `README.md` [NEW]
+
+---
+
+## Key Technical Decisions
+
+| Decision | Rationale |
+|---|---|
+| `sqlite3` + `threading.Lock` (not SQLAlchemy) | Zero extra deps, perfect for single-process threading |
+| `Rich Live` + `Progress` | Single live context manages all parallel bars cleanly |
+| `threading.Event` for pause/stop | Simple, reliable, works across `ThreadPoolExecutor` threads |
+| `keyboard` library for hotkeys | Cross-platform key detection in a background thread |
+| `yt-dlp` `progress_hooks` | Official API for real-time download state |
+| Root-level flat files | Simpler imports; the AURI/ subdirs are legacy stubs |
+
+---
+
+## Verification Plan
+- Run `pip install -r requirements.txt`
+- Launch `python main.py`
+- Test with: single URL, comma-separated URLs, playlist URL
+- Verify all 10 quality options work
+- Verify p/r/s controls respond during download
+- Verify DB table renders after session
+- Verify continue loop works (y → back to URL input, n → exits)
+==================================================================================================================================================
+# REQUIRMENT.txt :
+# Core download engine
+yt-dlp>=2024.3.10
+
+
+# Rich terminal UI (panels, tables, progress bars, live display)
+rich>=13.7.0
+
+
+# Keyboard hotkey detection for pause/resume/stop
+keyboard>=0.13.5
+
+==================================================================================================================================================
+# GIVE ME :
+- ITS A NEW PROJECT : " AURY "
+- with the help of above files and plans make you own new plan for this tool so it can build it properly all things .
+- analyse all data and made roadmap or implimentation plan for antigravity ai coding models
+for building & inmplementing all things from scratches ans also add new ideas in it
+- give implimentation plan to build my own idm.
+- buils structured prompt with folder & files layout structure so agent can make all things from scrach.
+- i just provide it empty folder and it builds all things .
+- it includes all features V1 ( version 1 ) we build for CLI .
+- then move to v2 ( GUI ) .
+- add cool features in it .
+- dont include any prompts that are manually done like : installing pacakges , libraries through cmd in terminal.
+- ( i can handle that things like : creating venv , pip ibtall , neccesary packages , etc for that -----> give me all cmds with their use case , where to use & also give its alternatives if one cmd if failed for each).
+- prompt only includes coding & error handling , bug fixing & etc task .
+- manual work : i'll do it ----> run cmds for run codes , instalation etcs ( just give their cmds )
+
+4 attachments
+Completed 2 steps
+Here is the complete AURY Master Agent Prompt — fully structured for Claude Sonnet 4.6 Thinking. Paste this directly into Google AI Studio (or Claude.ai) with your 4 reference files attached.
+
+Bug Analysis (From Your Uploaded Files)
+Before the prompt, here's what was found — all 12 bugs are documented inside the prompt itself:
+
+#	File	Bug Type	Description
+1–8	database.py	Syntax Error	8 conn.execute(...) calls missing closing ) — crashes at import
+9	config.py	Logic Bug	QUALITY_MAP keys "2" and "3" have identical yt-dlp format strings
+10	downloader.py	Performance Bug	threading.Event().wait(0.25) creates a new throwaway Event every 250ms
+11	main.py	Missing File	Imports from ui import ... but ui.py doesn't exist in the project
+12	downloader.py	Unused Import	field imported from dataclasses but never used
+✅ Master Agent Prompt for AURY
+xml
+<role>
+You are a senior Python engineer and GUI/CLI application architect with deep expertise in:
+- yt-dlp media downloading internals and progress hooks
+- Rich terminal UI (Live, Progress, Table, Panel, Layout)
+- SQLite3 thread-safe database design
+- Threading, concurrent.futures, and async I/O patterns
+- customtkinter modern GUI development
+- Clean modular Python project architecture
+
+You think deeply before writing any code. You analyse every file, trace every import, identify
+every bug, then build complete, runnable, production-quality code with zero placeholders.
+</role>
+
+<project_overview>
+Project name  : AURY (formerly AURI)
+Description   : A smart media downloader — a personal IDM (Internet Download Manager) built in Python.
+                Powered by yt-dlp. Two versions must be built sharing a common core:
+
+  V1 — CLI  : Rich terminal UI with live progress bars, pause/resume/stop, SQLite logging.
+  V2 — GUI  : Modern desktop GUI built with customtkinter, extending every V1 feature visually.
+
+Shared philosophy:
+  - Every download event is logged to SQLite in real time.
+  - All UI uses either Rich (CLI) or customtkinter (GUI) — never plain print().
+  - Code is strictly modular: each file has one responsibility.
+  - Complete, runnable code only — no stubs, no TODOs, no placeholders.
+</project_overview>
+
+<reference_files>
+Four existing source files are provided as reference and MUST be used as the foundation.
+Do NOT discard them — extend, fix, and integrate them.
+
+FILES PROVIDED:
+  1. config.py     — App settings, QUALITY_MAP, color theme, get_ydl_base_opts()
+  2. database.py   — SQLite3 CRUD with threading.Lock (sessions, downloads, errors tables)
+  3. downloader.py — DownloadWorker class, yt-dlp progress_hook, pause/stop events
+  4. main.py       — Session loop, KeyboardController, ThreadPoolExecutor runner
+
+CRITICAL BUGS FOUND IN REFERENCE FILES — fix all of these:
+
+  [database.py — SYNTAX ERRORS]
+  Bug 1: start_session()         → conn.execute(...) call is missing its closing parenthesis ")"
+  Bug 2: end_session()           → conn.execute("""...""", (...),) is missing closing ")"
+                                    Also missing closing ")" on the outer execute call
+  Bug 3: log_download_start()    → execute call missing closing ")"
+  Bug 4: log_download_complete() → execute call missing closing ")"
+  Bug 5: log_download_failed()   → execute call missing closing ")"
+  Bug 6: log_download_stopped()  → execute call missing closing ")"
+  Bug 7: update_download_title() → execute call missing closing ")"
+  Bug 8: log_error()             → execute call missing closing ")"
+  Fix: Ensure every conn.execute(...) call has proper matching parentheses.
+
+  [config.py — LOGIC BUG]
+  Bug 9: QUALITY_MAP keys "2" and "3" both use "bestvideo[height<=1440]+bestaudio/best"
+         Key "2" is labelled "2K (1440p)" and key "3" is "1440p" — these are identical.
+         Fix: Key "2" should be:
+           ("2K (1440p)", "bestvideo[height<=1440][width>=2560]+bestaudio/best
+            [width>=2560]/bestvideo[height<=1440]+bestaudio/best")
+         This prioritises true 2K (2560-wide) footage while falling back gracefully.
+
+  [downloader.py — PERFORMANCE BUG]
+  Bug 10: In the pause loop inside _progress_hook(), the code does:
+            threading.Event().wait(0.25)
+          This creates a NEW throwaway Event object every 250ms — wasteful and wrong.
+          Fix: Replace with: import time; time.sleep(0.25)
+
+  [main.py — MISSING IMPORT TARGET]
+  Bug 11: main.py imports from "ui" module (ui.py) which does NOT exist in the project.
+          Fix: Create ui.py completely from scratch (fully specified below).
+
+  [downloader.py — MISSING IMPORT]
+  Bug 12: "from dataclasses import dataclass, field" — "field" is imported but never used.
+          Fix: Remove unused import to keep code clean.
+</reference_files>
+
+<folder_structure>
+Build the entire project inside a single root folder called AURY/ with this exact layout.
+Create every file listed — none are optional.
+
+AURY/
+├── core/                          ← Shared engine (used by both CLI and GUI)
+│   ├── __init__.py                ← Exports: DownloadWorker, pause_event, stop_event
+│   ├── config.py                  ← All settings, QUALITY_MAP, color theme (fixed)
+│   ├── database.py                ← SQLite3 CRUD, thread-safe (fixed)
+│   └── downloader.py              ← DownloadWorker, DownloadResult, events (fixed)
+│
+├── cli/                           ← V1 CLI application
+│   ├── __init__.py
+│   ├── main.py                    ← Entry point: session loop, keyboard controller
+│   └── ui.py                      ← ALL Rich UI: banner, prompts, progress, tables
+│
+├── gui/                           ← V2 GUI application
+│   ├── __init__.py
+│   ├── app.py                     ← customtkinter App class, entry point
+│   ├── theme.py                   ← Color palette, font map, widget style helpers
+│   └── windows/
+│       ├── __init__.py
+│       ├── main_window.py         ← Root window: sidebar + content area layout
+│       ├── download_panel.py      ← URL input, quality picker, queue, progress cards
+│       ├── history_window.py      ← Full download history from SQLite
+│       └── settings_window.py     ← App settings: save path, workers, theme toggle
+│
+├── downloads/                     ← Auto-created by config.py
+├── aury.db                        ← Auto-created by database.init_db() on first run
+├── requirements_cli.txt           ← CLI dependencies (pinned versions)
+├── requirements_gui.txt           ← GUI dependencies (pinned versions)
+└── README.md                      ← Complete setup, usage, and feature guide
+</folder_structure>
+
+<v1_cli_spec>
+
+== core/config.py ==
+  - Fix Bug 9 (QUALITY_MAP key "2" duplicate format string).
+  - Change APP_NAME to "AURY", APP_VERSION to "1.0" for V1.
+  - BASE_DIR must point to AURY/ root (two levels up from core/).
+  - Add: CLI_BANNER_GRADIENT = list of Rich color names for the ASCII art banner.
+  - Keep all other constants from the reference file unchanged.
+  - Keep get_ydl_base_opts() unchanged.
+
+== core/database.py ==
+  - Fix all 8 syntax bugs (missing parentheses) listed in <reference_files>.
+  - Add new function: get_all_history(limit: int = 200) -> list[dict]
+    Returns the last N downloads across ALL sessions (for GUI history view).
+  - Add new function: delete_session(session_id: int) -> None
+    Hard-deletes a session and its downloads/errors (for settings cleanup).
+  - Add new function: get_lifetime_stats() -> dict
+    Returns: {total_downloads, total_sessions, total_bytes} across all sessions.
+  - All other functions remain identical to the reference file (after bug fixes).
+
+== core/downloader.py ==
+  - Fix Bug 10 (threading.Event().wait → time.sleep).
+  - Fix Bug 12 (remove unused "field" import).
+  - Add speed tracking: in _progress_hook when status=="downloading",
+    read d.get("speed") and store as self._current_speed (float, bytes/sec).
+  - Pass speed to progress.update() so UI can display MB/s.
+  - DownloadResult dataclass: add field speed_avg: float = 0.0
+  - Keep all other logic identical to the reference file.
+
+== cli/ui.py ==
+  Create this file entirely from scratch. It must contain ALL of the following:
+
+  IMPORTS: rich.console, rich.panel, rich.table, rich.progress, rich.text, rich.align,
+           rich.columns, rich.live, rich.style, rich.theme; also core.config, core.database.
+
+  CONSOLE: console = Console(theme=...) using the color constants from config.py.
+
+  show_banner():
+    - Print a large, colored ASCII art "AURY" logo using Rich Panel.
+    - Subtitle: "Smart Media Downloader | V1 CLI | yt-dlp powered"
+    - Version and tagline inside the panel border.
+    - Include lifetime stats: "📦 Lifetime: {total_downloads} downloads · {GB} GB"
+      via database.get_lifetime_stats().
+
+  prompt_urls() -> list[str]:
+    - Try pyperclip.paste() (import inside try/except) — if clipboard has a valid
+      URL, pre-show it: "📋 Clipboard URL detected: {url} — press Enter to use, or type new:"
+    - Prompt: "[bright_cyan]▶ Enter URL(s)[/] — single, comma-separated, or playlist URL:"
+    - Validate each entry starts with http:// or https://.
+    - On no valid URLs: show error panel and re-prompt (loop until valid).
+    - Return list of clean URL strings.
+
+  prompt_quality_scope() -> str:
+    - Print a framed panel: "Apply quality to: [A] All videos  [I] Individual"
+    - Prompt: "Enter a or i → "
+    - Accept only "a" or "i" (case-insensitive). Re-prompt on invalid input.
+    - Return lowercase "a" or "i".
+
+  prompt_quality(target: str) -> tuple[str, str]:
+    - Print a numbered Rich Table with all 10 quality options from QUALITY_MAP
+      plus option "0" → "Audio only (MP3 320kbps)" at the top.
+    - Columns: #, Quality Label, Format Code.
+    - Highlight the recommended option (1080p = key "4") in bright_cyan.
+    - Prompt: f"Quality for [bold]{target}[/] (0–10) → "
+    - If user enters "0": return ("Audio MP3 320k", "bestaudio/best") with
+      yt-dlp postprocessors for FFmpegExtractAudio set to MP3 320kbps.
+    - Accept 0–10 only. Re-prompt on invalid. Return (label, format_code) tuple.
+
+  make_progress() -> Progress:
+    - Return a Rich Progress with these columns in order:
+      SpinnerColumn(spinner_name="dots12"),
+      TextColumn("[bold bright_cyan]{task.fields[status_icon]}[/]"),
+      TextColumn("[bright_white]{task.fields[filename]:.45}[/]"),
+      BarColumn(bar_width=28, style="bright_cyan", complete_style="bright_green"),
+      TaskProgressColumn(),
+      TransferSpeedColumn(),
+      TimeRemainingColumn(),
+      DownloadColumn()
+    - Set expand=True on the Progress object.
+
+  controls_panel() -> Panel:
+    - Return a Rich Panel with hotkey hints.
+    - Color each key letter in bright_yellow; rest in grey62.
+    - Border style: dim grey62.
+
+  show_session_table(session_id: int) -> None:
+    - Fetch rows via database.get_session_downloads(session_id).
+    - Fetch summary via database.get_session_summary(session_id).
+    - Build a Rich Table with alternating row styles using ROW_COLORS from config.
+    - Columns: #, Title (truncated 40), Quality, Status (colored), Size, Duration, Path.
+    - Status coloring: completed→bright_green, failed→bright_red, stopped→bright_yellow.
+    - Below the table: a summary Panel with totals.
+    - After table: prompt "Export this session to CSV? (y/n) → "
+      If yes: write downloads/session_{id}_{timestamp}.csv.
+
+  show_error_panel(title: str, message: str) -> None:
+    - Print a bright_red bordered Panel with title and message.
+
+  prompt_stop_confirm() -> bool:
+    - Warning panel, then: "Confirm stop? (y/n) → " — return True only for "y".
+
+  prompt_continue() -> bool:
+    - Prompt: "Download more files? (y/n) → " — True if "y", False if "n".
+
+  prompt_retry_failed(count: int) -> bool:
+    - Prompt: f"Retry {count} failed download(s)? (y/n) → " — True if "y".
+
+  show_goodbye(session_id: int) -> None:
+    - Print goodbye Panel with session stats.
+
+== cli/main.py ==
+  - Fix Bug 11: ui.py now exists — all imports resolve.
+  - Fix workers list comprehension: ensure correct closing )] syntax.
+  - Fix prompt_quality call: unpack tuple correctly.
+  - Fix Group/Panel imports: move to top-level, not inside run_session().
+  - Add: after session ends, if any failed downloads exist, call prompt_retry_failed()
+    and if True, re-queue failed URLs with the same quality settings and run again.
+  - Add: network check at start of run_session() using socket.create_connection
+    ("8.8.8.8", 53, timeout=3). If offline: show error panel and return early.
+  - Add: ffmpeg check at startup using shutil.which("ffmpeg"). If None:
+    print a warning Panel but do NOT abort.
+  - Add: duplicate URL detection before download — query DB, warn if already downloaded.
+  - Keep all other logic identical to the reference file after syntax fixes.
+</v1_cli_spec>
+
+<v2_gui_spec>
+
+== Overview ==
+  V2 is a full desktop GUI application using customtkinter.
+  It shares core/ (config, database, downloader) with V1 unchanged.
+  All GUI code lives exclusively in gui/.
+  The GUI runs downloads in background daemon threads — the main thread is always the UI thread.
+
+== gui/theme.py ==
+  - CTK_APPEARANCE = "dark" (default; togglable via settings)
+  - CTK_COLOR_THEME = "blue" (customtkinter built-in theme)
+  - Custom color palette dict matching config.py COLOR_* constants as hex values.
+  - Font map: FONT_HEADING, FONT_BODY, FONT_MONO, FONT_SMALL using CTkFont.
+  - Helper: get_status_color(status: str) -> str — returns hex color for status badges.
+  - Helper: load_settings() -> dict — reads aury_settings.json if it exists.
+  - Helper: save_settings(data: dict) -> None — writes aury_settings.json.
+
+== gui/windows/main_window.py ==
+  MainWindow(ctk.CTk):
+    - Window title: "AURY — Smart Media Downloader"
+    - Size: 1100 x 700 minimum, resizable.
+    - Layout: left sidebar (200px fixed) + right content area (fills remaining width).
+    - Sidebar: AURY logo at top + navigation buttons (⬇ Download, 📋 History,
+      ⚙ Settings) + version label at bottom.
+    - Clicking a sidebar button swaps the active content frame (SPA-router pattern).
+    - Status bar at the very bottom: active downloads count + DB path.
+    - On window close (WM_DELETE_WINDOW): set stop_event, wait for threads, then destroy.
+
+== gui/windows/download_panel.py ==
+  DownloadPanel(ctk.CTkFrame):
+
+    ROW 1 — URL input area:
+      - CTkTextbox (4 rows, monospace font) for pasting URLs one per line.
+      - Hint label: "Paste one URL per line, or a playlist URL"
+      - [📋 Paste from Clipboard] button — reads clipboard and fills textbox.
+      - [✕ Clear] button.
+
+    ROW 2 — Quality and options:
+      - CTkOptionMenu: all 10 quality options + "Audio only (MP3)" from QUALITY_MAP.
+      - CTkRadioButton group: "Apply to All" / "Apply per Video"
+      - CTkCheckBox: "Audio only (MP3 320kbps)" — overrides quality selection.
+      - [🔍 Fetch Info] button — see Feature 8 below.
+
+    ROW 3 — Action bar:
+      - [▶ Start Downloads] button (bright green).
+      - [⏸ Pause All] button (yellow) — calls pause_event.clear().
+      - [▶ Resume All] button (green, disabled until paused) — calls pause_event.set().
+      - [⏹ Stop All] button (red) — CTkInputDialog confirmation, then stop_event.set().
+      - Worker count: CTkSlider (4–10) + label showing current value.
+
+    ROW 4 — Queue / Progress area:
+      - CTkScrollableFrame containing DownloadCard widgets.
+      - Cards are added dynamically as downloads are queued.
+
+    DownloadCard(ctk.CTkFrame):
+      - Title label (truncated 55 chars).
+      - CTkProgressBar (0.0–1.0, green gradient).
+      - Row of labels: speed (MB/s), percentage, ETA, file size.
+      - Status badge: colored rounded CTkLabel (Queued/Downloading/Paused/Done/Failed).
+      - [✘] remove button — visible only when status is done/failed/stopped.
+      - Thread safety: workers push updates to a queue.Queue(); the panel polls it
+        every 200ms via self.after(200, self._poll_queue).
+
+== gui/windows/history_window.py ==
+  HistoryWindow(ctk.CTkFrame):
+    - Fetches data via database.get_all_history(limit=500) on load and on refresh.
+    - Scrollable table in a CTkScrollableFrame, laid out with grid.
+    - Columns: #, Title, Quality, Status, Size (MB), Duration (s), Date, Path.
+    - Filter bar: CTkEntry for keyword search + CTkOptionMenu status filter.
+    - Per-row buttons: [📂 Open File] (os.startfile / subprocess xdg-open) and [🗑 Delete].
+    - [↺ Retry] button per failed row — re-queues the URL in DownloadPanel.
+    - [Export CSV] button at top — writes downloads/aury_history.csv.
+    - [🔄 Refresh] button — re-queries DB and rebuilds table.
+
+== gui/windows/settings_window.py ==
+  SettingsWindow(ctk.CTkFrame):
+    - Download folder: CTkEntry + [Browse] button (filedialog.askdirectory).
+    - Max workers: CTkSlider 4–12 with live label.
+    - Concurrent fragments: CTkSlider 1–10 with live label.
+    - Speed limit: CTkEntry (0 = unlimited, accepts "500k", "2M").
+    - Auto-open after download: CTkSwitch.
+    - Theme: CTkSwitch "Dark / Light" — calls ctk.set_appearance_mode() live.
+    - Color theme: CTkOptionMenu (blue / green / dark-blue).
+    - [🗑 Clear All History] — CTkInputDialog confirm → database.delete_session(ALL).
+    - [💾 Save Settings] — persists to aury_settings.json via theme.save_settings().
+    - All widgets auto-populated from theme.load_settings() on init.
+
+== gui/app.py ==
+  - Call database.init_db() before anything else.
+  - Load settings via theme.load_settings() and apply appearance/color-theme.
+  - Try darkdetect (import inside try/except): if no saved theme pref, auto-set from OS.
+  - Instantiate MainWindow and call mainloop().
+  - Entry: if __name__ == "__main__": run the app.
+</v2_gui_spec>
+
+<new_features>
+Implement ALL of the following new features:
+
+  [FEATURE 1 — Smart Duplicate Detection]
+  Before starting any download, query DB: SELECT url FROM downloads WHERE url=? AND status='completed'.
+  If found, show warning: "This URL was downloaded on {date}. Re-download?"
+  Add a "redownload" INTEGER column (0/1) to the downloads table schema.
+  Log re-downloads with redownload=1.
+
+  [FEATURE 2 — Speed Limiter]
+  Add SPEED_LIMIT_BYTES = 0 to config.py (0 = unlimited).
+  Pass via yt-dlp "ratelimit" key in get_ydl_base_opts().
+  GUI: CTkEntry in SettingsWindow — accepts "0", "500k", "2M" strings; parse to bytes.
+
+  [FEATURE 3 — Audio-Only Mode]
+  CLI: option "0" in prompt_quality() → MP3 320kbps via FFmpegExtractAudio postprocessor.
+  GUI: Audio-only checkbox in DownloadPanel already specified above.
+  yt-dlp postprocessors: [{"key": "FFmpegExtractAudio", "preferredcodec": "mp3",
+                           "preferredquality": "320"}]
+
+  [FEATURE 4 — Clipboard Auto-Detect (CLI)]
+  In prompt_urls(): try pyperclip.paste() inside try/except ImportError.
+  If clipboard contains a valid URL, pre-fill the prompt. Silently skip if unavailable.
+
+  [FEATURE 5 — Post-Download Notification]
+  CLI: after each "finished" event in progress_hook, print Rich notification:
+       "✔ {title} saved to {path}"
+  GUI: show a toast widget (small CTkFrame in bottom-right of MainWindow, auto-removes
+       after 4 seconds using after(4000, toast.destroy)).
+  If AUTO_OPEN_AFTER_DOWNLOAD = True in config: call os.startfile / xdg-open.
+
+  [FEATURE 6 — Session Export to CSV]
+  CLI: after show_session_table(), prompt "Export this session to CSV? (y/n) → "
+       Write to downloads/session_{id}_{timestamp}.csv using the csv module.
+  GUI: [Export CSV] button in HistoryWindow (already specified).
+
+  [FEATURE 7 — Retry Failed Downloads]
+  CLI: after session ends, count failed rows. If > 0, call prompt_retry_failed(count).
+       If True: re-queue only the failed URLs with the same quality settings.
+       Update existing rows to status='retrying', then log new rows for the retry.
+  GUI: [↺ Retry] button per failed row in HistoryWindow (already specified).
+
+  [FEATURE 8 — Video Info Preview (GUI only)]
+  [🔍 Fetch Info] button in DownloadPanel:
+    - Run yt_dlp.YoutubeDL({"quiet": True}).extract_info(url, download=False) in a daemon thread.
+    - Display info card: title, channel, duration, view count, available formats list.
+    - Fetch thumbnail via urllib.request.urlretrieve into a temp file; display with CTkImage.
+
+  [FEATURE 9 — Startup Lifetime Stats (CLI)]
+  In show_banner(): print a one-line stats bar using database.get_lifetime_stats():
+  "📦 Lifetime: {total_downloads} downloads · {total_gb:.2f} GB · {total_sessions} sessions"
+
+  [FEATURE 10 — OS Dark/Light Theme Auto-Switch (GUI)]
+  In gui/app.py: try import darkdetect; if no saved pref, set mode = darkdetect.theme().
+  Silently skip if darkdetect not installed (try/except ImportError).
+</new_features>
+
+<error_handling>
+Implement ALL of the following:
+  1. yt-dlp DownloadError      → catch, log to errors table, show Rich panel (CLI) / toast (GUI).
+  2. No internet               → socket.create_connection(("8.8.8.8", 53), timeout=3) check before
+                                  downloads. If offline: abort with clear message.
+  3. Invalid/dead URL          → yt-dlp returns empty info → treat as error, log it.
+  4. Disk full                 → catch OSError with errno.ENOSPC → show "Disk full" error.
+  5. ffmpeg not found          → shutil.which("ffmpeg") at startup. If None: warn, fall back to
+                                  video-only format string. Do NOT abort.
+  6. SQLite write failure      → wrap all DB calls in try/except, print warning but never crash.
+  7. Keyboard lib unavailable  → already in reference; keep the graceful fallback.
+  8. Permission denied on path → catch PermissionError, prompt alternate path (CLI) or
+                                  filedialog (GUI).
+  9. Empty URL list            → never proceed; re-prompt in CLI, disable Start button in GUI.
+  10. Playlist with 0 entries  → detect via info_dict.get("entries") == [] or None;
+                                  show info panel instead of silently doing nothing.
+</error_handling>
+
+<requirements_files>
+requirements_cli.txt:
+  yt-dlp>=2024.3.10
+  rich>=13.7.0
+  keyboard>=0.13.5
+  pyperclip>=1.8.2
+
+requirements_gui.txt:
+  yt-dlp>=2024.3.10
+  rich>=13.7.0
+  customtkinter>=5.2.2
+  Pillow>=10.3.0
+  pyperclip>=1.8.2
+  darkdetect>=0.8.0
+</requirements_files>
+
+<constraints>
+- Python 3.11+ (use | union types, match/case freely).
+- V1: ALL terminal output uses Rich — zero raw print() calls.
+- V2: ALL widgets use customtkinter — zero direct tkinter calls.
+- core/ is completely UI-agnostic: imports NOTHING from cli/ or gui/.
+- cli/ and gui/ import from core/ only — never from each other.
+- No placeholders. No stub functions. No "# TODO" comments.
+- Every file must be syntactically valid Python 3.11+ and immediately runnable.
+- Thread safety: all SQLite writes go through _db_lock. All GUI updates go through after() or queue.
+- yt-dlp must NEVER run on the main thread in V2. Always use ThreadPoolExecutor.
+- pause_event and stop_event in core/downloader.py are global singletons shared by both V1 and V2.
+- requirements_cli.txt and requirements_gui.txt must use >= pinned versions.
+- README.md must document: project structure, V1 usage, V2 usage, all 10 features, ffmpeg note.
+</constraints>
+
+<build_order>
+Write files in exactly this order to respect dependency graph:
+
+  1. core/__init__.py
+  2. core/config.py
+  3. core/database.py
+  4. core/downloader.py
+  5. cli/__init__.py
+  6. cli/ui.py
+  7. cli/main.py
+  8. gui/__init__.py
+  9. gui/theme.py
+  10. gui/windows/__init__.py
+  11. gui/windows/main_window.py
+  12. gui/windows/download_panel.py
+  13. gui/windows/history_window.py
+  14. gui/windows/settings_window.py
+  15. gui/app.py
+  16. requirements_cli.txt
+  17. requirements_gui.txt
+  18. README.md
+</build_order>
+
+<thinking>
+Before writing any code:
+1. Trace all imports across all 18 files to confirm zero circular dependencies.
+2. Verify core/ has zero UI-layer imports.
+3. Confirm every shared mutable state: _db_lock, pause_event, stop_event, GUI progress queue.
+4. Walk V1 flow: URL → scope → quality → ThreadPoolExecutor → Live(progress+controls) → DB table → retry? → CSV? → continue?
+5. Walk V2 flow: launch → paste URL → quality → Start → DownloadCards update via queue.Queue → history tab → settings.
+6. Verify thread safety: GUI worker threads only push to queue.Queue; main thread only reads via after(200, poll).
+7. Only then begin writing — one complete file at a time, in the order specified in <build_order>.
+</thinking>
+🖥️ Setup Commands (Your Manual Part)
+Here are all the commands you need, with use-cases and alternatives:
+
+Environment Setup
+bash
+# Create virtual environment
+python -m venv .venv
+
+# Activate (Windows) — use this in your project folder
+.venv\Scripts\activate
+
+# Activate (macOS/Linux) — alternative
+source .venv/bin/activate
+
+# If python not found, try:
+python3 -m venv .venv
+Install Dependencies
+bash
+# For V1 CLI
+pip install -r requirements_cli.txt
+
+# For V2 GUI
+pip install -r requirements_gui.txt
+
+# If pip fails, try:
+python -m pip install -r requirements_cli.txt
+
+# If a single package fails:
+pip install yt-dlp rich keyboard pyperclip
+Run the App
+bash
+# V1 CLI
+python cli/main.py
+
+# V2 GUI
+python gui/app.py
+
+# If module not found errors, run from AURY/ root:
+cd AURY
+python -m cli.main
+python -m gui.app
+FFmpeg (Required for Video+Audio Merge)
+bash
+# Windows — via winget
+winget install ffmpeg
+
+# Windows — via chocolatey (alternative)
+choco install ffmpeg
+
+# Check if ffmpeg is installed and on PATH
+ffmpeg -version
+Prepared using Claude Sonnet 4.6 Thinking
+give the step by step prompts so ai model dont get hallucinate and credits not get wasted .
+= i am using antigravity models & codex app for more credits and flexibility so divide above gig prompt into small prompts so each ai tools run simultaneously on diffrent small tasks to save time and creadits
+
+Good — I have full context on your AURY project, Antigravity, and Codex setup. Here's the complete parallel task breakdown — each prompt is self-contained, small enough to avoid hallucination, and independent so multiple agents run simultaneously.
+
+Strategy: How to Split
+The master prompt is divided into 4 Phases with 18 micro-tasks. Each task goes to one agent instance. Tasks in the same phase run simultaneously — tasks in different phases must run in order (each phase depends on the previous).
+
+text
+Phase 1 → Core files only (3 parallel agents)
+Phase 2 → CLI files (2 parallel agents, needs Phase 1 done)
+Phase 3 → GUI files (5 parallel agents, needs Phase 1 done)
+Phase 4 → Final files (2 parallel agents, needs everything done)
+🔴 Phase 1 — Core Engine (Run ALL 3 simultaneously)
+Rule before pasting: Attach only the specific reference file mentioned in each prompt. Nothing else.
+
+🟠 Agent 1A — core/config.py
+text
+TASK: Write one complete Python file: core/config.py
+
+CONTEXT:
+- Project: AURY — a yt-dlp powered media downloader.
+- This is the central config file shared by both CLI and GUI.
+- Python 3.11+. No UI imports of any kind.
+
+REFERENCE FILE: The existing config.py is attached. Use it as base.
+
+YOUR JOBS:
+1. Fix this bug: QUALITY_MAP key "2" and key "3" both use the same format string
+   "bestvideo[height<=1440]+bestaudio/best". Fix key "2" to:
+   "bestvideo[height<=1440][width>=2560]+bestaudio/best[width>=2560]/bestvideo[height<=1440]+bestaudio/best"
+2. Change APP_NAME = "AURY", APP_VERSION = "1.0"
+3. BASE_DIR must point to the AURY/ project root (parent of the core/ folder):
+   BASE_DIR = Path(__file__).parent.parent.resolve()
+4. Add this new constant after the color constants:
+   CLI_BANNER_GRADIENT = ["bright_cyan", "cyan", "bright_blue", "blue", "bright_magenta"]
+5. Add this constant: SPEED_LIMIT_BYTES = 0
+6. Add this constant: AUTO_OPEN_AFTER_DOWNLOAD = False
+7. Keep everything else EXACTLY as in the reference file.
+8. Keep get_ydl_base_opts() function unchanged EXCEPT:
+   - add "ratelimit": SPEED_LIMIT_BYTES to the returned dict (only if SPEED_LIMIT_BYTES > 0)
+
+OUTPUT: The complete file content only. No explanations.
+🟠 Agent 1B — core/database.py
+text
+TASK: Write one complete Python file: core/database.py
+
+CONTEXT:
+- Project: AURY — a yt-dlp powered media downloader.
+- This is the SQLite3 database layer, thread-safe with threading.Lock.
+- Python 3.11+. No UI imports of any kind.
+
+REFERENCE FILE: The existing database.py is attached. Use it as base.
+
+YOUR JOBS — fix these bugs first:
+Bug 1–8: Every single conn.execute(...) call in the file is missing its
+closing parenthesis ")". There are 8 such broken calls across these functions:
+  start_session(), end_session(), log_download_start(), log_download_complete(),
+  log_download_failed(), log_download_stopped(), update_download_title(), log_error()
+Fix: Add the missing closing ")" to each execute call so they are syntactically valid.
+
+Then add these NEW functions at the bottom of the file:
+
+1. get_all_history(limit: int = 200) -> list[dict]:
+   """Return the last N download rows across ALL sessions, most recent first."""
+   Query: SELECT d.title, d.url, d.quality, d.status, d.file_size, d.duration_s,
+                 d.save_path, d.start_time, s.session_start
+          FROM downloads d JOIN sessions s ON s.id = d.session_id
+          ORDER BY d.id DESC LIMIT ?
+   Return as list of plain dicts.
+
+2. delete_session(session_id: int) -> None:
+   """Hard-delete a session and all its downloads and errors."""
+   DELETE FROM errors WHERE session_id = ?
+   DELETE FROM downloads WHERE session_id = ?
+   DELETE FROM sessions WHERE id = ?
+   All three deletes in one _db_lock block.
+
+3. get_lifetime_stats() -> dict:
+   """Return aggregate stats across all sessions."""
+   Query: SELECT COUNT(*) as total_downloads,
+                COALESCE(SUM(file_size), 0) as total_bytes
+          FROM downloads WHERE status = 'completed'
+   Query: SELECT COUNT(*) as total_sessions FROM sessions
+   Return: {"total_downloads": int, "total_bytes": int, "total_sessions": int}
+
+4. get_failed_downloads(session_id: int) -> list[dict]:
+   """Return all failed download rows for a given session."""
+   Query: SELECT id, url, quality, format FROM downloads
+          WHERE session_id = ? AND status = 'failed'
+   Return as list of plain dicts.
+
+Also modify the _SCHEMA string:
+- Add column to downloads table: redownload INTEGER DEFAULT 0
+
+Also modify log_download_start() signature:
+- Add parameter: redownload: bool = False
+- Include it in the INSERT: pass int(redownload) for the redownload column.
+
+Keep all existing functions identical after fixing the syntax bugs.
+
+OUTPUT: The complete file content only. No explanations.
+🟠 Agent 1C — core/downloader.py
+text
+TASK: Write one complete Python file: core/downloader.py
+
+CONTEXT:
+- Project: AURY — a yt-dlp powered media downloader.
+- This is the yt-dlp wrapper. Runs in ThreadPoolExecutor threads.
+- Python 3.11+. No UI imports of any kind.
+
+REFERENCE FILE: The existing downloader.py is attached. Use it as base.
+
+YOUR JOBS — fix these bugs first:
+Bug 1: In the pause loop inside _progress_hook():
+  BROKEN:  threading.Event().wait(0.25)
+  FIX:     time.sleep(0.25)
+  Also add "import time" at the top of the file.
+
+Bug 2: Remove "field" from the dataclasses import line:
+  BROKEN:  from dataclasses import dataclass, field
+  FIX:     from dataclasses import dataclass
+
+Then make these additions:
+
+1. DownloadResult dataclass: add new field at the end:
+   speed_avg: float = 0.0
+
+2. In the DownloadWorker class, add a new instance variable in __init__:
+   self._current_speed: float = 0.0
+
+3. In _progress_hook(), inside the "if status == 'downloading':" block,
+   after reading 'downloaded_bytes', add:
+     speed = d.get("speed") or 0.0
+     self._current_speed = speed
+     self.progress.update(self._current_task_id, completed=downloaded, speed=speed)
+   (Replace the existing self.progress.update call for the downloading status.)
+
+4. In core/__init__.py (create this file too, as a second output):
+   Content:
+     from core.downloader import DownloadWorker, DownloadResult, pause_event, stop_event
+     __all__ = ["DownloadWorker", "DownloadResult", "pause_event", "stop_event"]
+
+Keep ALL other logic in the file exactly as in the reference.
+
+OUTPUT: Two files. First output core/downloader.py, then core/__init__.py. No explanations.
+🟡 Phase 2 — CLI Layer (Run BOTH simultaneously, after Phase 1 is done)
+Rule: Don't attach reference files for these. Describe the interface precisely instead — this prevents the agent from copying bugs.
+
+🟢 Agent 2A — cli/ui.py
+text
+TASK: Write one complete Python file: cli/ui.py — from scratch, no reference file.
+
+CONTEXT:
+- Project: AURY — yt-dlp media downloader. This is the V1 CLI.
+- This file contains ALL Rich UI components used by cli/main.py.
+- Python 3.11+.
+- Imports allowed: rich.*, core.config, core.database, pyperclip (inside try/except), os, csv, datetime
+
+ASSUME these exist in core/config.py (import them):
+  APP_NAME, APP_VERSION, APP_TAGLINE, QUALITY_MAP, COLOR_PRIMARY, COLOR_ACCENT,
+  COLOR_SUCCESS, COLOR_ERROR, COLOR_WARNING, COLOR_MUTED, ROW_COLORS, CLI_BANNER_GRADIENT
+
+ASSUME these exist in core/database.py (import them):
+  get_session_downloads, get_session_summary, get_lifetime_stats
+
+Write the following functions EXACTLY as specified:
+
+─────────────────────────────────────────
+console = Console(highlight=False)  ← module-level singleton
+─────────────────────────────────────────
+
+def show_banner() -> None:
+  - Print a Rich Panel containing ASCII art "AURY" text (use figlet-style text drawn
+    manually with box-drawing characters, at least 4 lines tall).
+  - Below the ASCII art: "Smart Media Downloader | V1 CLI | yt-dlp powered"
+  - Call database.get_lifetime_stats() inside try/except.
+    If successful, print one line below the panel:
+    "📦 Lifetime: {total_downloads} downloads · {total_gb:.2f} GB · {total_sessions} sessions"
+    where total_gb = total_bytes / 1_073_741_824
+  - Panel border_style: "bright_cyan"
+
+def prompt_urls() -> list[str]:
+  - Inside try/except ImportError: try import pyperclip
+    If clipboard has content starting with "http", pre-print:
+    "  📋 [dim]Clipboard detected:[/] {clipboard[:80]}"
+  - Prompt with console.input() :
+    "[bright_cyan]▶ Enter URL(s)[/] — single, comma-separated, or playlist:\n  → "
+  - Split on commas, strip whitespace, filter empty strings.
+  - Validate: each item must start with "http://" or "https://".
+  - If no valid URLs: call show_error_panel("Invalid Input", "No valid URLs found. Must start with http:// or https://") then loop again.
+  - Return list[str] of valid URLs only.
+
+def prompt_quality_scope() -> str:
+  - Print Panel: "Apply quality to:  [A] All videos   [I] Individual per video"
+    border_style="bright_magenta"
+  - console.input("[bright_magenta]▶[/] Enter [bold]a[/] or [bold]i[/] → ").strip().lower()
+  - Loop until answer is "a" or "i".
+  - Return "a" or "i".
+
+def prompt_quality(target: str) -> tuple[str, str]:
+  - Build a Rich Table with columns: "#", "Quality", "Format"
+    header_style="bold bright_cyan"
+    Row "0" → "🎵 Audio only (MP3 320kbps)", "bestaudio/best" — style bright_magenta
+    Rows 1–10 from QUALITY_MAP (key "1" → row 1, etc.)
+    Highlight row where key=="4" (1080p) with style "bold bright_cyan" and append " ← recommended"
+  - console.print(table)
+  - console.input(f"[bright_cyan]▶[/] Quality for [bold]{target}[/] [dim](0–10)[/] → ").strip()
+  - Loop until input is "0"–"10".
+  - If "0": return ("Audio MP3 320k", "bestaudio/best")
+  - Else: return QUALITY_MAP[choice]  → (label, format_code)
+
+def make_progress() -> Progress:
+  - Return Progress(
+      SpinnerColumn(spinner_name="dots12"),
+      TextColumn("[bold bright_cyan]{task.fields[status_icon]}[/]"),
+      TextColumn("[bright_white]{task.fields[filename]:.45}[/]"),
+      BarColumn(bar_width=28, style="bright_cyan", complete_style="bright_green"),
+      TaskProgressColumn(),
+      TransferSpeedColumn(),
+      TimeRemainingColumn(),
+      DownloadColumn(),
+      expand=True,
+    )
+
+def controls_panel() -> Panel:
+  - Return Panel(
+      "  [bold bright_yellow]P[/][grey62] Pause[/]   "
+      "[bold bright_yellow]R[/][grey62] Resume[/]   "
+      "[bold bright_yellow]S[/][grey62] Stop[/]  ",
+      border_style="dim grey62",
+      title="[dim]Controls[/]",
+    )
+
+def show_session_table(session_id: int) -> None:
+  - rows = get_session_downloads(session_id)
+  - summary = get_session_summary(session_id)
+  - Build Rich Table, title="📋 Session Report", border_style="bright_cyan",
+    row_styles=list(ROW_COLORS)
+  - Columns (with styles):
+      "#" right-justify dim
+      "Title" — truncate to 40 chars
+      "Quality" — bright_magenta
+      "Status" — color by status (completed→bright_green, failed→bright_red, stopped→bright_yellow, else grey)
+      "Size" — right-justify, format as MB: f"{row['file_size']/1_048_576:.1f} MB"
+      "Duration" — f"{row['duration_s']:.1f}s"
+      "Saved To" — truncate to 35 chars, dim
+  - console.print(table)
+  - Print summary Panel:
+      title="Session Summary", border_style="bright_green"
+      Content: f"✔ {summary['success']} completed  ✘ {summary['failed']} failed  ⏹ {summary['stopped']} stopped\n"
+               f"📦 Total: {summary['total_bytes']/1_048_576:.1f} MB  ⏱ {summary['total_seconds']:.0f}s"
+  - Then call _prompt_export_csv(session_id, rows) (define below)
+
+def _prompt_export_csv(session_id: int, rows: list[dict]) -> None:
+  - console.input("[dim]Export session to CSV? (y/n) → [/]").strip().lower()
+  - If "y": write to downloads/session_{session_id}_{YYYYMMDD_HHMMSS}.csv
+    using csv.DictWriter with fieldnames = list(rows[0].keys())
+    Print: "[bright_green]✔ Exported to {path}[/]"
+  - If "n": return silently.
+
+def show_error_panel(title: str, message: str) -> None:
+  - console.print(Panel(message, title=f"[bold]⚠ {title}[/]", border_style="bright_red"))
+
+def prompt_stop_confirm() -> bool:
+  - console.print(Panel("⚠ This will stop ALL active downloads immediately.", border_style="bright_yellow"))
+  - answer = console.input("[bright_yellow]Confirm stop? (y/n) → [/]").strip().lower()
+  - Return answer == "y"
+
+def prompt_continue() -> bool:
+  - answer = console.input("\n[bright_cyan]▶ Download more files? (y/n) → [/]").strip().lower()
+  - Loop until "y" or "n". Return answer == "y".
+
+def prompt_retry_failed(count: int) -> bool:
+  - answer = console.input(f"[bright_yellow]↺ Retry {count} failed download(s)? (y/n) → [/]").strip().lower()
+  - Loop until "y" or "n". Return answer == "y".
+
+def show_goodbye(session_id: int) -> None:
+  - Fetch summary via get_session_summary(session_id).
+  - Print Panel:
+      title="[bold bright_cyan]👋 Thanks for using AURY![/]"
+      content with session stats
+      border_style="bright_cyan"
+
+OUTPUT: The complete file content only. No explanations.
+🟢 Agent 2B — cli/main.py
+text
+TASK: Write one complete Python file: cli/main.py
+
+CONTEXT:
+- Project: AURY — yt-dlp powered media downloader. This is the V1 CLI entry point.
+- Python 3.11+. Uses ThreadPoolExecutor for parallel downloads.
+
+ASSUME these imports all work (write them exactly as shown):
+  import sys, threading, shutil, socket, errno, os
+  from concurrent.futures import ThreadPoolExecutor, as_completed
+  from rich.live import Live
+  from rich.console import Group
+  from rich.panel import Panel
+  import core.database as database
+  import core.downloader as dl
+  from core.config import MAX_WORKERS
+  from cli.ui import (
+      console, controls_panel, make_progress, prompt_continue,
+      prompt_quality, prompt_quality_scope, prompt_retry_failed,
+      prompt_stop_confirm, prompt_urls, show_banner, show_error_panel,
+      show_goodbye, show_session_table,
+  )
+  try:
+      import keyboard as kb
+      KEYBOARD_AVAILABLE = True
+  except ImportError:
+      KEYBOARD_AVAILABLE = False
+
+Write these components EXACTLY:
+
+─────────────────────────────────────────
+SECTION 1: startup_checks() -> None
+─────────────────────────────────────────
+- Check ffmpeg: if shutil.which("ffmpeg") is None:
+    console.print(Panel(
+      "⚠ ffmpeg not found on PATH. Video+audio merge disabled.\n"
+      "Install ffmpeg and add it to PATH for best quality.",
+      border_style="bright_yellow", title="ffmpeg Warning"
+    ))
+- Check internet: try socket.create_connection(("8.8.8.8", 53), timeout=3)
+    On success: pass
+    On OSError: show_error_panel("No Internet", "Cannot reach network. Check your connection.")
+                sys.exit(1)
+
+─────────────────────────────────────────
+SECTION 2: class KeyboardController
+─────────────────────────────────────────
+(Copy this logic exactly — no changes needed)
+- __init__: self._active = False, self._thread = None
+- start(): if KEYBOARD_AVAILABLE, set _active=True, start daemon thread → _listen()
+- stop(): self._active = False
+- _listen(): loop while _active:
+    event = kb.read_event(suppress=False)
+    if event.event_type != "down": continue
+    key = event.name.lower()
+    if key == "p" and dl.pause_event.is_set():
+        dl.pause_event.clear()
+        console.print("\n [bold bright_yellow]⏸ Paused — press R to resume.[/]\n")
+    elif key == "r" and not dl.pause_event.is_set():
+        dl.pause_event.set()
+        console.print("\n [bold bright_green]▶ Resumed.[/]\n")
+    elif key == "s":
+        if prompt_stop_confirm():
+            dl.stop_event.set()
+            dl.pause_event.set()
+            console.print("\n [bold bright_red]⏹ Stopping...[/]\n")
+            self._active = False
+            return
+    Wrap entire loop body in try/except Exception: pass
+
+─────────────────────────────────────────
+SECTION 3: def run_session(session_id: int) -> None
+─────────────────────────────────────────
+Step 1: Reset events
+  dl.stop_event.clear()
+  dl.pause_event.set()
+
+Step 2: URL input
+  urls = prompt_urls()
+
+Step 3: Duplicate detection
+  For each url in urls:
+    Inside try/except: query database with:
+      conn = sqlite3.connect(str(database.DB_PATH) ... )  ← NO, use database module instead:
+    Call: already_done = [r for r in database.get_all_history(500)
+                          if r["url"] == url and r["status"] == "completed"]
+    If already_done:
+      first = already_done[0]
+      answer = console.input(
+        f"[bright_yellow]⚠ '{url[:60]}' was already downloaded on {first['start_time']}.\n"
+        f"  Re-download? (y/n) → [/]"
+      ).strip().lower()
+      If answer != "y": urls.remove(url)
+  If not urls: return  ← all were skipped
+
+Step 4: Quality scope
+  scope = prompt_quality_scope()
+
+Step 5: Quality selection
+  if scope == "a":
+      quality_label, format_code = prompt_quality("all videos")
+      quality_map = {url: (quality_label, format_code) for url in urls}
+  else:
+      quality_map = {}
+      for url in urls:
+          short = url[:60] + "…" if len(url) > 60 else url
+          ql, fc = prompt_quality(short)
+          quality_map[url] = (ql, fc)
+
+Step 6: Build workers
+  progress = make_progress()
+  task_counter = dl.TaskCounter()
+  workers = [
+      dl.DownloadWorker(
+          url=url,
+          quality_label=quality_map[url][0],
+          format_code=quality_map[url][1],
+          session_id=session_id,
+          progress=progress,
+          task_counter=task_counter,
+      )
+      for url in urls
+  ]
+
+Step 7: Run with Live display
+  console.print(f"\n [bold bright_cyan]🚀 Starting {len(workers)} download(s) — {MAX_WORKERS} workers[/]\n")
+  if not KEYBOARD_AVAILABLE:
+      console.print(" [dim yellow]ℹ Install 'keyboard' for p/r/s hotkeys.[/]\n")
+  
+  live_renderable = Group(progress, controls_panel())
+  futures = []
+  errors = []
+  failed_urls = []
+  
+  with Live(live_renderable, console=console, refresh_per_second=8):
+      kb_ctrl = KeyboardController()
+      kb_ctrl.start()
+      with ThreadPoolExecutor(max_workers=MAX_WORKERS) as pool:
+          for w in workers:
+              futures.append(pool.submit(w.run))
+          for fut in as_completed(futures):
+              try:
+                  result: dl.DownloadResult = fut.result()
+                  if not result.success and result.error:
+                      errors.append((result.url, result.error))
+                      failed_urls.append((result.url, quality_map[result.url]))
+              except Exception as exc:
+                  errors.append(("unknown", str(exc)))
+      kb_ctrl.stop()
+
+Step 8: Show errors
+  for url, err in errors:
+      show_error_panel("Download Failed", f"URL: {url}\n{err}")
+
+Step 9: End session + show table
+  database.end_session(session_id)
+  show_session_table(session_id)
+
+Step 10: Retry failed
+  if failed_urls and prompt_retry_failed(len(failed_urls)):
+      dl.stop_event.clear()
+      dl.pause_event.set()
+      retry_progress = make_progress()
+      retry_counter = dl.TaskCounter()
+      retry_workers = [
+          dl.DownloadWorker(
+              url=u, quality_label=q[0], format_code=q[1],
+              session_id=session_id, progress=retry_progress, task_counter=retry_counter,
+          )
+          for u, q in failed_urls
+      ]
+      retry_renderable = Group(retry_progress, controls_panel())
+      with Live(retry_renderable, console=console, refresh_per_second=8):
+          kb_ctrl2 = KeyboardController()
+          kb_ctrl2.start()
+          with ThreadPoolExecutor(max_workers=MAX_WORKERS) as pool:
+              retry_futures = [pool.submit(w.run) for w in retry_workers]
+              for _ in as_completed(retry_futures): pass
+          kb_ctrl2.stop()
+
+─────────────────────────────────────────
+SECTION 4: def main() -> None
+─────────────────────────────────────────
+  database.init_db()
+  startup_checks()
+  show_banner()
+  try:
+      while True:
+          session_id = database.start_session()
+          run_session(session_id)
+          if not prompt_continue():
+              show_goodbye(session_id)
+              break
+          dl.stop_event.clear()
+          dl.pause_event.set()
+  except KeyboardInterrupt:
+      console.print("\n [bold bright_red]⏹ Interrupted. Exiting AURY…[/]\n")
+      dl.stop_event.set()
+      dl.pause_event.set()
+      sys.exit(0)
+
+─────────────────────────────────────────
+SECTION 5: Entry point
+─────────────────────────────────────────
+  if __name__ == "__main__":
+      if sys.platform == "win32":
+          import asyncio
+          asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+      main()
+
+Also write cli/__init__.py as a second output:
+  Content: (empty file — just a docstring: # AURY CLI package)
+
+OUTPUT: Two files — cli/main.py then cli/__init__.py. No explanations.
+🔵 Phase 3 — GUI Layer (Run ALL 5 simultaneously, after Phase 1 done)
+🔵 Agent 3A — gui/theme.py
+text
+TASK: Write one complete Python file: gui/theme.py
+
+CONTEXT:
+- Project: AURY — yt-dlp powered media downloader. This is the GUI theme config.
+- Python 3.11+. Uses customtkinter (ctk). No download logic here.
+
+IMPORTS NEEDED: customtkinter as ctk, json, pathlib.Path, os
+
+ASSUME these exist in core/config.py:
+  BASE_DIR (Path), APP_NAME, APP_VERSION
+
+Write EXACTLY:
+
+CTK_APPEARANCE = "dark"
+CTK_COLOR_THEME = "blue"
+
+PALETTE = {
+  "primary":   "#00d4ff",   # bright cyan
+  "accent":    "#ff44cc",   # bright magenta
+  "success":   "#44ff88",   # bright green
+  "error":     "#ff4444",   # bright red
+  "warning":   "#ffcc00",   # bright yellow
+  "muted":     "#888888",   # grey
+  "bg_dark":   "#1a1a2e",   # deep dark bg
+  "bg_card":   "#16213e",   # card background
+  "bg_sidebar":"#0f3460",   # sidebar background
+  "text":      "#e0e0e0",   # default text
+}
+
+SETTINGS_PATH = BASE_DIR / "aury_settings.json"
+DEFAULT_SETTINGS = {
+  "appearance": "dark",
+  "color_theme": "blue",
+  "download_folder": str(BASE_DIR / "downloads"),
+  "max_workers": 8,
+  "concurrent_fragments": 5,
+  "speed_limit": "0",
+  "auto_open": False,
+}
+
+def load_settings() -> dict:
+  """Load settings from aury_settings.json, return defaults if missing."""
+  try:
+      if SETTINGS_PATH.exists():
+          with open(SETTINGS_PATH, "r") as f:
+              data = json.load(f)
+              return {**DEFAULT_SETTINGS, **data}
+  except Exception:
+      pass
+  return DEFAULT_SETTINGS.copy()
+
+def save_settings(data: dict) -> None:
+  """Persist settings dict to aury_settings.json."""
+  try:
+      with open(SETTINGS_PATH, "w") as f:
+          json.dump(data, f, indent=2)
+  except Exception:
+      pass
+
+def get_status_color(status: str) -> str:
+  """Return hex color for a given download status string."""
+  return {
+      "completed":   PALETTE["success"],
+      "downloading": PALETTE["primary"],
+      "paused":      PALETTE["warning"],
+      "failed":      PALETTE["error"],
+      "stopped":     PALETTE["warning"],
+      "queued":      PALETTE["muted"],
+      "retrying":    PALETTE["accent"],
+  }.get(status, PALETTE["muted"])
+
+def apply_theme(settings: dict) -> None:
+  """Apply appearance mode and color theme to customtkinter."""
+  ctk.set_appearance_mode(settings.get("appearance", "dark"))
+  ctk.set_default_color_theme(settings.get("color_theme", "blue"))
+
+Also write gui/__init__.py as a second output:
+  Content: # AURY GUI package
+
+OUTPUT: Two files — gui/theme.py then gui/__init__.py. No explanations.
+🔵 Agent 3B — gui/windows/main_window.py
+text
+TASK: Write one complete Python file: gui/windows/main_window.py
+
+CONTEXT:
+- Project: AURY — GUI main window. Uses customtkinter.
+- Python 3.11+. This is the root CTk window with sidebar navigation.
+
+IMPORTS:
+  import customtkinter as ctk
+  from gui.theme import PALETTE, load_settings
+  from core.config import APP_NAME, APP_VERSION
+  import core.downloader as dl
+
+Write class MainWindow(ctk.CTk):
+
+  def __init__(self):
+    super().__init__()
+    self.title(f"{APP_NAME} — Smart Media Downloader")
+    self.geometry("1100x700")
+    self.minsize(1000, 640)
+    self._settings = load_settings()
+    self._active_frame = None
+    self._build_layout()
+    self.protocol("WM_DELETE_WINDOW", self._on_close)
+
+  def _build_layout(self):
+    - Configure grid: 2 columns (col 0 = 200px fixed sidebar, col 1 = fills remaining)
+                      1 main row + 1 bottom status bar row
+    - Sidebar: CTkFrame, bg_color=PALETTE["bg_sidebar"], width=200, fill Y
+      Inside sidebar (top to bottom):
+        1. CTkLabel with APP_NAME, font size 22 bold, text_color=PALETTE["primary"]
+        2. CTkLabel with f"v{APP_VERSION}", font size 11, text_color=PALETTE["muted"]
+        3. Separator (CTkFrame height=1, fg_color=PALETTE["muted"], padx=10)
+        4. Nav buttons — use _nav_btn() helper:
+             "⬇  Download"  → calls self._show_download_panel
+             "📋  History"   → calls self._show_history
+             "⚙  Settings"  → calls self._show_settings
+        5. At bottom: CTkLabel "yt-dlp powered", font size 10, text_color=PALETTE["muted"]
+    - Content area: CTkFrame that fills the right side (col 1, row 0). Store as self._content_area.
+    - Status bar: CTkFrame at row 1 spanning both columns, height 24.
+      Inside: self._status_label = CTkLabel("Ready", font size 11, text_color=PALETTE["muted"])
+
+  def _nav_btn(self, parent, text, command) -> CTkButton:
+    - Return CTkButton(parent, text=text, command=command,
+        fg_color="transparent", hover_color=PALETTE["bg_card"],
+        text_color=PALETTE["text"], anchor="w", height=40, corner_radius=8)
+
+  def _show_download_panel(self):
+    - Lazy import: from gui.windows.download_panel import DownloadPanel
+    - Call self._switch_frame(DownloadPanel)
+
+  def _show_history(self):
+    - Lazy import: from gui.windows.history_window import HistoryWindow
+    - Call self._switch_frame(HistoryWindow)
+
+  def _show_settings(self):
+    - Lazy import: from gui.windows.settings_window import SettingsWindow
+    - Call self._switch_frame(SettingsWindow)
+
+  def _switch_frame(self, FrameClass):
+    - If self._active_frame: self._active_frame.destroy()
+    - self._active_frame = FrameClass(self._content_area)
+    - self._active_frame.pack(fill="both", expand=True, padx=12, pady=12)
+
+  def set_status(self, text: str):
+    - self._status_label.configure(text=text)
+
+  def show_toast(self, message: str, duration_ms: int = 4000):
+    - Create a CTkFrame as a floating overlay in bottom-right of window.
+    - Inside: CTkLabel with message, padx=16, pady=8, fg_color=PALETTE["bg_card"],
+              corner_radius=12, border_width=1, border_color=PALETTE["primary"]
+    - Place with .place(relx=0.98, rely=0.96, anchor="se")
+    - Call self.after(duration_ms, toast_frame.destroy)
+
+  def _on_close(self):
+    - dl.stop_event.set()
+    - dl.pause_event.set()
+    - self.after(300, self.destroy)
+
+Also write gui/windows/__init__.py as a second output:
+  Content: # AURY GUI windows package
+
+OUTPUT: Two files. No explanations.
+🔵 Agent 3C — gui/windows/download_panel.py
+text
+TASK: Write one complete Python file: gui/windows/download_panel.py
+
+CONTEXT:
+- Project: AURY — GUI download panel. Uses customtkinter.
+- Python 3.11+.
+- Worker threads send progress via queue.Queue to the main thread.
+- Main thread polls queue every 200ms via self.after(200, ...).
+
+IMPORTS:
+  import queue, threading, os, sys, time
+  from concurrent.futures import ThreadPoolExecutor
+  import customtkinter as ctk
+  from gui.theme import PALETTE, get_status_color, load_settings
+  from core.config import QUALITY_MAP, MAX_WORKERS
+  import core.downloader as dl
+  import core.database as database
+
+─────────────────────────────────────────
+class DownloadCard(ctk.CTkFrame):
+─────────────────────────────────────────
+  __init__(self, parent, title: str, url: str):
+    - super().__init__(parent, fg_color=PALETTE["bg_card"], corner_radius=10)
+    - Store self.url = url
+    - Layout:
+        Row 0: CTkLabel(title[:55], font bold 13) + status badge CTkLabel
+        Row 1: CTkProgressBar(width=400) — store as self._bar
+        Row 2: speed_label, pct_label, eta_label, size_label (all CTkLabel, font 11 muted)
+        Row 3: [✘ Remove] CTkButton (only shown when done) — store as self._remove_btn
+    - self._remove_btn is hidden initially: self._remove_btn.grid_remove()
+    - self._status_badge is a CTkLabel with rounded fg_color
+
+  def update_from_data(self, data: dict):
+    """Called ONLY from main thread via after() polling."""
+    pct = data.get("pct", 0.0)          # float 0.0–1.0
+    speed = data.get("speed", 0.0)      # bytes/sec
+    eta = data.get("eta", 0)            # seconds
+    total = data.get("total", 0)        # bytes
+    status = data.get("status", "downloading")
+    title = data.get("title", "")
+    
+    self._bar.set(pct)
+    self._speed_label.configure(text=f"{speed/1_048_576:.1f} MB/s")
+    self._pct_label.configure(text=f"{pct*100:.0f}%")
+    self._eta_label.configure(text=f"ETA {eta}s" if eta else "")
+    self._size_label.configure(text=f"{total/1_048_576:.1f} MB" if total else "")
+    self._status_badge.configure(text=status.capitalize(), fg_color=get_status_color(status))
+    if status in ("completed", "failed", "stopped"):
+        self._remove_btn.grid()
+
+─────────────────────────────────────────
+class DownloadPanel(ctk.CTkFrame):
+─────────────────────────────────────────
+  __init__(self, parent):
+    - super().__init__(parent, fg_color="transparent")
+    - self._settings = load_settings()
+    - self._progress_queue: queue.Queue = queue.Queue()
+    - self._cards: dict[str, DownloadCard] = {}
+    - self._executor: ThreadPoolExecutor | None = None
+    - self._build_ui()
+    - self.after(200, self._poll_queue)
+
+  _build_ui(self):
+    Build these rows in order using .pack() or .grid():
+
+    ROW A — Title bar:
+      CTkLabel("⬇ Download", font size 20 bold, text_color=PALETTE["primary"])
+
+    ROW B — URL input:
+      CTkLabel("Paste URLs (one per line or comma-separated):", font 12 muted)
+      self._url_box = CTkTextbox(height=90, font=("Courier New", 12))
+      Buttons row: [📋 Paste] → self._paste_clipboard | [✕ Clear] → self._url_box.delete("0.0","end")
+
+    ROW C — Quality options:
+      quality_labels = ["0. Audio only (MP3)"] + [f"{k}. {v[0]}" for k,v in QUALITY_MAP.items()]
+      self._quality_var = ctk.StringVar(value="4. 1080p")
+      CTkOptionMenu(values=quality_labels, variable=self._quality_var, width=220)
+      self._audio_only_var = ctk.BooleanVar(value=False)
+      CTkCheckBox("Audio only (MP3 320kbps)", variable=self._audio_only_var)
+      self._scope_var = ctk.StringVar(value="all")
+      CTkRadioButton("Apply to All", variable=self._scope_var, value="all")
+      CTkRadioButton("Apply per Video", variable=self._scope_var, value="individual")
+      CTkButton("🔍 Fetch Info", command=self._fetch_info, fg_color=PALETTE["muted"])
+
+    ROW D — Action buttons:
+      self._start_btn  = CTkButton("▶ Start",    command=self._start_downloads, fg_color=PALETTE["success"],   width=120)
+      self._pause_btn  = CTkButton("⏸ Pause",    command=self._pause_all,       fg_color=PALETTE["warning"],   width=100)
+      self._resume_btn = CTkButton("▶ Resume",   command=self._resume_all,      fg_color=PALETTE["success"],   width=100, state="disabled")
+      self._stop_btn   = CTkButton("⏹ Stop",     command=self._stop_all,        fg_color=PALETTE["error"],     width=100)
+      CTkLabel("Workers:"), self._workers_slider = CTkSlider(from_=4, to=10, number_of_steps=6)
+      self._workers_slider.set(self._settings.get("max_workers", 8))
+      self._workers_label = CTkLabel(f"{int(self._settings.get('max_workers', 8))}")
+      self._workers_slider.configure(command=lambda v: self._workers_label.configure(text=str(int(v))))
+
+    ROW E — Scrollable cards area:
+      self._cards_frame = CTkScrollableFrame(self, label_text="Download Queue")
+
+  def _paste_clipboard(self):
+    - text = self.clipboard_get()
+    - self._url_box.delete("0.0", "end")
+    - self._url_box.insert("0.0", text)
+
+  def _get_urls(self) -> list[str]:
+    - raw = self._url_box.get("0.0", "end").strip()
+    - Split on newlines and commas, strip, filter empty, filter starting with "http"
+    - Return list[str]
+
+  def _get_format(self) -> tuple[str, str]:
+    - If self._audio_only_var.get(): return ("Audio MP3", "bestaudio/best")
+    - Else: parse self._quality_var.get() → get first part before "." → key → QUALITY_MAP[key]
+    - Return (label, format_code)
+
+  def _start_downloads(self):
+    - urls = self._get_urls()
+    - If not urls: show CTkMessagebox or just return
+    - dl.stop_event.clear(); dl.pause_event.set()
+    - session_id = database.start_session()
+    - self._executor = ThreadPoolExecutor(max_workers=int(self._workers_slider.get()))
+    - label, fmt = self._get_format()
+    - For each url:
+        card = DownloadCard(self._cards_frame, title=url[:55], url=url)
+        card.pack(fill="x", pady=4, padx=4)
+        self._cards[url] = card
+        worker = dl.DownloadWorker(
+            url=url, quality_label=label, format_code=fmt,
+            session_id=session_id, progress=None, task_counter=dl.TaskCounter(),
+            progress_queue=self._progress_queue,  ← NOTE: downloader needs this kwarg (see below)
+        )
+        self._executor.submit(worker.run)
+    - self._start_btn.configure(state="disabled")
+
+  NOTE FOR AGENT: The DownloadWorker in core/downloader.py needs a new optional kwarg:
+    progress_queue: queue.Queue | None = None
+  When set, instead of calling self.progress.update(), push a dict to progress_queue:
+    self._progress_queue.put({
+        "url": self.url, "pct": pct, "speed": speed,
+        "eta": eta, "total": total, "status": status, "title": title
+    })
+  Add this kwarg and logic to DownloadWorker without changing any existing behavior
+  (when progress_queue is None, use the existing Rich Progress path).
+
+  def _poll_queue(self):
+    - Drain up to 50 items from self._progress_queue per cycle (non-blocking):
+        while True:
+            try: data = self._progress_queue.get_nowait()
+            except queue.Empty: break
+            url = data.get("url","")
+            if url in self._cards:
+                self._cards[url].update_from_data(data)
+    - self.after(200, self._poll_queue)
+
+  def _pause_all(self):
+    dl.pause_event.clear()
+    self._pause_btn.configure(state="disabled")
+    self._resume_btn.configure(state="normal")
+
+  def _resume_all(self):
+    dl.pause_event.set()
+    self._resume_btn.configure(state="disabled")
+    self._pause_btn.configure(state="normal")
+
+  def _stop_all(self):
+    - dialog = ctk.CTkInputDialog(text="Type STOP to confirm:", title="Stop Downloads")
+    - if dialog.get_input() == "STOP":
+        dl.stop_event.set(); dl.pause_event.set()
+
+  def _fetch_info(self):
+    - url = self._get_urls()[0] if self._get_urls() else None
+    - If no url: return
+    - Run in daemon thread: import yt_dlp; info = yt_dlp.YoutubeDL({"quiet":True}).extract_info(url, download=False)
+    - After getting info: self.after(0, lambda: self._show_info_card(info))
+
+  def _show_info_card(self, info: dict):
+    - Create a CTkToplevel window, title "Video Info"
+    - Show: title, channel, duration (seconds), view_count
+    - Build thumbnail: fetch info.get("thumbnail") URL via urllib.request.urlretrieve to a temp file
+      Load with PIL.Image and CTkImage, display in window
+    - Close button
+
+OUTPUT: Complete file only. No explanations.
+🔵 Agent 3D — gui/windows/history_window.py + gui/windows/settings_window.py
+text
+TASK: Write TWO complete Python files.
+
+────────────── FILE 1: gui/windows/history_window.py ──────────────
+
+CONTEXT: AURY GUI history view. Shows all downloads from SQLite. Python 3.11+.
+
+IMPORTS:
+  import os, sys, csv, subprocess, datetime
+  import customtkinter as ctk
+  from gui.theme import PALETTE, get_status_color
+  import core.database as database
+
+class HistoryWindow(ctk.CTkFrame):
+  __init__(self, parent):
+    - super().__init__(parent, fg_color="transparent")
+    - self._all_rows: list[dict] = []
+    - self._filtered_rows: list[dict] = []
+    - self._build_ui()
+    - self._load_data()
+
+  _build_ui(self):
+    ROW 0 — Title + action bar:
+      CTkLabel("📋 Download History", font 20 bold, text_color=PALETTE["primary"])
+      CTkButton("🔄 Refresh", command=self._load_data, width=90)
+      CTkButton("📥 Export CSV", command=self._export_csv, width=110)
+      self._search_entry = CTkEntry(placeholder_text="Search title...", width=200)
+      self._search_entry.bind("<KeyRelease>", lambda e: self._apply_filter())
+      self._status_filter = ctk.StringVar(value="All")
+      CTkOptionMenu(values=["All","completed","failed","stopped","downloading"],
+                    variable=self._status_filter,
+                    command=lambda _: self._apply_filter(), width=140)
+
+    ROW 1 — Table headers (CTkLabel row in a frame):
+      Headers: "#", "Title", "Quality", "Status", "Size (MB)", "Duration", "Date", "Actions"
+      Use grid layout, sticky="w" for all.
+
+    ROW 2 — Scrollable table:
+      self._table_frame = CTkScrollableFrame(self, label_text="")
+      Fill with self._render_rows() on data load.
+
+  _load_data(self):
+    - self._all_rows = database.get_all_history(limit=500)
+    - self._apply_filter()
+
+  _apply_filter(self):
+    - keyword = self._search_entry.get().lower()
+    - status = self._status_filter.get()
+    - self._filtered_rows = [
+        r for r in self._all_rows
+        if (keyword in (r.get("title","") or "").lower())
+        and (status == "All" or r.get("status") == status)
+      ]
+    - self._render_rows()
+
+  _render_rows(self):
+    - Clear all widgets from self._table_frame
+    - For i, row in enumerate(self._filtered_rows):
+        color = PALETTE["bg_card"] if i % 2 == 0 else PALETTE["bg_dark"]
+        row_frame = CTkFrame(self._table_frame, fg_color=color, corner_radius=4)
+        row_frame.pack(fill="x", pady=1)
+        Add CTkLabel for each column in a grid inside row_frame.
+        "Size": f"{row.get('file_size',0)/1_048_576:.1f}"
+        "Duration": f"{row.get('duration_s',0):.0f}s"
+        "Date": row.get("start_time","")[:16]
+        "Status": CTkLabel with fg_color=get_status_color(row['status'])
+        Actions column: 3 buttons packed horizontally:
+          [📂 Open]   → self._open_file(row.get("save_path",""))
+          [🗑 Delete] → self._delete_row(row)
+          [↺ Retry]   → only if status=="failed" → self._retry(row)
+                        else: hidden / state="disabled"
+
+  _open_file(self, path: str):
+    - If not path or not os.path.exists(path): return
+    - if sys.platform == "win32": os.startfile(path)
+    - elif sys.platform == "darwin": subprocess.Popen(["open", path])
+    - else: subprocess.Popen(["xdg-open", path])
+
+  _delete_row(self, row: dict):
+    - dialog = ctk.CTkInputDialog(text="Type DELETE to confirm:", title="Delete Record")
+    - if dialog.get_input() == "DELETE":
+        database.delete_session(row.get("session_id")) ← need to add session_id to get_all_history query
+        self._load_data()
+
+  _retry(self, row: dict):
+    - Just print a note or show a toast — full retry integration is outside this file's scope.
+    - For now: show CTkInputDialog "Retry not yet integrated with DownloadPanel in this view."
+
+  _export_csv(self):
+    - from core.config import BASE_DIR, DOWNLOAD_FOLDER
+    - path = DOWNLOAD_FOLDER / f"aury_history_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+    - If not self._filtered_rows: return
+    - Write with csv.DictWriter(fieldnames=list(self._filtered_rows[0].keys()))
+    - Show brief CTkLabel "✔ Exported to {path}" for 3 seconds.
+
+────────────── FILE 2: gui/windows/settings_window.py ──────────────
+
+CONTEXT: AURY GUI settings panel. Python 3.11+.
+
+IMPORTS:
+  import customtkinter as ctk
+  from tkinter import filedialog
+  from gui.theme import PALETTE, load_settings, save_settings, apply_theme
+  import core.database as database
+  from core.config import BASE_DIR
+
+class SettingsWindow(ctk.CTkFrame):
+  __init__(self, parent):
+    - super().__init__(parent, fg_color="transparent")
+    - self._settings = load_settings()
+    - self._build_ui()
+
+  _build_ui(self):
+    CTkLabel("⚙ Settings", font 20 bold, text_color=PALETTE["primary"])
+
+    Section "Download":
+      Download folder row: CTkEntry(width=320) pre-filled with settings["download_folder"]
+                           CTkButton("Browse", command=self._browse_folder, width=80)
+      Max workers: CTkSlider 4–12 + CTkLabel showing int value
+      Fragments:   CTkSlider 1–10 + CTkLabel showing int value
+      Speed limit: CTkEntry(placeholder="0 = unlimited, e.g. 500k or 2M", width=200)
+                   pre-filled with settings["speed_limit"]
+      Auto-open:   CTkSwitch("Auto-open after download")
+                   pre-set from settings["auto_open"]
+
+    Section "Appearance":
+      Theme:       CTkSwitch("Dark mode", command=self._toggle_theme)
+                   pre-set: settings["appearance"]=="dark"
+      Color theme: CTkOptionMenu(["blue","green","dark-blue"],
+                   command=self._change_color_theme, width=160)
+                   pre-set from settings["color_theme"]
+
+    Section "Database":
+      CTkLabel(f"DB: {BASE_DIR / 'aury.db'}", font 11, text_color=PALETTE["muted"])
+      CTkButton("🗑 Clear All History", command=self._clear_history,
+                fg_color=PALETTE["error"], width=180)
+
+    Bottom: CTkButton("💾 Save Settings", command=self._save, fg_color=PALETTE["primary"], width=160)
+
+  _browse_folder(self):
+    - path = filedialog.askdirectory(initialdir=self._settings["download_folder"])
+    - If path: self._folder_entry.delete(0,"end"); self._folder_entry.insert(0, path)
+
+  _toggle_theme(self):
+    - mode = "dark" if self._theme_switch.get() else "light"
+    - ctk.set_appearance_mode(mode)
+
+  _change_color_theme(self, value: str):
+    - ctk.set_default_color_theme(value)
+
+  _clear_history(self):
+    - dialog = ctk.CTkInputDialog(text="Type CLEAR to confirm:", title="Clear History")
+    - if dialog.get_input() == "CLEAR":
+        Fetch all sessions: conn = ... use database module
+        For each: database.delete_session(sid)
+        Show confirmation label for 3s.
+
+  _save(self):
+    - Collect all widget values into a new settings dict.
+    - Call save_settings(new_settings).
+    - Show success label "✔ Settings saved" for 3s.
+
+OUTPUT: Both complete files. File 1 first, then File 2. No explanations.
+🔵 Agent 3E — gui/app.py
+text
+TASK: Write one complete Python file: gui/app.py
+
+CONTEXT: AURY GUI entry point. Python 3.11+.
+
+IMPORTS:
+  import sys
+  import customtkinter as ctk
+  import core.database as database
+  from gui.theme import apply_theme, load_settings, PALETTE
+  from gui.windows.main_window import MainWindow
+
+Write EXACTLY:
+
+def main() -> None:
+  # 1. Init DB first — before any UI
+  database.init_db()
+
+  # 2. Load user settings
+  settings = load_settings()
+
+  # 3. Try to auto-detect OS theme if no saved preference
+  try:
+      import darkdetect
+      if settings.get("appearance") == "dark" or settings.get("appearance") == "light":
+          pass  # user has a saved preference — respect it
+      else:
+          os_theme = darkdetect.theme()
+          if os_theme:
+              settings["appearance"] = os_theme.lower()
+  except ImportError:
+      pass
+
+  # 4. Apply theme to customtkinter
+  apply_theme(settings)
+
+  # 5. Create and run main window
+  app = MainWindow()
+  app.mainloop()
+
+if __name__ == "__main__":
+  if sys.platform == "win32":
+      import asyncio
+      asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+  main()
+
+OUTPUT: Complete file only. No explanations.
+⚪ Phase 4 — Final Files (Run BOTH simultaneously, after all phases done)
+⚫ Agent 4A — requirements_cli.txt + requirements_gui.txt
+text
+TASK: Write TWO plain text files — no Python, just package lists.
+
+FILE 1: requirements_cli.txt
+Content (exact):
+yt-dlp>=2024.3.10
+rich>=13.7.0
+keyboard>=0.13.5
+pyperclip>=1.8.2
+
+FILE 2: requirements_gui.txt
+Content (exact):
+yt-dlp>=2024.3.10
+customtkinter>=5.2.2
+Pillow>=10.3.0
+pyperclip>=1.8.2
+darkdetect>=0.8.0
+
+OUTPUT: Both files. File 1 first, then File 2.
+⚫ Agent 4B — README.md
+text
+TASK: Write one complete README.md for the AURY project.
+
+CONTEXT: AURY is a Python yt-dlp powered media downloader with a V1 CLI (Rich)
+and V2 GUI (customtkinter). SQLite3 logging. Parallel downloads.
+
+README must contain these sections IN ORDER:
+
+# AURY — Smart Media Downloader
+
+Tagline + badges row (Python 3.11+ | yt-dlp | Rich | customtkinter)
+
+## Features
+- V1 CLI features (bullet list of 10 items)
+- V2 GUI features (bullet list of 8 items)
+- 10 new advanced features (bullet list)
+
+## Project Structure
+Full folder tree (matching the AURY/ structure exactly)
+
+## Setup
+### Prerequisites
+- Python 3.11+
+- ffmpeg (required for video+audio merging)
+  Include: download link and PATH setup note for Windows/macOS/Linux
+
+### Installation
+```bash
+# Clone / create project folder
+# Create venv
+python -m venv .venv
+.venv\Scripts\activate   # Windows
+source .venv/bin/activate  # macOS/Linux
+
+# Install for CLI
+pip install -r requirements_cli.txt
+
+# Install for GUI
+pip install -r requirements_gui.txt
+```
+
+## Usage
+### V1 — CLI
+```bash
+python -m cli.main
+```
+Step-by-step flow description (7 steps).
+
+### V2 — GUI
+```bash
+python -m gui.app
+```
+Step-by-step flow description (5 steps).
+
+## Quality Options
+Table with all 10 options + Audio Only (11 rows total)
+
+## Keyboard Controls (CLI)
+Table: Key | Action
+
+## Database
+Describe the 3 tables: sessions, downloads, errors
+Mention: aury.db auto-created, WAL mode, thread-safe
+
+## Advanced Features
+Numbered list of all 10 new features with one-line descriptions each.
+
+## Troubleshooting
+- ffmpeg not found
+- keyboard lib needs admin on Windows
+- No internet at launch
+- Permission denied on save path
+
+OUTPUT: Complete README.md only. No explanations.
+⚡ Execution Cheatsheet
+Phase	Agents	Run	Wait for
+1	1A, 1B, 1C	Simultaneously	Nothing
+2	2A, 2B	Simultaneously	Phase 1 ✅
+3	3A, 3B, 3C, 3D, 3E	Simultaneously	Phase 1 ✅
+4	4A, 4B	Simultaneously	Phase 3 ✅
+After Phase 3, one final pass: Take the updated core/downloader.py output from Agent 3C (it adds progress_queue kwarg) and merge it back into Agent 1C's output — Agent 3C explicitly documents what needs to change in downloader.py for the GUI queue system to work.
+
+Prepared using Claude Sonnet 4.6
+NOW MAKE A LIST OF DETAILED PROMPTS IN CRONOLOGICAL ORDER SO I JUST DONT HAVE TO BOTHER IT WITH CONTINUOUSLY , ALSO ALONG WITH IT GIVE ME INSTRUCTIONS TOO.
+- GIVE ALL PROPTS THAT CAN BE GENRATED FOR CURRENT UPDATES AND FUTURE UPDATES.
+- REMEBER : this project is build for speed & fast excusion
+- dont include or suggest any 3rd party application like : github copilot , etc
+- we have already done lot , review above chnages and give ibfo according to it
+- dont repeat same things that we already build , so no hallusinate to agent .
+
+Here is the complete master prompt list — reviewed against everything already built, zero repetition, in exact execution order:
+
+text
+╔══════════════════════════════════════════════════════════════════╗
+║          AURY — MASTER BUILD GUIDE                              ║
+║          All Prompts · All Instructions · Chronological         ║
+╚══════════════════════════════════════════════════════════════════╝
+📋 WHAT IS ALREADY DONE — Skip These
+text
+✅ V1 CLI — main menu, download flow, quality picker
+✅ V1 — Individual/All quality selection
+✅ V1 — Subtitle options + language picker
+✅ V1 — Schedule download (now / delay / exact time)
+✅ V1 — Duplicate URL detection + re-download prompt
+✅ V1 — Clipboard auto-detect on URL input
+✅ V1 — Session report table + CSV export
+✅ V1 — Lifetime stats on banner (downloads/GB/sessions)
+✅ V1 — 8 parallel workers
+✅ BUG FIX — Removed controls panel (P/R/S)
+✅ BUG FIX — y/n prompt validation loop
+✅ BUG FIX — Chrome cookie / DPAPI error suppression
+✅ GUI V2 — Main window + sidebar navigation
+✅ GUI V2 — Dashboard page (stat cards + queue)
+✅ GUI V2 — History page with search/filter
+✅ GUI V2 — Settings page (all 9 options)
+✅ GUI V2 — DownloadCard with live progress bar
+✅ GUI V2 — System notifications (plyer)
+✅ GUI V2 — SpeedMonitor widget (live graph)
+✅ DB — AuryDB class with 5 tables + views + triggers
+🗂️ HOW TO USE THIS GUIDE
+text
+╭────────────────────────────────────────────────────────────────╮
+│  RULES — Read before starting                                  │
+│                                                                │
+│  1. Do prompts in EXACT order shown. Never skip ahead.        │
+│                                                                │
+│  2. Before each prompt:                                        │
+│     → Attach AURY_CONTEXT.md                                  │
+│     → Attach ALL files listed under "FILES TO MODIFY"         │
+│     → Paste the prompt below it                               │
+│                                                                │
+│  3. After each prompt:                                         │
+│     → Run the test command shown                              │
+│     → Only move to next prompt after test passes              │
+│                                                                │
+│  4. If AI breaks something:                                    │
+│     → Say: "Revert ONLY [filename]. Keep all other changes."  │
+│     → Never say "fix everything" — too vague                  │
+│                                                                │
+│  5. One prompt = one session with AI. Never combine two.       │
+╰────────────────────────────────────────────────────────────────╯
+━━━ PHASE 1 — V1 CLI COMPLETION ━━━
+[P-01] Quick Download Mode
+Files: cli/main.py
+Test: python main.py → press Q from menu → paste URL → downloads with no prompts
+
+text
+TASK: Add Quick Download mode to AURY V1 CLI.
+
+ADD to Main Menu:
+╭─────────────────────────────────────╮
+│ [1]  ⬇  Start New Download          │
+│ [2]  ⚡  Quick Download   ← NEW     │
+│ [3]  📋  View Download History      │
+│ [4]  ⚙  Settings                   │
+│ [5]  ❌  Exit                       │
+╰─────────────────────────────────────╯
+
+Also: pressing Q on the menu goes directly to Quick Download.
+
+Quick Download flow:
+- Auto-confirm clipboard URL if detected
+- Ask ONLY for URL input (skip quality/subtitle/schedule/thumbnail)
+- Use default_quality_index from settings (fallback: index 4 = 1080p)
+- Skip subtitles, skip schedule, skip thumbnail
+- Start download immediately
+- Show single progress bar
+- Return to main menu on finish
+- Log to DB with is_quick_mode = 1
+
+New function: run_quick_download() in cli/main.py
+In session report, show "⚡ Quick" instead of quality label
+when is_quick_mode = 1.
+
+OUTPUT: Updated cli/main.py only.
+Return complete file. No placeholders.
+[P-02] Smart Batch & URL Cleaner
+Files: cli/main.py, core/database.py
+Test: Paste 3 YouTube URLs separated by newlines → sees preview of 3 → confirms → all queue
+
+text
+TASK: Add batch URL input and URL cleaning to AURY V1.
+
+FEATURE 1 — Multi-URL paste at URL input prompt:
+If user pastes multiple lines (newline-separated or comma-separated):
+→ Auto-split into list
+→ Show preview:
+  ╭──────────────────────────────────────╮
+  │  📋 Detected 3 URLs                  │
+  │  1. https://youtu.be/abc123          │
+  │  2. https://youtu.be/def456          │
+  │  3. https://youtu.be/ghi789          │
+  ╰──────────────────────────────────────╯
+  Confirm queue? (y/n) →
+  (blank Enter = y here — user already pasted intentionally)
+
+FEATURE 2 — Load URLs from .txt file:
+At URL input prompt, if user types a path ending in .txt:
+→ Read file, extract all lines starting with http
+→ Show same preview panel
+→ Confirm → queue all
+
+FEATURE 3 — URL cleaner:
+Strip tracking params from YouTube URLs before use:
+KEEP: v=, list=, index=, t=
+STRIP: si=, utm_source=, utm_medium=, utm_campaign=,
+       utm_content=, utm_term=, feature=, pp=
+
+Show cleaned URL:
+  🔧 Cleaned: https://youtu.be/abc123
+
+DATABASE:
+- url column = cleaned URL
+- url_original column = what user pasted
+  (add if not exists: ALTER TABLE downloads ADD COLUMN url_original TEXT)
+
+Helper: clean_url(raw: str) -> str  in core/config.py
+        Uses urllib.parse to strip params
+
+OUTPUT: Updated cli/main.py + core/config.py
+        DB migration line in core/database.py init
+Return complete files. No placeholders.
+[P-03] Auto-Retry + Speed Boost Engine
+Files: core/downloader.py, core/config.py
+Test: Disconnect wifi mid-download → see retry countdown → reconnect → resumes
+
+text
+TASK: Add aria2c speed boost and smart auto-retry to AURY.
+
+FEATURE 1 — aria2c integration:
+In core/config.py → get_ydl_base_opts():
+
+import shutil
+if shutil.which("aria2c"):
+    opts["external_downloader"] = "aria2c"
+    opts["external_downloader_args"] = {
+        "aria2c": [
+            "-x", "16",
+            "-s", "16",
+            "-k", "1M",
+            "--min-split-size=1M",
+            "--quiet",
+        ]
+    }
+    opts["concurrent_fragment_downloads"] = 16
+else:
+    opts["concurrent_fragment_downloads"] = 8
+
+Also add:
+    opts["buffersize"] = 1024 * 1024
+    opts["http_chunk_size"] = 10485760
+
+Show in banner after lifetime stats:
+  ⚡ aria2c detected — Turbo ON (16x)
+or
+  💡 Install aria2c for 3x faster downloads
+
+FEATURE 2 — Auto-retry with countdown:
+In core/downloader.py → DownloadWorker.run():
+
+Retry logic:
+- Max 3 retries
+- Backoff: 5s → 10s → 20s
+- HTTP 429: wait 30s before retry
+- HTTP 403/404: no retry (permanent fail)
+
+Show countdown:
+  ✘  Failed: HTTP 429 Too Many Requests
+  🔄  Retry 1/3 in 5s...  ████░░  5s
+
+After all retries exhausted:
+  ✘  All 3 retries failed. Saved to retry queue.
+  → Append URL to retry_queue.txt (one per line)
+
+Database:
+  retry_count INTEGER (already in schema)
+  last_error TEXT (already in schema)
+  UPDATE downloads SET retry_count = retry_count + 1,
+         last_error = '{error}' WHERE id = ?
+
+After session ends, if retry_queue.txt exists and has URLs:
+  ╭──────────────────────────────────────╮
+  │  1 download failed earlier.          │
+  │  [Y] Retry now  [S] Keep for later   │
+  │  [N] Discard                         │
+  ╰──────────────────────────────────────╯
+
+OUTPUT: Updated core/downloader.py + core/config.py
+Return complete files. No placeholders.
+[P-04] Full Settings Menu
+Files: cli/settings.py (new), cli/main.py, core/database.py
+Test: python main.py → [4] Settings → test all 9 options including DB stats
+
+text
+TASK: Replace "Settings menu coming soon in V2!" with
+full working settings in a new file cli/settings.py.
+
+CREATE cli/settings.py with function: run_settings_menu()
+Call it from cli/main.py when user picks Settings option.
+
+SETTINGS SCREEN:
+╭──────────────────────────────────────────────────────╮
+│  ⚙  AURY Settings                                   │
+│  [1]  📁  Download folder   :  downloads/   [change] │
+│  [2]  🎯  Default quality   :  1080p        [change] │
+│  [3]  ⚡  Max workers       :  8            [change] │
+│  [4]  🚀  aria2c turbo      :  AUTO         [toggle] │
+│  [5]  📝  Default subtitles :  OFF          [toggle] │
+│  [6]  🌐  Default sub lang  :  en           [change] │
+│  [7]  🗑  Clear history                     [run]    │
+│  [8]  📊  Database stats                   [view]   │
+│  [9]  🔙  Back to menu                              │
+╰──────────────────────────────────────────────────────╯
+
+Option 1: validate path, create if not exists, save to DB
+Option 2: show quality table (0–10), save index
+Option 3: validate 1–16, save to DB
+Option 4: toggle AUTO/ON/OFF, save to DB
+Option 7:
+  → "Are you sure? (y/n)"
+  → DELETE FROM downloads; DELETE FROM sessions; VACUUM;
+  → Show: ✔ History cleared. {n} records deleted.
+Option 8 (DB STATS — this is your DBMS marks):
+  ╭───────────────────────────────────────────────────────╮
+  │  📊  AURY Database Statistics                        │
+  │  DB file size: 2.1 MB  |  Tables: 5  |  Views: 3    │
+  │                                                       │
+  │  Platform    Downloads    Total Size                 │
+  │  YouTube        41         12.4 GB                  │
+  │  Instagram        4          234 MB                  │
+  │                                                       │
+  │  Quality         Count                              │
+  │  4K (2160p)        18                               │
+  │  1080p             16                               │
+  │  Audio only         8                               │
+  │                                                       │
+  │  All-time avg speed : 18.4 MB/s                     │
+  │  Largest file       : 2.1 GB (Apr 29)               │
+  ╰───────────────────────────────────────────────────────╝
+
+All settings stored in DB settings table:
+  db.get_setting("key", default)
+  db.set_setting("key", "value")
+
+Read settings at startup in cli/main.py and core/config.py.
+
+OUTPUT: New cli/settings.py + updated cli/main.py
+Return complete files. No placeholders.
+[P-05] History Viewer Upgrade
+Files: cli/main.py, core/database.py
+Test: Download 3 videos → View History → filter by platform → search by title → delete one
+
+text
+TASK: Upgrade the History viewer in AURY V1 CLI.
+Current history shows a basic table. Make it powerful.
+
+UPGRADED HISTORY SCREEN:
+
+Header with live filters:
+  🔍 Search (title/URL): _____________
+  Platform: [All / YouTube / Instagram / ...]
+  Status:   [All / Completed / Failed]
+  Sort:     [Newest / Oldest / Largest / Fastest]
+
+Table columns (from v_downloads_full view):
+  # | Platform | Title | Quality | Size | Speed | Date | Status
+
+After showing table, show action menu:
+  ╭─────────────────────────────────────────╮
+  │  [D] Delete record    [E] Export CSV    │
+  │  [R] Retry failed     [C] Clear all     │
+  │  [B] Back to menu                       │
+  ╰─────────────────────────────────────────╯
+
+[D] Delete: ask for record # → DELETE FROM downloads WHERE id=?
+[E] Export CSV: write history to downloads_export_{date}.csv
+[R] Retry failed: collect all failed URLs → re-run them
+[C] Clear all: same as Settings → Clear history
+
+PAGINATION: show 15 rows per page
+  Page 1 of 4  [N]ext  [P]rev
+
+DB QUERIES to use:
+  -- Search
+  SELECT * FROM v_downloads_full
+  WHERE title LIKE '%{query}%'
+    AND (platform = '{p}' OR '{p}' = 'All')
+    AND (status = '{s}'   OR '{s}' = 'All')
+  ORDER BY downloaded_at DESC
+  LIMIT 15 OFFSET {page * 15};
+
+  -- Count for pagination
+  SELECT COUNT(*) FROM v_downloads_full
+  WHERE title LIKE '%{query}%' ...;
+
+OUTPUT: Updated cli/main.py (history section)
+        + helper query methods in core/database.py
+Return complete files. No placeholders.
+━━━ PHASE 2 — GUI PERFORMANCE & STABILITY ━━━
+[P-06] GUI Download Speed Fix ⚡ CRITICAL
+Files: core/downloader.py, core/config.py, gui/dashboard.py, gui_main.py
+Test: Download 100MB 4K video via GUI → completes in under 60 seconds
+
+text
+TASK: Fix download speed regression in AURY V2 GUI.
+V1 CLI = fast. V2 GUI = same engine, must be same speed.
+
+FIX 1 — Throttle progress hook in core/downloader.py:
+def progress_hook(self, d):
+    now = time.monotonic()
+    if now - self._last_update < 0.1:   ← 100ms gate
+        return
+    self._last_update = now
+    self.progress_queue.put(d)
+Add to __init__: self._last_update = 0.0
+
+FIX 2 — Verify aria2c in GUI mode (core/config.py):
+Same opts as P-03 (aria2c 16x connections).
+Must be active when called from GUI too.
+Add: opts["buffersize"] = 1024 * 1024
+     opts["http_chunk_size"] = 10485760
+
+FIX 3 — GUI poll interval (gui/dashboard.py):
+Change: self.after(50,  self._poll_queue)
+To:     self.after(150, self._poll_queue)
+
+FIX 4 — Process priority (gui_main.py entry point):
+import sys
+if sys.platform == "win32":
+    import ctypes
+    ctypes.windll.kernel32.SetPriorityClass(
+        ctypes.windll.kernel32.GetCurrentProcess(),
+        0x00000080)   ← HIGH_PRIORITY_CLASS
+
+FIX 5 — Thread priority (core/downloader.py run()):
+import sys
+if sys.platform == "win32":
+    import ctypes
+    ctypes.windll.kernel32.SetThreadPriority(
+        ctypes.windll.kernel32.GetCurrentThread(), 1)
+
+EXPECTED: 100MB file ≤ 20s | 4GB file ≤ proportional
+GUI must NOT freeze during download.
+Progress bar updates smoothly every 150ms.
+
+OUTPUT: Updated core/downloader.py, core/config.py,
+        gui/dashboard.py, gui_main.py
+Return complete files. No placeholders.
+[P-07] GUI Smart Queue Manager
+Files: gui/queue_panel.py (new), gui/dashboard.py, core/database.py
+Test: Queue 3 URLs → reorder with ↑↓ → cancel middle one → confirm correct order downloads
+
+text
+TASK: Build Smart Queue Manager panel for AURY V2 GUI.
+Replace current "Active Downloads" section on Dashboard.
+
+CREATE gui/queue_panel.py with QueuePanel class.
+
+VISUAL:
+╭────────────────────────────────────────────────────────╮
+│  📥 Download Queue              [Clear Done ✕]  [+ ⬇] │
+├────────────────────────────────────────────────────────┤
+│  ⬇ Rick Astley - Never Gonna...  ━━━━━━░░  73%        │
+│    1080p · YouTube · 18.4 MB/s · 0:00:08              │
+│                                      [⏸ Pause] [⏹ Stop]│
+├────────────────────────────────────────────────────────┤
+│  ⏳ Coffee Roast with Samay...    QUEUED               │
+│    4K · Waiting for slot...                            │
+│                               [↑ Up] [↓ Down] [✕ Remove]│
+├────────────────────────────────────────────────────────┤
+│  ✔ SAAS BAHU AUR SAANP...     DONE · 90MB · 19s       │
+│                                    [📂 Open] [🗑 Delete]│
+╰────────────────────────────────────────────────────────╯
+
+FEATURES:
+- Max 3 simultaneous active downloads (from settings max_workers / 3)
+- ↑↓ reorders queue_position in DB for pending items
+- ✕ removes pending item from DB entirely
+- 📂 runs: os.startfile(os.path.dirname(file_path))
+- [Clear Done ✕] hides all completed cards (keeps DB record)
+- [+ ⬇] button opens the download modal
+
+Card states and colors:
+  Downloading: blue progress bar (#1f6feb)
+  Paused:      yellow (#d29922), show Resume button
+  Queued:      gray text, no progress bar
+  Completed:   green bar 100% (#3fb950)
+  Failed:      red bar (#f85149), show Retry button
+
+DATABASE:
+ADD if not exists:
+  ALTER TABLE downloads ADD COLUMN queue_position INTEGER;
+
+Reorder query:
+  UPDATE downloads SET queue_position = ?
+  WHERE id = ? AND status = 'pending';
+
+OUTPUT: New gui/queue_panel.py
+        Updated gui/dashboard.py to use QueuePanel
+        DB migration in core/database.py
+Return complete files. No placeholders.
+[P-08] GUI Analytics Dashboard Tab
+Files: gui/analytics.py (new), gui/dashboard.py, gui/charts.py (new)
+Test: Open app → click Analytics tab → all 3 chart sections render with real DB data
+
+text
+TASK: Add Analytics tab to AURY V2 Dashboard.
+Use CTkTabview to split Dashboard into 2 tabs:
+  Tab 1: "⬇ Downloads" (existing queue panel)
+  Tab 2: "📊 Analytics" (NEW — build this)
+
+NO matplotlib. NO external chart libraries.
+Use tkinter Canvas ONLY for all charts.
+
+CREATE gui/charts.py with two reusable classes:
+
+class BarChart(tk.Canvas):
+    def draw(self, data: list[tuple[str,int]], color="#1f6feb"):
+        """data = [(label, value), ...]"""
+        # Draw vertical bars
+        # Draw x-axis labels below each bar
+        # Draw value label on top of each bar
+        # Draw subtle horizontal grid lines
+
+class DonutChart(tk.Canvas):
+    def draw(self, data: list[tuple[str,int,str]]):
+        """data = [(label, value, hex_color), ...]"""
+        # Draw arc segments using create_arc
+        # Draw legend on the right side
+
+ANALYTICS TAB LAYOUT:
+ROW 1 — 3 stat cards (larger than dashboard ones):
+  ┌────────────────┐ ┌────────────────┐ ┌─────────────┐
+  │  📅 This Week  │ │  ⚡ Peak Speed │ │ 📁 Avg File │
+  │  12 downloads  │ │  44.5 MB/s     │ │    187 MB   │
+  │  2.1 GB saved  │ │  Apr 29 · 4K  │ │  per file   │
+  └────────────────┘ └────────────────┘ └─────────────┘
+
+ROW 2 — Bar chart: Downloads per day (last 14 days)
+  Title: "📅 Activity — Last 14 Days"
+  X-axis: dates (Apr 17 … Apr 30)
+  Y-axis: download count
+  Bars fill upward with animation on tab open
+  (animate via after() loop, 30 frames, 16ms each)
+
+ROW 3 — Two donut charts side by side:
+  LEFT:  "🎯 Quality Split"
+    4K → #ff6b6b, 1080p → #1f6feb, 720p → #3fb950,
+    Audio → #d29922, Other → #8b949e
+  RIGHT: "🌐 Platform Split"
+    YouTube → #ff0000, Instagram → #e1306c,
+    SoundCloud → #ff5500, Other → #8b949e
+
+DB QUERIES:
+  -- Weekly stats
+  SELECT COUNT(*), SUM(file_size_bytes)
+  FROM downloads
+  WHERE downloaded_at >= DATE('now','-7 days')
+    AND status='completed';
+
+  -- Peak speed
+  SELECT MAX(avg_speed_bps), title, DATE(downloaded_at)
+  FROM downloads WHERE status='completed';
+
+  -- 14-day activity
+  SELECT DATE(downloaded_at) AS day, COUNT(*)
+  FROM downloads
+  WHERE downloaded_at >= DATE('now','-14 days')
+  GROUP BY day ORDER BY day;
+
+  -- Quality split
+  SELECT quality_label, COUNT(*) FROM downloads
+  WHERE status='completed' GROUP BY quality_label;
+
+  -- Platform split
+  SELECT p.name, COUNT(*), p.icon FROM platforms p
+  LEFT JOIN downloads d ON d.platform_id = p.id
+  WHERE d.status='completed' GROUP BY p.id;
+
+Refresh data: call db queries every time tab is opened.
+Show "No data yet. Start downloading!" if DB is empty.
+
+OUTPUT: New gui/charts.py, new gui/analytics.py
+        Updated gui/dashboard.py (add CTkTabview)
+Return complete files. No placeholders.
+━━━ PHASE 3 — GUI ADVANCED FEATURES ━━━
+[P-09] Drag & Drop URL Support
+Files: gui/app.py, gui/drop_overlay.py (new), requirements.txt
+Test: Drag a YouTube link from browser into AURY window → download modal opens with URL pre-filled
+
+text
+TASK: Add drag-and-drop URL support to AURY V2 GUI.
+
+DEPENDENCY: pip install tkinterdnd2
+Add tkinterdnd2 to requirements.txt
+
+In gui/app.py:
+Change base class:
+  from tkinterdnd2 import TkinterDnD, DND_TEXT
+  class AuryApp(TkinterDnD.Tk):
+
+Register drop target:
+  self.drop_target_register(DND_TEXT)
+  self.dnd_bind("<<DragEnter>>", self._on_drag_enter)
+  self.dnd_bind("<<DragLeave>>", self._on_drag_leave)
+  self.dnd_bind("<<Drop>>",      self._on_drop)
+
+CREATE gui/drop_overlay.py:
+Semi-transparent overlay shown when dragging over window:
+  class DropOverlay(ctk.CTkFrame):
+  Shows: "📥 Drop URL to Download"
+  Full window size, bg = rgba(0,0,0,0.7)
+  Placed on top of all other widgets via .place()
+  Hidden by default, shown on drag enter, hidden on leave/drop
+
+Drop handlers:
+  def _on_drag_enter(self, event):
+      self.overlay.show()
+
+  def _on_drag_leave(self, event):
+      self.overlay.hide()
+
+  def _on_drop(self, event):
+      self.overlay.hide()
+      data = event.data.strip()
+      if data.startswith("http"):
+          self._open_download_modal(url=data)
+      elif data.endswith(".txt"):
+          urls = [l.strip() for l in open(data)
+                  if l.strip().startswith("http")]
+          if urls:
+              self._open_batch_modal(urls)
+
+Batch modal for .txt drop:
+  Shows list of URLs found
+  [⬇ Queue All]  [✕ Cancel]
+
+OUTPUT: Updated gui/app.py
+        New gui/drop_overlay.py
+        Updated requirements.txt
+Return complete files. No placeholders.
+[P-10] Thumbnail Preview in Download Modal
+Files: gui/download_modal.py, core/downloader.py
+Test: Open download modal → paste YouTube URL → click Preview → thumbnail + title appear
+
+text
+TASK: Add video thumbnail preview to the Download Modal
+in AURY V2 GUI. Before downloading, show the video's
+thumbnail, title, and duration.
+
+IN gui/download_modal.py:
+
+After user enters URL, add [🔍 Preview] button.
+On click → run in background thread:
+  yt-dlp --dump-json --no-download {url}
+  Parse JSON: title, thumbnail URL, duration, uploader
+
+While fetching:
+  Show spinner: "Fetching info..."
+
+After fetch, show in modal:
+  ╭──────────────────────────────────────────────────╮
+  │  ┌──────────────┐  Rick Astley — Never Gonna     │
+  │  │  [thumbnail] │  Give You Up                   │
+  │  │    image     │  ⏱ 3:33  · 📺 YouTube          │
+  │  └──────────────┘  👤 Rick Astley                 │
+  ╰──────────────────────────────────────────────────╯
+
+Thumbnail fetch:
+  import urllib.request
+  from PIL import Image, ImageTk
+  import io
+  urllib.request.urlretrieve(thumb_url, tmp_path)
+  img = Image.open(tmp_path).resize((160, 90))
+  → Display as CTkImage in modal
+
+DEPENDENCY: pip install pillow (add to requirements.txt)
+
+Also show estimated file size based on quality:
+  Quality: [1080p ▼]
+  Est. size: ~450 MB  ← from yt-dlp format info
+
+Store in DB on download complete:
+  thumbnail_path TEXT (already in schema)
+  Save thumbnail locally to: downloads/thumbs/{id}.jpg
+
+If preview fetch fails (private video, slow net):
+  Show: "⚠ Preview unavailable — download will still work"
+  Let user proceed normally
+
+OUTPUT: Updated gui/download_modal.py
+        Updated requirements.txt (add pillow)
+Return complete file. No placeholders.
+[P-11] Keyboard Shortcuts in GUI
+Files: gui/app.py, gui/dashboard.py
+Test: Press Ctrl+N → download modal opens. Press Ctrl+H → history page. Press Escape → closes modal
+
+text
+TASK: Add keyboard shortcuts to AURY V2 GUI.
+Gen Z does NOT use mouse for everything.
+
+IN gui/app.py → bind to main window:
+
+GLOBAL SHORTCUTS (work from any page):
+  Ctrl+N     → open download modal (new download)
+  Ctrl+Q     → open quick download modal (no prompts)
+  Ctrl+H     → switch to History page
+  Ctrl+,     → switch to Settings page
+  Ctrl+D     → switch to Dashboard page
+  Ctrl+W     → close modal if open (else do nothing)
+  Escape     → close any open modal/popup
+  F5         → refresh current page (re-query DB)
+  Ctrl+V     → if URL in clipboard, open modal with it
+
+DASHBOARD PAGE SHORTCUTS:
+  Space      → pause/resume topmost active download
+  Delete     → remove selected queue item (if any selected)
+
+VISUAL INDICATOR:
+Show shortcut hints in sidebar next to each nav item:
+  ⬇ Download     Ctrl+N
+  📊 Dashboard   Ctrl+D
+  📋 History     Ctrl+H
+  ⚙ Settings    Ctrl+,
+
+Implementation:
+  self.bind("<Control-n>", lambda e: self.open_download_modal())
+  self.bind("<Control-q>", lambda e: self.open_quick_modal())
+  self.bind("<Escape>",    lambda e: self.close_top_modal())
+  etc.
+
+Modal close on Escape:
+  In each CTkToplevel modal:
+  modal.bind("<Escape>", lambda e: modal.destroy())
+
+OUTPUT: Updated gui/app.py + gui/dashboard.py
+Return complete files. No placeholders.
+[P-12] Dark/Light Theme Toggle
+Files: gui/app.py, gui/widgets.py, core/database.py
+Test: Click moon icon in sidebar → app switches to light theme. Restart app → theme persists.
+
+text
+TASK: Add working dark/light theme toggle to AURY V2.
+Setting must persist across restarts via DB.
+
+IN gui/app.py:
+Add toggle button in sidebar bottom:
+  🌙 Dark   (click → switches to ☀ Light)
+  ☀ Light   (click → switches to 🌙 Dark)
+
+Implementation:
+  import customtkinter as ctk
+
+  def toggle_theme(self):
+      current = ctk.get_appearance_mode()
+      new = "Light" if current == "Dark" else "Dark"
+      ctk.set_appearance_mode(new)
+      db.set_setting("theme", new.lower())
+      self._update_theme_btn(new)
+
+  def _update_theme_btn(self, mode):
+      icon = "🌙" if mode == "Light" else "☀"
+      label = "Dark" if mode == "Light" else "Light"
+      self.theme_btn.configure(text=f"{icon} {label}")
+
+On app startup:
+  saved = db.get_setting("theme", "dark")
+  ctk.set_appearance_mode(saved.capitalize())
+
+COLORS THAT CHANGE:
+  Dark mode:  bg = #0d1117, card = #161b22, text = #e6edf3
+  Light mode: bg = #ffffff, card = #f6f8fa, text = #1f2328
+  (customtkinter handles most of this automatically)
+
+Custom colors in SpeedMonitor + charts must also update:
+  canvas.configure(bg="#0d1117" if dark else "#ffffff")
+  Bind to theme change event via a callback list
+
+DB: settings table
+  key = "theme", value = "dark" or "light"
+
+OUTPUT: Updated gui/app.py + gui/widgets.py
+Return complete files. No placeholders.
+━━━ PHASE 4 — DBMS PRESENTATION LAYER ━━━
+[P-13] DB Report Screen (College Presentation)
+Files: gui/db_report.py (new), gui/app.py, core/database.py
+Test: Open DB Report → run all 8 preset queries → schema viewer shows all 5 tables
+
+text
+TASK: Build DB Report page for AURY V2 GUI.
+This page is SPECIFICALLY for the DBMS college presentation.
+Add to sidebar as last item: [🎓 DB Report]
+
+PAGE LAYOUT — 3 sections:
+
+════════════════════════════════════════
+SECTION 1 — Live SQL Query Runner (top)
+════════════════════════════════════════
+╭────────────────────────────────────────────────────────╮
+│  🔍 Run SQL Query (SELECT only)                        │
+│  ┌────────────────────────────────────────────────┐   │
+│  │ SELECT * FROM v_downloads_full LIMIT 10;       │   │
+│  └────────────────────────────────────────────────┘   │
+│  [▶ Run Query]  [🗑 Clear]                            │
+│                                                        │
+│  Results: (scrollable table, max 50 rows shown)        │
+╰────────────────────────────────────────────────────────╯
+Safety: reject any query not starting with SELECT (case-insensitive).
+Show error: "⚠ Only SELECT queries are allowed."
+
+════════════════════════════════════════
+SECTION 2 — Preset Demo Queries (middle)
+════════════════════════════════════════
+8 buttons, each runs a preset query and shows result:
+
+[1] Downloads per platform
+    SELECT p.icon, p.name, COUNT(d.id) AS total,
+           ROUND(SUM(d.file_size_bytes)/1e9,2) AS gb
+    FROM platforms p
+    LEFT JOIN downloads d ON d.platform_id = p.id
+    GROUP BY p.id ORDER BY total DESC;
+
+[2] Average speed per session
+    SELECT s.id, DATE(s.started_at) AS date,
+           ROUND(s.avg_speed_bps/1e6,1) AS mbps,
+           s.completed_files, s.failed_files
+    FROM sessions s ORDER BY s.started_at DESC LIMIT 10;
+
+[3] Most downloaded quality
+    SELECT quality_label, COUNT(*) AS cnt,
+           ROUND(SUM(file_size_bytes)/1e9,2) AS gb
+    FROM downloads WHERE status='completed'
+    GROUP BY quality_label ORDER BY cnt DESC;
+
+[4] Downloads per day (last 7 days)
+    SELECT DATE(downloaded_at) AS day,
+           COUNT(*) AS total,
+           ROUND(SUM(file_size_bytes)/1e6,1) AS mb
+    FROM downloads
+    WHERE downloaded_at >= DATE('now','-7 days')
+    GROUP BY day ORDER BY day DESC;
+
+[5] Full JOIN (downloads + platforms + sessions)
+    SELECT d.id, d.title, p.name AS platform,
+           d.quality_label, d.status,
+           ROUND(d.file_size_bytes/1e6,1) AS mb,
+           DATE(d.downloaded_at) AS date
+    FROM downloads d
+    JOIN platforms p ON d.platform_id = p.id
+    JOIN sessions  s ON d.session_id  = s.id
+    ORDER BY d.downloaded_at DESC LIMIT 20;
+
+[6] All active triggers
+    SELECT name, sql FROM sqlite_master
+    WHERE type='trigger' ORDER BY name;
+
+[7] All views
+    SELECT name, sql FROM sqlite_master
+    WHERE type='view' ORDER BY name;
+
+[8] Failed downloads with errors
+    SELECT id, title, retry_count, last_error,
+           DATE(downloaded_at) AS date
+    FROM downloads WHERE status='failed'
+    ORDER BY downloaded_at DESC;
+
+════════════════════════════════════════
+SECTION 3 — Schema Viewer (bottom)
+════════════════════════════════════════
+Dropdown: [downloads ▼] ← pick any table
+Show columns table:
+  Column | Type | PK | FK References | Nullable
+  (from PRAGMA table_info() + foreign_key_list())
+
+Also show row count: "Table: downloads (47 rows)"
+
+[📤 Export All as CSV] button:
+  → export each table to CSV
+  → save as aury_db_export_{date}.zip
+  → use zipfile module (stdlib, no dependencies)
+
+OUTPUT: New gui/db_report.py
+        Updated gui/app.py (add nav item)
+        New method in core/database.py: run_safe_query(sql)
+Return complete files. No placeholders.
+[P-14] ER Diagram Generator
+Files: gui/db_report.py, core/database.py
+Test: Open DB Report → click "Show ER Diagram" → diagram renders with all 5 tables and relationships
+
+text
+TASK: Add a visual ER Diagram to the DB Report page.
+Draw it using tkinter Canvas — NO matplotlib, NO graphviz.
+
+ADD to gui/db_report.py — new tab or scrollable section:
+  "📐 ER Diagram"
+
+DRAW THIS LAYOUT on Canvas (800x400):
+
+┌──────────┐        ┌──────────────┐        ┌───────────┐
+│ sessions │───────<│  downloads   │>───────│ platforms │
+│ ──────── │  1:N   │ ──────────── │  N:1   │ ───────── │
+│ id PK    │        │ id PK        │        │ id PK     │
+│ started  │        │ session_id FK│        │ name      │
+│ ended    │        │ platform_id FK        │ domain    │
+│ total    │        │ url          │        │ icon      │
+└──────────┘        │ title        │        └───────────┘
+                    │ quality_label│
+                    │ status       │
+                    │ file_size    │
+                    └──────┬───────┘
+                           │ N:M via download_tags
+                    ┌──────▼───────┐
+                    │ download_tags│
+                    │ ──────────── │
+                    │ download_id FK│
+                    │ tag_id FK    │
+                    └──────┬───────┘
+                           │ N:1
+                    ┌──────▼───────┐
+                    │ settings     │
+                    │ tags         │
+                    └──────────────┘
+
+Drawing instructions:
+- Boxes: canvas.create_rectangle, rounded via stipple
+- Text: canvas.create_text, Courier font for column names
+- Relationship lines: canvas.create_line with arrow=LAST
+- PK columns: bold text + 🔑 prefix
+- FK columns: italic text + 🔗 prefix
+- Color scheme:
+    Box border:  #1f6feb
+    Box fill:    #0d1117
+    PK text:     #f0c040
+    FK text:     #58a6ff
+    Normal text: #e6edf3
+    Lines:       #8b949e
+
+[📤 Save as PNG] button:
+  import PIL.ImageGrab (from pillow)
+  Capture canvas region → save as er_diagram.png
+
+OUTPUT: Updated gui/db_report.py with ER diagram tab
+Return complete file. No placeholders.
+━━━ PHASE 5 — POLISH & FINAL FEATURES ━━━
+[P-15] App Tray Icon + Background Mode
+Files: gui_main.py, gui/app.py
+Test: Minimize AURY → it disappears to system tray → right-click tray icon → Open/Quit
+
+text
+TASK: Add Windows system tray support to AURY V2.
+When window is minimized or closed, app lives in tray.
+Downloads continue in background.
+
+DEPENDENCY: pip install pystray pillow
+Add both to requirements.txt (pillow already there).
+
+IN gui_main.py:
+import pystray
+from PIL import Image, ImageDraw
+
+def create_tray_icon(app):
+    # Draw simple icon (16x16 colored circle)
+    img = Image.new("RGB", (64,64), color="#0d1117")
+    draw = ImageDraw.Draw(img)
+    draw.ellipse([8,8,56,56], fill="#1f6feb")
+    draw.text((20,18), "A", fill="white",
+              font=None)  ← use default PIL font
+
+    menu = pystray.Menu(
+        pystray.MenuItem("Open AURY",  lambda: app.deiconify()),
+        pystray.MenuItem("New Download",
+                         lambda: app.after(0, app.open_download_modal)),
+        pystray.MenuItem("─────────", None, enabled=False),
+        pystray.MenuItem("Quit",
+                         lambda: app.after(0, app.quit_app)),
+    )
+    return pystray.Icon("AURY", img, "AURY Downloader", menu)
+
+IN gui/app.py:
+Override close button to minimize to tray:
+  self.protocol("WM_DELETE_WINDOW", self._on_close)
+
+  def _on_close(self):
+      self.withdraw()   ← hide window (don't destroy)
+      self.tray_icon.notify("AURY is still running",
+                            "Downloads continue in background.")
+
+  def quit_app(self):
+      self.tray_icon.stop()
+      self.destroy()
+
+Tray icon shows download count badge when active:
+  pystray.MenuItem(f"⬇ {n} active downloads", None, enabled=False)
+  Update every 2 seconds via threading.Timer
+
+OUTPUT: Updated gui_main.py + gui/app.py
+        Updated requirements.txt
+Return complete files. No placeholders.
+[P-16] One-Click Installer Script
+Files: install.bat (new), requirements.txt, README.md (new)
+Test: Fresh machine → double-click install.bat → everything installs → AURY launches
+
+text
+TASK: Create a one-click install script for AURY on Windows.
+Goal: someone with only Python installed can run install.bat
+and AURY V2 GUI launches within 2 minutes.
+
+CREATE install.bat:
+@echo off
+title AURY Installer
+echo.
+echo  ██████╗  ██╗   ██╗ ██████╗  ██╗   ██╗
+echo  AURY Smart Media Downloader
+echo  Installing dependencies...
+echo.
+
+REM Check Python
+python --version >nul 2>&1
+if errorlevel 1 (
+    echo  [ERROR] Python not found. Install from python.org
+    pause
+    exit /b 1
+)
+
+REM Create venv
+echo  [1/4] Creating virtual environment...
+python -m venv venv
+call venv\Scripts\activate.bat
+
+REM Install requirements
+echo  [2/4] Installing Python packages...
+pip install -r requirements.txt --quiet
+
+REM Check aria2c
+echo  [3/4] Checking aria2c...
+where aria2c >nul 2>&1
+if errorlevel 1 (
+    echo  [INFO] aria2c not found.
+    echo  [INFO] Download from: https://github.com/aria2/aria2/releases
+    echo  [INFO] Add to PATH for 3x faster downloads.
+) else (
+    echo  [OK] aria2c found - Turbo mode enabled
+)
+
+REM Create desktop shortcut
+echo  [4/4] Creating shortcuts...
+python -c "
+import os, sys
+desktop = os.path.join(os.environ['USERPROFILE'], 'Desktop')
+shortcut = os.path.join(desktop, 'AURY.bat')
+venv_python = os.path.join(os.getcwd(), 'venv', 'Scripts', 'python.exe')
+with open(shortcut, 'w') as f:
+    f.write(f'@echo off\ncd /d \"{os.getcwd()}\"\n')
+    f.write(f'call venv\\Scripts\\activate.bat\n')
+    f.write(f'python gui_main.py\n')
+print('Desktop shortcut created: AURY.bat')
+"
+
+echo.
+echo  ╔══════════════════════════════════════╗
+echo  ║  AURY installed successfully!        ║
+echo  ║  Launching GUI...                    ║
+echo  ╚══════════════════════════════════════╝
+echo.
+python gui_main.py
+
+CREATE requirements.txt (final complete list):
+yt-dlp>=2024.11.4
+rich>=13.7.0
+pyperclip>=1.8.2
+customtkinter>=5.2.2
+pillow>=10.2.0
+pystray>=0.19.5
+tkinterdnd2>=0.3.0
+plyer>=2.1.0
+
+CREATE README.md with:
+- What AURY is (2 lines)
+- Install instructions (3 steps)
+- CLI usage: python main.py
+- GUI usage: python gui_main.py
+- Feature list (table format)
+- DB schema overview (for DBMS presentation notes)
+
+OUTPUT: New install.bat, requirements.txt, README.md
+Return complete files. No placeholders.
+📌 Master Execution Checklist
+text
+╔═════════════════════════════════════════════════════════════════╗
+║  PROMPT  │  FEATURE                    │ STATUS                 ║
+╠══════════╪═════════════════════════════╪════════════════════════╣
+║  P-01    │  Quick Download mode        │ 📋 TODO                ║
+║  P-02    │  Batch URL + URL cleaner    │ 📋 TODO                ║
+║  P-03    │  aria2c boost + auto-retry  │ 📋 TODO                ║
+║  P-04    │  Full Settings Menu         │ 📋 TODO                ║
+║  P-05    │  History viewer upgrade     │ 📋 TODO                ║
+║  P-06    │  GUI speed fix ⚡           │ 🔴 DO FIRST            ║
+║  P-07    │  Smart Queue Manager        │ 📋 TODO                ║
+║  P-08    │  Analytics Dashboard tab    │ ⭐ DBMS marks          ║
+║  P-09    │  Drag & Drop URL            │ 📋 TODO                ║
+║  P-10    │  Thumbnail preview          │ 📋 TODO                ║
+║  P-11    │  Keyboard shortcuts         │ 📋 TODO                ║
+║  P-12    │  Dark/Light theme toggle    │ 📋 TODO                ║
+║  P-13    │  DB Report screen           │ 🎓 MANDATORY           ║
+║  P-14    │  ER Diagram generator       │ 🎓 MANDATORY           ║
+║  P-15    │  System tray + background   │ 📋 TODO                ║
+║  P-16    │  One-click installer        │ 📋 LAST                ║
+╚══════════╧═════════════════════════════╧════════════════════════╝
+
+RULE: Mark ✅ only after running the test command.
+NEVER move forward with a failing test.
+Prepared using Claude Sonnet 4.6 Thinking
+make list of diffrent future versions of idm like this above image
+Completed 2 steps
+Aury Versions Roadmap
+Aury Versions Roadmap
+Chart
+Aury Versions Roadmap
+Aury Versions Roadmap
+Chart
+Here is the complete AURY version roadmap across all 6 versions:
+
+Version Overview
+Version	Status	Theme	Key Highlight
+V1	✅ Done	CLI Foundation	yt-dlp engine, SQLite DB, 8 workers
+V2	✅ Done	Desktop GUI	Dashboard, analytics, ER diagram, tray
+V3	🔵 Building	Power User	Portable .exe, bandwidth limiter, ID3 tags
+V4	🟣 Planned	Media Suite	Built-in player, converter, metadata editor
+V5	🟠 Planned	Remote & Cloud	Web UI, Telegram bot, QR input, mobile app
+V6	🔴 Future	AI Edition	Natural language downloads, smart playlists, AI search
+For Your Presentation
+You can show this chart as your "project roadmap slide" to demonstrate you planned AURY like a real software product with versioned releases — exactly what SPPU examiners look for in DBMS and SE project presentations. V1 + V2 being already complete and tested makes it even stronger.
+
+Prepared using Claude Sonnet 4.6 Thinking
+in detail format
+Here is the complete AURY roadmap in full detailed format:
+
+text
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    AURY — COMPLETE VERSION ROADMAP                          ║
+║                    V1 → V6  |  CLI to AI-Powered Media Suite                ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+text
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  V1  ✅ COMPLETE          CLI FOUNDATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Entry Point  :  python main.py
+  Theme        :  Speed-first CLI, zero friction
+  Database     :  SQLite — 5 tables, 3 views, 3 triggers
+
+  FEATURES:
+  ┌─────────────────────────────────────────────────────────────┐
+  │  ⬇  yt-dlp download engine (YouTube, Instagram, 1000+)     │
+  │  🎯  Quality picker (0–10 : Audio → 4K)                     │
+  │  📝  Subtitle downloader (EN, HI, auto, custom lang)        │
+  │  ⏰  Scheduled download (now / delay / exact HH:MM)         │
+  │  📋  History viewer (search, filter, delete, retry)         │
+  │  📊  Session report table (size, speed, duration)           │
+  │  🗄  SQLite AuryDB (platforms, sessions, downloads,         │
+  │       tags, settings tables)                                │
+  │  ⚡  8 parallel workers                                     │
+  │  🔗  Batch URL input (comma / newline / .txt file)          │
+  │  🧹  URL cleaner (strips si=, utm_*, tracking params)       │
+  │  🚀  aria2c turbo (16x connections if installed)            │
+  │  🔄  Auto-retry engine (3x with countdown, backoff)         │
+  │  ⚙  Full settings menu (9 options, DB-persisted)           │
+  │  ⚡  Quick Download mode (Q key, zero prompts)              │
+  └─────────────────────────────────────────────────────────────┘
+  Tests        :  16/16 passing (tests/test_all.py)
+  Install      :  install.bat + requirements.txt + README.md
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  V2  ✅ COMPLETE          DESKTOP GUI APP
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Entry Point  :  python gui_main.py
+  Theme        :  IDM-style dark GUI, Gen Z design
+  Framework    :  CustomTkinter + tkinter Canvas
+
+  FEATURES:
+  ┌─────────────────────────────────────────────────────────────┐
+  │  🖥  Full desktop GUI window (1100x700, resizable)          │
+  │  🗂  Sidebar navigation (Dashboard/History/Settings/DB)     │
+  │  📊  Dashboard — stat cards (downloads/GB/speed/success%)  │
+  │  📥  Smart Queue Manager (reorder ↑↓, cancel, open file)   │
+  │  📈  Analytics tab (bar chart + donut charts, 14-day view)  │
+  │  🎨  BarChart + DonutChart (pure tkinter Canvas, no deps)   │
+  │  📡  Live Speed Monitor (real-time graph, 30s history)      │
+  │  🖱  Drag & Drop URL (drop link from browser → download)   │
+  │  🖼  Thumbnail preview in modal (PIL, est. file size)       │
+  │  ⌨  Keyboard shortcuts (Ctrl+N/H/D/Q/V, F5, Escape)       │
+  │  🌙  Dark / Light theme toggle (DB-persisted)               │
+  │  🔔  System notifications (plyer toast on complete)         │
+  │  🎓  DB Report screen (SQL runner, 8 demo queries)          │
+  │  📐  ER Diagram (Canvas-drawn, Save as PNG)                 │
+  │  📤  Export all tables to CSV zip                           │
+  │  📌  System tray icon (pystray, background downloads)       │
+  │  🔧  One-click installer (install.bat, venv, shortcut)      │
+  └─────────────────────────────────────────────────────────────┘
+  Shared With  :  V1 (same core/, same aury.db)
+  DBMS Ready   :  DB Report + ER Diagram for presentation
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  V3  🔵 BUILD NEXT        POWER USER EDITION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Entry Point  :  python gui_main.py (same, extended)
+  Theme        :  No-compromise performance & control
+  Prompts      :  P-17 → P-42
+
+  FEATURES:
+  ┌─────────────────────────────────────────────────────────────┐
+  │  🔄  yt-dlp auto-updater (check on startup, 1-click update) │
+  │  🪵  Crash logger (logs/crash.log, full traceback)          │
+  │  💾  Queue persistence (restore queue after restart)        │
+  │  🎵  MP3 ID3 tag writer (title, artist, thumbnail embed)    │
+  │  ✂  Video chapter splitter (split by YouTube chapters)     │
+  │  🔊  Audio extractor (from existing file, no re-download)   │
+  │  💬  Subtitle format converter (SRT→VTT→ASS→TXT)           │
+  │  🍪  Cookie auth (age-restricted / private videos)          │
+  │  📶  Bandwidth limiter (cap to X MB/s in settings)          │
+  │  📅  Recurring scheduler (daily/weekly cron-style)          │
+  │  🎬  Playlist manager (pick specific items, not all)        │
+  │  📦  Portable .exe (PyInstaller, no Python needed)          │
+  │  🔔  Notification history panel (log of all toasts)         │
+  │  🔍  Global search (history + files + settings at once)     │
+  │  🏷  Tag system UI (music/lecture/shorts per download)      │
+  │  💿  DB backup & restore (export aury.db, import anywhere)  │
+  │  📄  Stats report PDF (schema + queries + charts)           │
+  │  🔁  Duplicate detector (same video, different URL)         │
+  └─────────────────────────────────────────────────────────────┘
+  Start With   :  P-17 (yt-dlp updater) — safest first step
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  V4  🟣 PLANNED           MEDIA SUITE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Entry Point  :  python gui_main.py (same, extended)
+  Theme        :  All-in-one media manager, no external apps
+  New Dep      :  ffmpeg-python, mutagen, send2trash
+
+  FEATURES:
+  ┌─────────────────────────────────────────────────────────────┐
+  │  ▶  Built-in mini video player (tkinter + vlc or cv2)      │
+  │  🔄  Audio/video converter (MP4↔MKV, MP3↔FLAC, via ffmpeg) │
+  │  📝  Batch subtitle editor (edit SRT files in GUI)          │
+  │  📁  File manager tab (browse downloads folder in app)      │
+  │  🖼  Auto thumbnail gallery (grid view of all downloads)    │
+  │  🗂  Smart file organizer (auto-sort by platform/date/type) │
+  │  📐  Format converter panel (video/audio format selector)   │
+  │  🏷  Full metadata editor (title, album, year, cover art)   │
+  │  🗑  Safe delete (send2trash, recoverable)                  │
+  │  🔎  In-app file preview (video thumbnail, audio waveform)  │
+  │  📊  Storage analyzer (which platform uses most disk)       │
+  │  🧹  Junk cleaner (remove temp files, failed downloads)     │
+  └─────────────────────────────────────────────────────────────┘
+  Requires     :  V3 complete + ffmpeg installed
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  V5  🟠 PLANNED           REMOTE & CLOUD EDITION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Entry Point  :  python gui_main.py + python server.py
+  Theme        :  Control AURY from anywhere
+  New Dep      :  Flask, python-telegram-bot, qrcode, requests
+
+  FEATURES:
+  ┌─────────────────────────────────────────────────────────────┐
+  │  🌐  Web UI (Flask, access from any browser on LAN)         │
+  │  📱  Telegram bot (send URL → bot → AURY downloads it)      │
+  │  📷  QR code input (scan from phone → downloads on PC)      │
+  │  🔔  Discord webhook (post completion to your server)       │
+  │  🔄  Multi-device sync (same DB across 2 PCs via cloud)     │
+  │  ☁  Cloud DB backup (auto-upload aury.db to Google Drive)  │
+  │  📡  Remote queue manager (add/cancel from phone browser)   │
+  │  📲  Mobile companion (PWA — works in phone browser)        │
+  │  🔐  Password protection (PIN lock for web UI)              │
+  │  📬  Email summary (daily report of downloads to email)     │
+  │  🌍  Public tunnel (ngrok support for remote access)        │
+  └─────────────────────────────────────────────────────────────┘
+  Requires     :  V4 complete + internet/LAN setup
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  V6  🔴 FUTURE            AI EDITION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Entry Point  :  python gui_main.py (AI layer on top)
+  Theme        :  Intelligent, self-organizing, predictive
+  New Dep      :  openai / ollama, scikit-learn, whisper
+
+  FEATURES:
+  ┌─────────────────────────────────────────────────────────────┐
+  │  🤖  AI title categorizer (auto-detect: music/lecture/news) │
+  │  🎵  Smart playlist builder (group by mood/topic/channel)   │
+  │  🏷  Auto-tag suggestions (AI reads title → suggests tags)  │
+  │  📝  Content summarizer (Whisper → transcript → summary)    │
+  │  🔁  Duplicate detector AI (same video, different edits)    │
+  │  ⏱  Watch time predictor (estimate how long to watch)      │
+  │  🔍  AI search engine (semantic search across history)      │
+  │  💬  Natural language download                              │
+  │       ("download latest carryminati video in 1080p")        │
+  │  📊  Trend analyzer (what you download most, when, why)     │
+  │  🎯  Recommendation engine (suggest based on history)       │
+  │  🗣  Voice command support (speak URL → downloads)          │
+  └─────────────────────────────────────────────────────────────┘
+  Requires     :  V5 complete + AI API key or local Ollama
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+
+╔══════════════════════════════════════════════════════════════════╗
+║  SUMMARY TABLE                                                  ║
+╠════════╦══════════════╦═════════════╦═════════╦════════════════╣
+║  Ver   ║  Name        ║  Status     ║ Features║ Start After    ║
+╠════════╬══════════════╬═════════════╬═════════╬════════════════╣
+║  V1    ║ CLI          ║ ✅ Done     ║   14    ║  —             ║
+║  V2    ║ Desktop GUI  ║ ✅ Done     ║   17    ║  V1            ║
+║  V3    ║ Power User   ║ 🔵 Next     ║   18    ║  V2 + present  ║
+║  V4    ║ Media Suite  ║ 🟣 Planned  ║   12    ║  V3 + ffmpeg   ║
+║  V5    ║ Remote/Cloud ║ 🟠 Planned  ║   11    ║  V4 + LAN      ║
+║  V6    ║ AI Edition   ║ 🔴 Future   ║   11    ║  V5 + AI API   ║
+╚════════╩══════════════╩═════════════╩═════════╩════════════════╝
+  Total planned features across all versions :  83
+  Currently built & tested                   :  31
+╚══════════════════════════════════════════════════════════════════╝
+Prepared using Claude Sonnet 4.6 Thinking
+make prompt to check gui passes all test , like you did for cli
+
+text
+TASK: Create a GUI feature test suite for AURY V2.
+File: tests/test_gui.py
+Run with: .\\venv\\Scripts\\python.exe tests/test_gui.py
+Generates: tests/AURY_GUI_REPORT_{timestamp}.txt
+           tests/AURY_GUI_REPORT_{timestamp}.html
+
+════════════════════════════════════════════════════════════════
+IMPORTANT RULES FOR THIS TEST FILE
+════════════════════════════════════════════════════════════════
+
+1. NO real windows must open — all GUI tests run HEADLESS.
+   Use: os.environ["DISPLAY"] = "" (non-Windows)
+   Use: import unittest.mock to mock ctk.CTk and tk.Tk
+   NEVER call .mainloop() anywhere in tests.
+
+2. NO real downloads — mock yt-dlp entirely.
+
+3. Use a TEMP database (aury_gui_test.db) — never touch aury.db.
+
+4. All tests must complete in under 10 seconds total.
+
+5. Same decorator pattern as tests/test_all.py:
+   RESULTS = []
+   def test(test_id, name): ...decorator...
+
+════════════════════════════════════════════════════════════════
+READ THESE FILES BEFORE WRITING TESTS:
+════════════════════════════════════════════════════════════════
+gui/app.py
+gui/dashboard.py
+gui/analytics.py
+gui/charts.py
+gui/queue_panel.py
+gui/download_modal.py
+gui/drop_overlay.py
+gui/db_report.py
+gui/widgets.py
+gui/history.py
+gui/settings.py
+core/database.py
+
+════════════════════════════════════════════════════════════════
+ALL GUI TESTS — 20 TESTS TOTAL
+════════════════════════════════════════════════════════════════
+
+──────────────────────────────────────────────────────────────
+GUI-01 | All GUI modules import without crash
+──────────────────────────────────────────────────────────────
+@test("GUI-01", "GUI Module Imports (headless)")
+def test_gui_imports():
+    Set env vars to prevent display errors:
+      os.environ.setdefault("CUSTOMTKINTER_SCALING", "1.0")
+
+    Try importing each GUI module:
+      from gui import app, dashboard, analytics, charts,
+                      queue_panel, download_modal, drop_overlay,
+                      db_report, widgets, history
+    (use try/except per module, collect failures)
+    Assert ALL 10 imported successfully.
+    Return: "10/10 GUI modules imported OK"
+
+──────────────────────────────────────────────────────────────
+GUI-02 | AuryApp class exists and is subclass of CTk
+──────────────────────────────────────────────────────────────
+@test("GUI-02", "AuryApp class structure")
+def test_app_class():
+    from gui.app import AuryApp
+    import inspect
+    assert inspect.isclass(AuryApp), "AuryApp is not a class"
+    methods = dir(AuryApp)
+    for m in ["toggle_theme", "open_download_modal",
+              "quit_app", "_on_close"]:
+        assert m in methods, f"AuryApp.{m}() missing"
+    return "AuryApp + 4 required methods OK"
+
+──────────────────────────────────────────────────────────────
+GUI-03 | Keyboard shortcuts defined in app.py
+──────────────────────────────────────────────────────────────
+@test("GUI-03", "Keyboard Shortcuts Defined")
+def test_keyboard_shortcuts():
+    src = open(BASE_DIR / "gui" / "app.py").read()
+    shortcuts = [
+        "Control-n", "Control-h", "Control-d",
+        "Control-q", "Escape", "F5", "Control-v"
+    ]
+    missing = [s for s in shortcuts if s not in src]
+    assert not missing, f"Missing shortcuts: {missing}"
+    return f"All {len(shortcuts)} shortcuts defined"
+
+──────────────────────────────────────────────────────────────
+GUI-04 | Theme toggle reads and writes to DB
+──────────────────────────────────────────────────────────────
+@test("GUI-04", "Theme Persistence in DB")
+def test_theme_persistence():
+    from core.database import AuryDB
+    db = AuryDB(str(TEST_DB))
+    db.set_setting("theme", "dark")
+    assert db.get_setting("theme") == "dark"
+    db.set_setting("theme", "light")
+    assert db.get_setting("theme") == "light"
+    db.conn.close()
+    return "Dark/Light theme DB persistence OK"
+
+──────────────────────────────────────────────────────────────
+GUI-05 | Dashboard stat cards query returns correct shape
+──────────────────────────────────────────────────────────────
+@test("GUI-05", "Dashboard Stats Query")
+def test_dashboard_stats():
+    from core.database import AuryDB
+    db = AuryDB(str(TEST_DB))
+    # Seed one completed download
+    pid = db.get_platform_id("https://youtube.com/watch?v=test")
+    sid = db.start_session()
+    db.insert_download(
+        session_id=sid, platform_id=pid,
+        url="https://youtube.com/watch?v=test",
+        title="Test Video", quality_label="1080p",
+        format_id="22", status="completed",
+        file_size_bytes=100_000_000,
+        avg_speed_bps=10_000_000,
+        file_path="downloads/test.mp4"
+    )
+    stats = db.conn.execute(
+        "SELECT COUNT(*), SUM(file_size_bytes) "
+        "FROM downloads WHERE status='completed'"
+    ).fetchone()
+    assert stats[0] == 1, "Download count wrong"
+    assert stats[1] == 100_000_000, "File size wrong"
+    db.conn.close()
+    return f"Stats: {stats[0]} downloads, {stats[1]/1e6:.0f} MB"
+
+──────────────────────────────────────────────────────────────
+GUI-06 | SpeedMonitor widget class exists with correct attrs
+──────────────────────────────────────────────────────────────
+@test("GUI-06", "SpeedMonitor Widget Structure")
+def test_speed_monitor():
+    src = open(BASE_DIR / "gui" / "widgets.py").read()
+    assert "SpeedMonitor" in src, "SpeedMonitor class missing"
+    assert "HISTORY_SECONDS" in src, "HISTORY_SECONDS missing"
+    assert "POLL_INTERVAL_MS" in src, "POLL_INTERVAL_MS missing"
+    assert "_poll" in src, "_poll method missing"
+    assert "_redraw" in src, "_redraw method missing"
+    assert "deque" in src, "collections.deque not used"
+    return "SpeedMonitor class structure OK"
+
+──────────────────────────────────────────────────────────────
+GUI-07 | QueuePanel class structure and DB integration
+──────────────────────────────────────────────────────────────
+@test("GUI-07", "QueuePanel Class Structure")
+def test_queue_panel():
+    src = open(BASE_DIR / "gui" / "queue_panel.py").read()
+    assert "QueuePanel" in src, "QueuePanel missing"
+    assert "queue_position" in src, "queue_position not used"
+    assert "os.startfile" in src or "subprocess" in src, \
+        "Open file action missing"
+    assert "Clear Done" in src or "clear_done" in src, \
+        "Clear Done button missing"
+    from core.database import AuryDB
+    db = AuryDB(str(TEST_DB))
+    cols = [r[1] for r in
+            db.conn.execute("PRAGMA table_info(downloads)")]
+    assert "queue_position" in cols, \
+        "queue_position column missing from DB"
+    db.conn.close()
+    return "QueuePanel + queue_position DB column OK"
+
+──────────────────────────────────────────────────────────────
+GUI-08 | BarChart canvas drawing methods exist
+──────────────────────────────────────────────────────────────
+@test("GUI-08", "BarChart Canvas Widget")
+def test_bar_chart():
+    src = open(BASE_DIR / "gui" / "charts.py").read()
+    assert "BarChart" in src, "BarChart missing"
+    assert "create_rectangle" in src, \
+        "canvas.create_rectangle not used"
+    assert "create_text" in src, "canvas.create_text not used"
+    assert "draw" in src, "draw() method missing"
+    return "BarChart with Canvas drawing OK"
+
+──────────────────────────────────────────────────────────────
+GUI-09 | DonutChart canvas arc drawing exists
+──────────────────────────────────────────────────────────────
+@test("GUI-09", "DonutChart Canvas Widget")
+def test_donut_chart():
+    src = open(BASE_DIR / "gui" / "charts.py").read()
+    assert "DonutChart" in src, "DonutChart missing"
+    assert "create_arc" in src, "canvas.create_arc not used"
+    assert "draw" in src, "draw() method missing"
+    return "DonutChart with arc drawing OK"
+
+──────────────────────────────────────────────────────────────
+GUI-10 | Analytics DB methods return correct data shape
+──────────────────────────────────────────────────────────────
+@test("GUI-10", "Analytics DB Methods")
+def test_analytics_methods():
+    from core.database import AuryDB
+    db = AuryDB(str(TEST_DB))
+    required = [
+        "get_analytics_weekly",
+        "get_analytics_peak_speed",
+        "get_analytics_avg_size",
+        "get_quality_split",
+        "get_platform_split",
+    ]
+    for method in required:
+        assert hasattr(db, method), f"{method}() missing"
+        result = getattr(db, method)()
+        assert result is not None, f"{method}() returned None"
+    db.conn.close()
+    return f"All {len(required)} analytics methods OK"
+
+──────────────────────────────────────────────────────────────
+GUI-11 | DropOverlay class and tkinterdnd2 wired correctly
+──────────────────────────────────────────────────────────────
+@test("GUI-11", "Drag & Drop Integration")
+def test_drag_drop():
+    overlay_src = open(BASE_DIR / "gui" / "drop_overlay.py").read()
+    assert "DropOverlay" in overlay_src, "DropOverlay missing"
+    assert "show" in overlay_src, "show() method missing"
+    assert "hide" in overlay_src, "hide() method missing"
+    app_src = open(BASE_DIR / "gui" / "app.py").read()
+    assert "tkinterdnd2" in app_src or "TkinterDnD" in app_src, \
+        "tkinterdnd2 not used in app.py"
+    assert "_on_drop" in app_src, "_on_drop handler missing"
+    assert "DND_TEXT" in app_src, "DND_TEXT drop type missing"
+    return "DropOverlay + DnD wiring OK"
+
+──────────────────────────────────────────────────────────────
+GUI-12 | DownloadModal preview fetch uses background thread
+──────────────────────────────────────────────────────────────
+@test("GUI-12", "Thumbnail Preview Modal")
+def test_download_modal():
+    src = open(BASE_DIR / "gui" / "download_modal.py").read()
+    assert "DownloadModal" in src, "DownloadModal class missing"
+    assert "Preview" in src, "Preview button/text missing"
+    assert "threading" in src or "Thread" in src, \
+        "Background thread missing for preview fetch"
+    assert "PIL" in src or "Image" in src, \
+        "PIL Image not used for thumbnail"
+    assert "thumbnail" in src.lower(), \
+        "thumbnail handling missing"
+    return "DownloadModal preview structure OK"
+
+──────────────────────────────────────────────────────────────
+GUI-13 | DB Report safe query rejects non-SELECT
+──────────────────────────────────────────────────────────────
+@test("GUI-13", "DB Report Safe Query Guard")
+def test_safe_query_guard():
+    from core.database import AuryDB
+    db = AuryDB(str(TEST_DB))
+    # Should succeed
+    result = db.run_safe_query("SELECT COUNT(*) FROM downloads")
+    assert result is not None, "Safe SELECT returned None"
+    # Should be rejected
+    for bad in ["DROP TABLE downloads",
+                "DELETE FROM sessions",
+                "INSERT INTO settings VALUES('x','y')",
+                "UPDATE downloads SET status='deleted'"]:
+        try:
+            db.run_safe_query(bad)
+            assert False, f"Dangerous query not blocked: {bad}"
+        except (ValueError, PermissionError, Exception) as e:
+            pass   ← expected — blocked correctly
+    db.conn.close()
+    return "Safe query: SELECT allowed, DML blocked"
+
+──────────────────────────────────────────────────────────────
+GUI-14 | DB Report 8 preset queries all valid SQL
+──────────────────────────────────────────────────────────────
+@test("GUI-14", "8 Preset Demo Queries Syntax")
+def test_preset_queries():
+    from core.database import AuryDB
+    db = AuryDB(str(TEST_DB))
+    preset_queries = [
+        "SELECT COUNT(*) FROM platforms",
+        "SELECT COUNT(*) FROM sessions",
+        "SELECT quality_label, COUNT(*) FROM downloads "
+         "GROUP BY quality_label",
+        "SELECT DATE(downloaded_at), COUNT(*) FROM downloads "
+         "GROUP BY DATE(downloaded_at)",
+        "SELECT d.id, d.title FROM downloads d "
+         "JOIN platforms p ON d.platform_id=p.id LIMIT 5",
+        "SELECT name, sql FROM sqlite_master "
+         "WHERE type='trigger'",
+        "SELECT name, sql FROM sqlite_master "
+         "WHERE type='view'",
+        "SELECT id, title, last_error FROM downloads "
+         "WHERE status='failed'",
+    ]
+    for i, q in enumerate(preset_queries):
+        result = db.run_safe_query(q)
+        assert result is not None, f"Query {i+1} returned None"
+    db.conn.close()
+    return f"All 8 preset queries execute OK"
+
+──────────────────────────────────────────────────────────────
+GUI-15 | ER Diagram code has Canvas drawing for all 5 tables
+──────────────────────────────────────────────────────────────
+@test("GUI-15", "ER Diagram Canvas Drawing")
+def test_er_diagram():
+    src = open(BASE_DIR / "gui" / "db_report.py").read()
+    assert "create_rectangle" in src, "Box drawing missing"
+    assert "create_line" in src, "Relationship lines missing"
+    assert "create_text" in src, "Text labels missing"
+    tables = ["downloads", "sessions", "platforms",
+              "tags", "settings"]
+    for t in tables:
+        assert t in src, f"Table '{t}' not in ER diagram"
+    assert "er_diagram" in src.lower() or "ER" in src, \
+        "ER diagram section missing"
+    return "ER diagram draws all 5 tables OK"
+
+──────────────────────────────────────────────────────────────
+GUI-16 | CSV export creates valid zip file
+──────────────────────────────────────────────────────────────
+@test("GUI-16", "CSV Export to ZIP")
+def test_csv_export():
+    from core.database import AuryDB
+    import zipfile, tempfile, os
+    db = AuryDB(str(TEST_DB))
+    # Manually test the export logic
+    tables = ["downloads","sessions","platforms","settings","tags"]
+    zip_path = Path(tempfile.mkdtemp()) / "test_export.zip"
+    with zipfile.ZipFile(zip_path, "w") as zf:
+        for table in tables:
+            rows = db.conn.execute(
+                f"SELECT * FROM {table}").fetchall()
+            cols = [d[0] for d in db.conn.execute(
+                f"SELECT * FROM {table}").description or []]
+            csv_content = ",".join(cols or []) + "\n"
+            for row in rows:
+                csv_content += ",".join(str(c) for c in row)+"\n"
+            zf.writestr(f"{table}.csv", csv_content)
+    assert zip_path.exists(), "ZIP file not created"
+    with zipfile.ZipFile(zip_path) as zf:
+        assert len(zf.namelist()) == 5, \
+            f"Expected 5 CSVs, got {len(zf.namelist())}"
+    db.conn.close()
+    return f"ZIP export OK: {len(tables)} tables → CSVs"
+
+──────────────────────────────────────────────────────────────
+GUI-17 | System tray wired — withdraw on close, pystray used
+──────────────────────────────────────────────────────────────
+@test("GUI-17", "System Tray Integration")
+def test_system_tray():
+    app_src = open(BASE_DIR / "gui" / "app.py").read()
+    main_src = open(BASE_DIR / "gui_main.py").read()
+    assert "withdraw" in app_src, \
+        "window.withdraw() missing in _on_close"
+    assert "pystray" in main_src, \
+        "pystray not imported in gui_main.py"
+    assert "quit_app" in app_src, "quit_app() method missing"
+    assert "WM_DELETE_WINDOW" in app_src, \
+        "WM_DELETE_WINDOW protocol not overridden"
+    import importlib.util
+    spec = importlib.util.find_spec("pystray")
+    assert spec is not None, "pystray not installed in venv"
+    return "pystray + withdraw + quit_app OK"
+
+──────────────────────────────────────────────────────────────
+GUI-18 | History page search query works on v_downloads_full
+──────────────────────────────────────────────────────────────
+@test("GUI-18", "History Search via View")
+def test_history_search():
+    from core.database import AuryDB
+    db = AuryDB(str(TEST_DB))
+    view = db.conn.execute(
+        "SELECT name FROM sqlite_master "
+        "WHERE type='view' AND name='v_downloads_full'"
+    ).fetchone()
+    assert view, "v_downloads_full view missing"
+    rows = db.conn.execute(
+        "SELECT * FROM v_downloads_full "
+        "WHERE title LIKE '%Test%' LIMIT 5"
+    ).fetchall()
+    assert isinstance(rows, list), "History query failed"
+    db.conn.close()
+    return f"History view search OK ({len(rows)} rows found)"
+
+──────────────────────────────────────────────────────────────
+GUI-19 | Settings page reads/writes all 9 keys correctly
+──────────────────────────────────────────────────────────────
+@test("GUI-19", "GUI Settings Page — 9 Keys")
+def test_gui_settings():
+    from core.database import AuryDB
+    db = AuryDB(str(TEST_DB))
+    setting_keys = [
+        "download_folder", "default_quality_index",
+        "max_workers", "aria2c_mode", "default_subtitles",
+        "default_sub_lang", "theme",
+        "notifications_enabled", "close_to_tray",
+    ]
+    for key in setting_keys:
+        db.set_setting(key, "test_value")
+        val = db.get_setting(key, None)
+        assert val == "test_value", \
+            f"Setting '{key}' not persisting"
+    db.conn.close()
+    return f"All {len(setting_keys)} settings keys OK"
+
+──────────────────────────────────────────────────────────────
+GUI-20 | Progress hook throttle active in downloader
+──────────────────────────────────────────────────────────────
+@test("GUI-20", "Progress Hook Throttle (Speed Fix)")
+def test_progress_throttle():
+    from core.downloader import DownloadWorker
+    import inspect
+    src = inspect.getsource(DownloadWorker)
+    assert "_last_update" in src, \
+        "_last_update throttle variable missing"
+    assert "0.1" in src or "100" in src, \
+        "100ms throttle gate missing"
+    # Verify poll interval in dashboard
+    dash_src = open(BASE_DIR/"gui"/"dashboard.py").read()
+    assert "150" in dash_src, \
+        "150ms poll interval missing in dashboard"
+    return "Throttle 100ms + 150ms poll interval OK"
+
+════════════════════════════════════════════════════════════════
+MAIN RUNNER — same structure as test_all.py
+════════════════════════════════════════════════════════════════
+
+if __name__ == "__main__":
+    import tempfile
+    TEST_DB = Path(tempfile.mkdtemp()) / "aury_gui_test.db"
+
+    print()
+    print("╔══════════════════════════════════════════════╗")
+    print("║     AURY V2 GUI — Feature Test Suite        ║")
+    print(f"║     {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}                        ║")
+    print("╚══════════════════════════════════════════════╝")
+    print()
+
+    all_tests = [
+        test_gui_imports, test_app_class,
+        test_keyboard_shortcuts, test_theme_persistence,
+        test_dashboard_stats, test_speed_monitor,
+        test_queue_panel, test_bar_chart,
+        test_donut_chart, test_analytics_methods,
+        test_drag_drop, test_download_modal,
+        test_safe_query_guard, test_preset_queries,
+        test_er_diagram, test_csv_export,
+        test_system_tray, test_history_search,
+        test_gui_settings, test_progress_throttle,
+    ]
+
+    for fn in all_tests:
+        fn()
+
+    passed = sum(1 for r in RESULTS if "PASS" in r["status"])
+    failed = sum(1 for r in RESULTS if "FAIL" in r["status"])
+    total  = len(RESULTS)
+    score  = int((passed / total) * 100)
+
+    print()
+    print("╔══════════════════════════════════════════════╗")
+    print(f"║  RESULTS: {passed}/{total} passed  ({score}% score)         ║")
+    if failed == 0:
+        print("║  🎉 ALL GUI TESTS PASSED!                   ║")
+    else:
+        print(f"║  ⚠  {failed} test(s) failed — check report      ║")
+    print("╚══════════════════════════════════════════════╝")
+
+    ← Save TXT + HTML report (same logic as test_all.py)
+    ← HTML opens in browser automatically
+    ← Cleanup TEST_DB temp file after report saved
+
+    sys.exit(0 if failed == 0 else 1)
+
+════════════════════════════════════════════════════════════════
+EXPECTED TERMINAL OUTPUT:
+════════════════════════════════════════════════════════════════
+
+╔══════════════════════════════════════════════╗
+║     AURY V2 GUI — Feature Test Suite        ║
+║     2026-04-30 06:38:00                     ║
+╚══════════════════════════════════════════════╝
+
+  ✅ GUI-01 GUI Module Imports (headless) (44ms)
+  ✅ GUI-02 AuryApp class structure (3ms)
+  ✅ GUI-03 Keyboard Shortcuts Defined (2ms)
+  ✅ GUI-04 Theme Persistence in DB (5ms)
+  ✅ GUI-05 Dashboard Stats Query (8ms)
+  ✅ GUI-06 SpeedMonitor Widget Structure (2ms)
+  ✅ GUI-07 QueuePanel Class Structure (4ms)
+  ✅ GUI-08 BarChart Canvas Widget (2ms)
+  ✅ GUI-09 DonutChart Canvas Widget (2ms)
+  ✅ GUI-10 Analytics DB Methods (11ms)
+  ✅ GUI-11 Drag & Drop Integration (3ms)
+  ✅ GUI-12 Thumbnail Preview Modal (3ms)
+  ✅ GUI-13 DB Report Safe Query Guard (6ms)
+  ✅ GUI-14 8 Preset Demo Queries Syntax (9ms)
+  ✅ GUI-15 ER Diagram Canvas Drawing (2ms)
+  ✅ GUI-16 CSV Export to ZIP (12ms)
+  ✅ GUI-17 System Tray Integration (3ms)
+  ✅ GUI-18 History Search via View (5ms)
+  ✅ GUI-19 GUI Settings Page — 9 Keys (7ms)
+  ✅ GUI-20 Progress Hook Throttle (2ms)
+
+╔══════════════════════════════════════════════╗
+║  RESULTS: 20/20 passed  (100% score)        ║
+║  🎉 ALL GUI TESTS PASSED!                   ║
+╚══════════════════════════════════════════════╝
+
+  📄 TXT  → tests/AURY_GUI_REPORT_20260430_063800.txt
+  🌐 HTML → tests/AURY_GUI_REPORT_20260430_063800.html
+
+════════════════════════════════════════════════════════════════
+FILES TO CREATE:
+  tests/test_gui.py    ← this file (complete, no placeholders)
+
+ALSO UPDATE:
+  tests/test_all.py    ← add 3 lines at bottom:
+    print("\n  Run GUI tests: .\\venv\\Scripts\\python.exe"
+          " tests/test_gui.py")
+
+OUTPUT: Return complete tests/test_gui.py
+All 20 test functions fully implemented.
+No placeholders. No skipped functions.
+Prepared using Claude Sonnet 4.6 Thinking
+
+

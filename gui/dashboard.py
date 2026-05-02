@@ -196,66 +196,87 @@ class DashboardPage(ctk.CTkFrame):
         BatchDownloadModal(self.winfo_toplevel(), urls, self.start_download)
 
     def start_download(self, url, q_label, q_fmt, sub_langs, is_quick):
-        # Refresh queue to show the new pending item
+        if not self.session_id:
+            self.session_id = database.db.start_session()
+
+        def progress_cb(data):
+            self.progress_queue.put(data)
+
+        w = downloader.DownloadWorker(
+            self.session_id, url, q_label, q_fmt,
+            progress_callback=progress_cb,
+            sub_langs=sub_langs,
+            is_quick_mode=is_quick,
+        )
+
+        # Register a sentinel so _handle_progress tracks this worker
+        temp_id = id(w)
+        self.active_cards[temp_id] = True
+
         self.queue_panel.refresh()
-        
-        # Run in background
+
         def run_thread():
             res = w.run()
-            self.progress_queue.put({"dl_id": w.dl_id, "status": res.status, "temp_id": id(w), "filename": res.title})
-            
+            self.progress_queue.put({
+                "dl_id":    w.dl_id,
+                "status":   res.status,
+                "temp_id":  temp_id,
+                "filename": res.title,
+            })
+            self.after(0, self.queue_panel.refresh)
+
         threading.Thread(target=run_thread, daemon=True).start()
 
     def _update_loop(self):
-        # Process up to 50 messages per 100ms to avoid freezing
         for _ in range(50):
             try:
                 data = self.progress_queue.get_nowait()
                 self._handle_progress(data)
             except queue.Empty:
                 break
-                
+
         self.after(150, self._update_loop)
 
     def _handle_progress(self, data):
-        dl_id = data.get("dl_id")
+        dl_id   = data.get("dl_id")
         temp_id = data.get("temp_id")
-        status = data.get("status")
-        
-        # Swap temp_id to dl_id if present
+        status  = data.get("status")
+
+        # Promote temp_id sentinel → real dl_id
         if temp_id and temp_id in self.active_cards and dl_id:
             self.active_cards[dl_id] = self.active_cards.pop(temp_id)
 
-        card = self.active_cards.get(dl_id)
-        if not card: return
+        # Auto-register the dl_id on first progress callback (no temp_id yet)
+        if dl_id and dl_id not in self.active_cards:
+            self.active_cards[dl_id] = True
+
+        if not dl_id:
+            return
 
         if status == "downloading":
-            dl = float(data.get("downloaded_bytes") or 0)
+            dl    = float(data.get("downloaded_bytes") or 0)
             total = float(data.get("total_bytes") or 1)
-            pct = dl / total if total > 0 else 0
-            
-            speed_mb = float(data.get("speed") or 0) / (1024*1024)
-            eta = data.get("eta") or 0
-            
-            info = f"{data.get('quality_label', '1080p')} · {speed_mb:.1f} MB/s · ETA: {int(eta)}s"
+            pct   = min(dl / total, 1.0) if total > 0 else 0
+
+            speed_mb = float(data.get("speed") or 0) / (1024 * 1024)
+            eta      = int(data.get("eta") or 0)
+            info     = f"{speed_mb:.1f} MB/s · ETA: {eta}s"
             self.queue_panel.update_card(dl_id, pct, info)
-            
+
         elif status == "retrying":
-            att = data.get("attempt", 1)
-            mx = data.get("max_retries", 3)
+            att  = data.get("attempt", 1)
+            mx   = data.get("max_retries", 3)
             wait = data.get("wait", 0)
-            self.queue_panel.update_card(dl_id, 1.0, f"⚠️ Retrying {att}/{mx} in {wait}s...")
-            
+            self.queue_panel.update_card(dl_id, 0.5, f"⚠️ Retrying {att}/{mx} in {wait}s...")
+
         elif status in ("finished", "failed", "stopped"):
-            # Remove card after delay
-            self.after(2000, lambda c=card: c.destroy())
             if dl_id in self.active_cards:
                 del self.active_cards[dl_id]
-                
+
             if status == "finished":
                 self.queue_panel.update_card(dl_id, 1.0, "✔ Completed")
             else:
-                self.queue_panel.update_card(dl_id, 1.0, f"✘ {status.capitalize()}")
-                
+                self.queue_panel.update_card(dl_id, 0.0, f"✘ {status.capitalize()}")
+
             self.refresh_stats()
-            self.queue_panel.refresh()
+            self.after(2000, self.queue_panel.refresh)

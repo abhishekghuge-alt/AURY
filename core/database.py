@@ -440,6 +440,10 @@ class AuryDB:
         with self._lock, self.conn:
             self.conn.execute("DELETE FROM downloads WHERE id = ? AND status = 'pending'", (dl_id,))
 
+    def get_history(self, limit: int = 100) -> list[dict]:
+        """Simple wrapper — returns latest downloads for dashboards and history pages."""
+        return self.get_filtered_history(limit=limit)
+
     def get_filtered_history(self, search="", platform="All", status="All", sort="Newest", limit=15, offset=0) -> list[dict]:
         where_clauses = []
         params = []
