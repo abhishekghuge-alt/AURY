@@ -29,6 +29,7 @@ class AuryDB:
             self._create_schema()
             self._seed_platforms()
             self._migrate_queue_pos()
+            self._migrate_scheduled_table()
             self.sync_config_with_db()
 
     def sync_config_with_db(self):
@@ -90,7 +91,26 @@ class AuryDB:
         try:
             self.conn.execute("ALTER TABLE downloads ADD COLUMN queue_position INTEGER DEFAULT 0")
         except sqlite3.OperationalError:
-            pass # already exists
+            pass
+
+    def _migrate_scheduled_table(self):
+        """V3: Create scheduled_downloads table if not present."""
+        try:
+            self.conn.execute("""
+                CREATE TABLE IF NOT EXISTS scheduled_downloads (
+                    id           INTEGER PRIMARY KEY AUTOINCREMENT,
+                    url          TEXT NOT NULL,
+                    quality      TEXT DEFAULT '4',
+                    scheduled_ts INTEGER NOT NULL,
+                    repeat       TEXT DEFAULT 'none',
+                    fired        INTEGER DEFAULT 0,
+                    note         TEXT,
+                    created_at   DATETIME DEFAULT CURRENT_TIMESTAMP
+                )
+            """)
+            self.conn.commit()
+        except sqlite3.OperationalError:
+            pass
 
     def _create_schema(self):
         with self.conn:
@@ -671,6 +691,85 @@ class AuryDB:
         with self._lock:
             cursor = self.conn.execute(sql)
             return [dict(r) for r in cursor.fetchall()]
+
+    # ── Scheduler methods ────────────────────────────────────────────────────
+
+    def get_scheduled_items(self) -> list[dict]:
+        with self._lock:
+            cursor = self.conn.execute(
+                "SELECT * FROM scheduled_downloads ORDER BY scheduled_ts ASC")
+            return [dict(r) for r in cursor.fetchall()]
+
+    def get_scheduled_pending(self) -> list[dict]:
+        with self._lock:
+            cursor = self.conn.execute(
+                "SELECT * FROM scheduled_downloads WHERE fired=0 ORDER BY scheduled_ts ASC")
+            return [dict(r) for r in cursor.fetchall()]
+
+    def add_scheduled(self, url: str, quality: str, scheduled_ts: int,
+                      repeat: str = "none", note: str = "") -> int:
+        with self._lock, self.conn:
+            cursor = self.conn.execute(
+                "INSERT INTO scheduled_downloads (url,quality,scheduled_ts,repeat,note) VALUES (?,?,?,?,?)",
+                (url, quality, scheduled_ts, repeat, note))
+            return cursor.lastrowid
+
+    def mark_scheduled_fired(self, item_id: int):
+        with self._lock, self.conn:
+            self.conn.execute(
+                "UPDATE scheduled_downloads SET fired=1 WHERE id=?", (item_id,))
+
+    def delete_scheduled(self, item_id: int):
+        with self._lock, self.conn:
+            self.conn.execute(
+                "DELETE FROM scheduled_downloads WHERE id=?", (item_id,))
+
+    # ── Tag methods ──────────────────────────────────────────────────────────
+
+    def get_all_tags(self) -> list[dict]:
+        with self._lock:
+            cursor = self.conn.execute("""
+                SELECT t.id, t.name, COUNT(dt.download_id) AS count
+                FROM tags t LEFT JOIN download_tags dt ON t.id=dt.tag_id
+                GROUP BY t.id ORDER BY t.name
+            """)
+            return [dict(r) for r in cursor.fetchall()]
+
+    def create_tag(self, name: str) -> int:
+        with self._lock, self.conn:
+            cursor = self.conn.execute(
+                "INSERT OR IGNORE INTO tags (name) VALUES (?)", (name,))
+            if cursor.lastrowid:
+                return cursor.lastrowid
+            cursor = self.conn.execute(
+                "SELECT id FROM tags WHERE name=?", (name,))
+            return cursor.fetchone()["id"]
+
+    def delete_tag(self, tag_id: int):
+        with self._lock, self.conn:
+            self.conn.execute("DELETE FROM tags WHERE id=?", (tag_id,))
+
+    def get_download_tags(self, dl_id: int) -> list[dict]:
+        with self._lock:
+            cursor = self.conn.execute("""
+                SELECT t.id, t.name FROM tags t
+                JOIN download_tags dt ON t.id=dt.tag_id
+                WHERE dt.download_id=?
+            """, (dl_id,))
+            return [dict(r) for r in cursor.fetchall()]
+
+    def add_download_tag(self, dl_id: int, tag_id: int):
+        with self._lock, self.conn:
+            self.conn.execute(
+                "INSERT OR IGNORE INTO download_tags (download_id,tag_id) VALUES (?,?)",
+                (dl_id, tag_id))
+
+    def remove_download_tag(self, dl_id: int, tag_id: int):
+        with self._lock, self.conn:
+            self.conn.execute(
+                "DELETE FROM download_tags WHERE download_id=? AND tag_id=?",
+                (dl_id, tag_id))
+
 
 # Global Database Instance (Lazy Loaded)
 _db = None
