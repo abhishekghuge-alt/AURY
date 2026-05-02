@@ -1,0 +1,24 @@
+AURY V2 ULTRA-RESILIENT TEST REPORT
+Timestamp: 2026-04-30 06:09:25.548230
+Summary: 12/16 Passed
+----------------------------------------
+[PASS] F-01 DB Schema Integrity (87ms)
+[PASS] F-02 Settings API Store (2ms)
+[PASS] F-03 Session Mgmt Lifecycle (4ms)
+[PASS] F-04 Download/Trigger Logic (35ms)
+[PASS] F-05 Platform Detection (1ms)
+[PASS] F-06 URL Tracker Cleaning (0ms)
+[PASS] F-07 Config/DB Runtime Sync (1ms)
+[PASS] F-08 yt-dlp Engine Config (0ms)
+[PASS] F-09 Aria2c Speed Boost (40ms)
+[FAIL] F-10 CLI UI Components (1615ms)
+      ERROR: UI Component Crash: Failed to get style 'primary'; unable to parse 'primary' as color; 'primary' is not a valid color
+[FAIL] F-11 GUI Module Imports (1999ms)
+      ERROR: Failed to import gui.db_report: No module named 'PIL'
+[PASS] F-12 Analytics Logic (13ms)
+[FAIL] F-13 Reporting Logic (42ms)
+      ERROR: No module named 'PIL'
+[PASS] F-14 Clipboard Watcher (45ms)
+[PASS] F-15 Installation Scripts (21ms)
+[FAIL] F-16 Directory Structure (1ms)
+      ERROR: Subfolder video not auto-created

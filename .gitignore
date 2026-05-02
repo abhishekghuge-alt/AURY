@@ -1,0 +1,33 @@
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Packages
+lib/
+Lib/
+site-packages/
+Scripts/
+
+# IDEs and Editors
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Databases
+*.db
+*.db-shm
+*.db-wal
+*.sqlite3
+
+# OS generated files
+.DS_Store
+Thumbs.db

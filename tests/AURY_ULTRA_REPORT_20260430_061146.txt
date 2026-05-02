@@ -1,0 +1,21 @@
+AURY V2 ULTRA-RESILIENT TEST REPORT
+Timestamp: 2026-04-30 06:11:46.626091
+Summary: 15/16 Passed
+----------------------------------------
+[PASS] F-01 DB Schema Integrity (84ms)
+[PASS] F-02 Settings API Store (4ms)
+[PASS] F-03 Session Mgmt Lifecycle (2ms)
+[PASS] F-04 Download/Trigger Logic (31ms)
+[PASS] F-05 Platform Detection (0ms)
+[PASS] F-06 URL Tracker Cleaning (0ms)
+[PASS] F-07 Config/DB Runtime Sync (4ms)
+[PASS] F-08 yt-dlp Engine Config (0ms)
+[PASS] F-09 Aria2c Speed Boost (43ms)
+[PASS] F-10 CLI UI Components (3886ms)
+[PASS] F-11 GUI Module Imports (10499ms)
+[PASS] F-12 Analytics Logic (13ms)
+[FAIL] F-13 Reporting Logic (0ms)
+      ERROR: cannot import name 'ReportGenerator' from 'gui.db_report' (C:\Users\DAR AL WEFAQ\Google Drive Streaming\My Drive\cllg\AURY\gui\db_report.py)
+[PASS] F-14 Clipboard Watcher (132ms)
+[PASS] F-15 Installation Scripts (23ms)
+[PASS] F-16 Directory Structure (6ms)

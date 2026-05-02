@@ -1,0 +1,24 @@
+AURY V2 ULTRA-RESILIENT TEST REPORT
+Timestamp: 2026-04-30 06:09:06.426402
+Summary: 12/16 Passed
+----------------------------------------
+[PASS] F-01 DB Schema Integrity (75ms)
+[PASS] F-02 Settings API Store (4ms)
+[PASS] F-03 Session Mgmt Lifecycle (2ms)
+[PASS] F-04 Download/Trigger Logic (31ms)
+[PASS] F-05 Platform Detection (0ms)
+[PASS] F-06 URL Tracker Cleaning (0ms)
+[PASS] F-07 Config/DB Runtime Sync (2ms)
+[PASS] F-08 yt-dlp Engine Config (0ms)
+[PASS] F-09 Aria2c Speed Boost (53ms)
+[FAIL] F-10 CLI UI Components (4176ms)
+      ERROR: UI Component Crash: 'charmap' codec can't encode characters in position 0-6: character maps to <undefined>
+[FAIL] F-11 GUI Module Imports (10165ms)
+      ERROR: Failed to import gui.app: No module named 'PIL'
+[PASS] F-12 Analytics Logic (13ms)
+[FAIL] F-13 Reporting Logic (153ms)
+      ERROR: No module named 'PIL'
+[PASS] F-14 Clipboard Watcher (65ms)
+[PASS] F-15 Installation Scripts (19ms)
+[FAIL] F-16 Directory Structure (1ms)
+      ERROR: Subfolder video not auto-created
