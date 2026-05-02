@@ -72,21 +72,23 @@ class DownloadWorker:
 
     @staticmethod
     def _sort_destination(file_path: str) -> Path:
-        """Move file into downloads/<type>/ subfolder."""
+        """Move file into downloads/<type>/ subfolder.
+        Reads config.DOWNLOAD_DIR at call time so runtime changes take effect."""
         src = Path(file_path)
         ext = src.suffix.lower().lstrip(".")
+        dl_dir = config.DOWNLOAD_DIR          # runtime lookup, not import-time constant
         if ext in VIDEO_EXTS:
-            folder = DOWNLOAD_DIR / "video"
+            folder = dl_dir / "video"
         elif ext in AUDIO_EXTS:
-            folder = DOWNLOAD_DIR / "audio"
+            folder = dl_dir / "audio"
         elif ext in IMAGE_EXTS:
-            folder = DOWNLOAD_DIR / "images"
+            folder = dl_dir / "images"
         elif ext in DOC_EXTS:
-            folder = DOWNLOAD_DIR / "documents"
+            folder = dl_dir / "documents"
         elif ext in ARCHIVE_EXTS:
-            folder = DOWNLOAD_DIR / "archives"
+            folder = dl_dir / "archives"
         else:
-            folder = DOWNLOAD_DIR / "others"
+            folder = dl_dir / "others"
         folder.mkdir(parents=True, exist_ok=True)
         return folder / src.name
 

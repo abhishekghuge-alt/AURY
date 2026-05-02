@@ -649,16 +649,50 @@ textarea.input{resize:vertical;font-family:'Manrope',monospace;font-size:12.5px}
 
   <!-- ── ER DIAGRAM (Interactive) ───────────────────────────────── -->
   <div id="page-erdiagram" class="page">
-    <div class="page-head" style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:8px">
-      <div><h1>ER Diagram</h1><p>Drag tables to rearrange · Shows all 7 tables and relationships</p></div>
-      <div style="display:flex;gap:8px">
+    <div class="page-head">
+      <h1>ER Diagram</h1>
+      <p>Interactive schema · 7 tables · Drag nodes · Scroll to zoom · Pan to navigate</p>
+    </div>
+    <!-- Toolbar -->
+    <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:10px;padding:8px 12px;background:var(--card);border:1px solid var(--outline-variant);border-radius:var(--radius-md)">
+      <!-- Select / Pan toggle -->
+      <button id="er-select-btn" onclick="setErTool('select')" class="btn btn-sm" style="background:var(--primary-container);color:var(--primary);border:none" title="Select & drag nodes (S)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:13px;height:13px"><path d="M5 3l14 9-7 1-4 7-3-17z"/></svg>
+        Select
+      </button>
+      <button id="er-pan-btn" onclick="setErTool('pan')" class="btn btn-outline btn-sm" title="Pan canvas (H / Space)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:13px;height:13px"><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0m-4 8V8a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7c0 4 3 7 7 7s7-3 7-7v-1a2 2 0 0 0-2-2 2 2 0 0 0-2 2"/></svg>
+        Pan
+      </button>
+      <div style="width:1px;height:20px;background:var(--outline-variant);margin:0 2px"></div>
+      <!-- Zoom controls -->
+      <button onclick="erZoomBy(1.25)" class="btn btn-outline btn-sm" title="Zoom In (+)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="11" y1="8" x2="11" y2="14"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+      </button>
+      <button onclick="erZoomBy(1/1.25)" class="btn btn-outline btn-sm" title="Zoom Out (-)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/><line x1="8" y1="11" x2="14" y2="11"/></svg>
+      </button>
+      <button onclick="erFitView()" class="btn btn-outline btn-sm" title="Fit all nodes in view (F)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:13px;height:13px"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+        Fit
+      </button>
+      <button onclick="erResetView()" class="btn btn-outline btn-sm" title="Reset zoom to 100%">1:1</button>
+      <!-- Zoom label -->
+      <span id="er-zoom-label" style="font-size:11.5px;color:var(--on-surface-variant);font-family:monospace;min-width:40px;text-align:center">100%</span>
+      <div style="width:1px;height:20px;background:var(--outline-variant);margin:0 2px"></div>
+      <!-- Scroll hint -->
+      <span style="font-size:11.5px;color:var(--on-surface-variant)">Scroll = zoom · Middle-drag = pan</span>
+      <div style="margin-left:auto">
         <button onclick="resetErPositions()" class="btn btn-outline btn-sm">Reset Layout</button>
       </div>
     </div>
-    <div class="card" style="padding:12px;overflow:hidden">
-      <canvas id="er-canvas" height="600"></canvas>
+    <!-- Canvas wrapper with overflow hidden so it doesn't grow page -->
+    <div class="card" style="padding:0;overflow:hidden;position:relative">
+      <canvas id="er-canvas" style="display:block;width:100%;height:620px;cursor:default"></canvas>
     </div>
-    <p style="font-size:12px;color:var(--on-surface-variant);margin-top:8px;text-align:center">Drag any table to reposition it · Orange lines = foreign key relationships</p>
+    <p style="font-size:11.5px;color:var(--on-surface-variant);margin-top:6px;text-align:center">
+      Drag nodes to reposition · Scroll to zoom · Space/H = pan mode · F = fit view · Orange dashed lines = FK relationships
+    </p>
   </div>
 
   <!-- ── NOTIFICATIONS ─────────────────────────────────────────── -->
@@ -680,8 +714,17 @@ textarea.input{resize:vertical;font-family:'Manrope',monospace;font-size:12.5px}
           <div style="display:flex;flex-direction:column;gap:13px">
             <div>
               <label class="label-caps" style="display:block;margin-bottom:5px">Download Folder</label>
-              <input id="set-dir" type="text" class="input" placeholder="./downloads"/>
-              <p style="font-size:11.5px;color:var(--on-surface-variant);margin-top:4px">Set the full path where files are saved</p>
+              <div style="display:flex;gap:6px">
+                <input id="set-dir" type="text" class="input" placeholder="./downloads" style="flex:1"/>
+                <button onclick="$('set-dir').value='C:\\Users\\DAR AL WEFAQ\\Google Drive Streaming\\My Drive\\cllg\\AURY\\downloads'" class="btn btn-outline btn-sm" title="Paste Google Drive path" style="white-space:nowrap;flex-shrink:0">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:12px;height:12px"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                  Drive Path
+                </button>
+              </div>
+              <p style="font-size:11.5px;color:var(--on-surface-variant);margin-top:4px">
+                Full path where files are saved · On this server: <code style="font-size:11px;background:var(--surface-container);padding:1px 4px;border-radius:3px">./downloads/video</code>
+                · When running locally on Windows, use your Google Drive path then click Save
+              </p>
             </div>
             <div>
               <label class="label-caps" style="display:block;margin-bottom:5px">Default Quality</label>
@@ -1502,8 +1545,8 @@ async function loadNotifications(){
 async function clearNotifications(){ await api('/api/notifications',{method:'DELETE'}); loadNotifications(); clearUnread(); showToast('Cleared','info'); }
 function clearUnread(){ state.unreadNotifs=0; const b=$('notif-badge'); if(b) b.style.display='none'; }
 
-// ═══ ER DIAGRAM (Interactive Canvas) ══════════════════════════════
-const NODE_W = 210;
+// ═══ ER DIAGRAM — Full Pan / Zoom / Scroll ════════════════════════
+const NODE_W = 220;
 const HEADER_H = 34;
 const ROW_H = 17;
 const PAD_B = 8;
@@ -1514,28 +1557,28 @@ const ER_TABLES = [
   { id:'platforms', title:'platforms', x:20, y:20, cols:[
     {n:'id',t:'INTEGER PK',pk:true},{n:'name',t:'TEXT UNIQUE'},{n:'icon',t:'TEXT'},{n:'domain',t:'TEXT'},{n:'created_at',t:'DATETIME'}
   ]},
-  { id:'sessions', title:'sessions', x:260, y:20, cols:[
+  { id:'sessions', title:'sessions', x:270, y:20, cols:[
     {n:'id',t:'INTEGER PK',pk:true},{n:'started_at',t:'DATETIME'},{n:'ended_at',t:'DATETIME'},
     {n:'total_files',t:'INTEGER'},{n:'completed_files',t:'INTEGER'},{n:'failed_files',t:'INTEGER'},
     {n:'total_bytes',t:'INTEGER'},{n:'avg_speed_bps',t:'REAL'},{n:'duration_secs',t:'REAL'}
   ]},
-  { id:'downloads', title:'downloads', x:500, y:20, cols:[
+  { id:'downloads', title:'downloads', x:520, y:20, cols:[
     {n:'id',t:'INTEGER PK',pk:true},{n:'session_id',t:'→ sessions',fk:true},{n:'platform_id',t:'→ platforms',fk:true},
     {n:'url',t:'TEXT NOT NULL'},{n:'title',t:'TEXT'},{n:'quality_label',t:'TEXT'},{n:'status',t:'TEXT'},
     {n:'file_path',t:'TEXT'},{n:'file_size_bytes',t:'INTEGER'},{n:'avg_speed_bps',t:'REAL'},
     {n:'retry_count',t:'INTEGER'},{n:'last_error',t:'TEXT'},{n:'downloaded_at',t:'DATETIME'},
     {n:'subtitles_lang',t:'TEXT'},{n:'is_quick_mode',t:'BOOLEAN'},{n:'queue_position',t:'INTEGER'}
   ]},
-  { id:'settings', title:'settings', x:750, y:20, cols:[
+  { id:'settings', title:'settings', x:780, y:20, cols:[
     {n:'key',t:'TEXT PK',pk:true},{n:'value',t:'TEXT NOT NULL'},{n:'updated_at',t:'DATETIME'}
   ]},
-  { id:'tags', title:'tags', x:20, y:260, cols:[
+  { id:'tags', title:'tags', x:20, y:270, cols:[
     {n:'id',t:'INTEGER PK',pk:true},{n:'name',t:'TEXT UNIQUE'}
   ]},
-  { id:'download_tags', title:'download_tags', x:260, y:400, cols:[
+  { id:'download_tags', title:'download_tags', x:270, y:430, cols:[
     {n:'download_id',t:'→ downloads',fk:true},{n:'tag_id',t:'→ tags',fk:true}
   ]},
-  { id:'scheduled_downloads', title:'scheduled_downloads', x:750, y:200, cols:[
+  { id:'scheduled_downloads', title:'scheduled_downloads', x:780, y:200, cols:[
     {n:'id',t:'INTEGER PK',pk:true},{n:'url',t:'TEXT'},{n:'quality',t:'TEXT'},
     {n:'scheduled_ts',t:'INTEGER'},{n:'repeat',t:'TEXT'},{n:'fired',t:'INTEGER'},
     {n:'note',t:'TEXT'},{n:'created_at',t:'DATETIME'}
@@ -1549,105 +1592,283 @@ const ER_EDGES = [
   {from:'tags',to:'download_tags',label:'tag_id'},
 ];
 
-let erDragging=null, erDragOX=0, erDragOY=0;
-let erPositions = {};  // id → {x,y}
+// ── Camera state ──────────────────────────────────────────────────
+let erZoom = 1, erPanX = 0, erPanY = 0;
+let erTool = 'select';   // 'select' | 'pan'
+let erDragging = null, erDragOX = 0, erDragOY = 0;
+let erIsPanning = false, erPanSX = 0, erPanSY = 0, erPanOX = 0, erPanOY = 0;
+let erPositions = {};
+// Middle-mouse pan
+let erMidPan = false, erMidSX = 0, erMidSY = 0, erMidOX = 0, erMidOY = 0;
+// Touch pinch
+let erTouches = [];
 
 function nodeBounds(node){
-  const pos=erPositions[node.id]||{x:node.x,y:node.y};
+  const pos = erPositions[node.id] || {x:node.x, y:node.y};
   return {x:pos.x, y:pos.y, w:NODE_W, h:nodeH(node)};
 }
-
-function nodeCenter(node){
+function nodeCenter(node){ const b=nodeBounds(node); return {x:b.x+b.w/2, y:b.y+b.h/2}; }
+function nodeSide(node,side){
   const b=nodeBounds(node);
-  return {x:b.x+b.w/2, y:b.y+b.h/2};
-}
-
-function nodeSide(node, side){
-  const b=nodeBounds(node);
-  if(side==='right') return {x:b.x+b.w, y:b.y+b.h/2};
-  if(side==='left')  return {x:b.x,     y:b.y+b.h/2};
-  if(side==='bottom')return {x:b.x+b.w/2, y:b.y+b.h};
-  if(side==='top')   return {x:b.x+b.w/2, y:b.y};
+  if(side==='right')  return {x:b.x+b.w,     y:b.y+b.h/2};
+  if(side==='left')   return {x:b.x,          y:b.y+b.h/2};
+  if(side==='bottom') return {x:b.x+b.w/2,    y:b.y+b.h};
+  if(side==='top')    return {x:b.x+b.w/2,    y:b.y};
   return nodeCenter(node);
 }
-
-function getBestSides(a, b){
+function getBestSides(a,b){
   const ca=nodeCenter(a), cb=nodeCenter(b);
   const dx=cb.x-ca.x, dy=cb.y-ca.y;
-  if(Math.abs(dx)>Math.abs(dy)){
-    return dx>0?['right','left']:['left','right'];
-  }
+  if(Math.abs(dx)>Math.abs(dy)) return dx>0?['right','left']:['left','right'];
   return dy>0?['bottom','top']:['top','bottom'];
 }
 
-function initER(){
-  const canvas=$('er-canvas'); if(!canvas) return;
-  erInitialized=true;
-  // Reset positions from defaults
-  ER_TABLES.forEach(t=>{ erPositions[t.id]={x:t.x, y:t.y}; });
-  resizeER();
-  drawER();
+// Screen pixel → world coordinate (accounts for zoom+pan)
+function erToWorld(canvas, clientX, clientY){
+  const r = canvas.getBoundingClientRect();
+  const sx = canvas.width / r.width, sy = canvas.height / r.height;
+  const cx = (clientX - r.left) * sx, cy = (clientY - r.top) * sy;
+  return { x:(cx - erPanX) / erZoom, y:(cy - erPanY) / erZoom };
+}
+// Screen pixel coords of canvas pixel (no world transform needed)
+function erToCanvas(canvas, clientX, clientY){
+  const r = canvas.getBoundingClientRect();
+  return { x:(clientX-r.left)*(canvas.width/r.width), y:(clientY-r.top)*(canvas.height/r.height) };
+}
 
-  canvas.addEventListener('mousedown', erMouseDown);
-  canvas.addEventListener('mousemove', erMouseMove);
-  canvas.addEventListener('mouseup',   erMouseUp);
-  canvas.addEventListener('mouseleave',erMouseUp);
-  canvas.addEventListener('touchstart', erTouchStart, {passive:false});
-  canvas.addEventListener('touchmove',  erTouchMove,  {passive:false});
-  canvas.addEventListener('touchend',   erMouseUp);
+function setErTool(t){
+  erTool = t;
+  const selBtn = $('er-select-btn'), panBtn = $('er-pan-btn');
+  const c = $('er-canvas');
+  if(t==='pan'){
+    if(selBtn){ selBtn.className='btn btn-outline btn-sm'; }
+    if(panBtn){ panBtn.className='btn btn-sm'; panBtn.style.cssText='background:var(--primary-container);color:var(--primary);border:none'; }
+    if(c) c.style.cursor='grab';
+  } else {
+    if(panBtn){ panBtn.className='btn btn-outline btn-sm'; panBtn.style.cssText=''; }
+    if(selBtn){ selBtn.className='btn btn-sm'; selBtn.style.cssText='background:var(--primary-container);color:var(--primary);border:none'; }
+    if(c) c.style.cursor='default';
+  }
+}
+
+function erUpdateZoomLabel(){
+  const el=$('er-zoom-label'); if(el) el.textContent=Math.round(erZoom*100)+'%';
+}
+
+function erZoomBy(factor, cx, cy){
+  const canvas=$('er-canvas'); if(!canvas) return;
+  if(cx===undefined) cx=canvas.width/2;
+  if(cy===undefined) cy=canvas.height/2;
+  const newZ = Math.min(Math.max(erZoom*factor, 0.12), 6);
+  erPanX = cx - (cx-erPanX)*(newZ/erZoom);
+  erPanY = cy - (cy-erPanY)*(newZ/erZoom);
+  erZoom = newZ;
+  drawER(); erUpdateZoomLabel();
+}
+
+function erFitView(){
+  const canvas=$('er-canvas'); if(!canvas) return;
+  const W=canvas.width, H=canvas.height;
+  let minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
+  ER_TABLES.forEach(t=>{
+    const b=nodeBounds(t);
+    minX=Math.min(minX,b.x); minY=Math.min(minY,b.y);
+    maxX=Math.max(maxX,b.x+b.w); maxY=Math.max(maxY,b.y+b.h);
+  });
+  const pad=40, cW=maxX-minX+pad*2, cH=maxY-minY+pad*2;
+  erZoom=Math.min(W/cW, H/cH, 2);
+  erPanX=(W-cW*erZoom)/2-(minX-pad)*erZoom;
+  erPanY=(H-cH*erZoom)/2-(minY-pad)*erZoom;
+  drawER(); erUpdateZoomLabel();
+}
+
+function erResetView(){
+  erZoom=1; erPanX=30; erPanY=20;
+  drawER(); erUpdateZoomLabel();
+}
+
+function resetErPositions(){
+  ER_TABLES.forEach(t=>{ erPositions[t.id]={x:t.x,y:t.y}; });
+  erFitView(); showToast('Layout reset','info');
 }
 
 function resizeER(){
   const canvas=$('er-canvas'); if(!canvas) return;
-  canvas.width=canvas.offsetWidth||900;
-  canvas.height=600;
+  canvas.width  = canvas.offsetWidth  || 900;
+  canvas.height = canvas.offsetHeight || 620;
   drawER();
 }
 
-function resetErPositions(){
-  ER_TABLES.forEach(t=>{ erPositions[t.id]={x:t.x, y:t.y}; });
-  drawER(); showToast('Layout reset','info');
+function initER(){
+  const canvas=$('er-canvas'); if(!canvas) return;
+  erInitialized = true;
+  ER_TABLES.forEach(t=>{ erPositions[t.id]={x:t.x,y:t.y}; });
+  resizeER();
+  erFitView();
+
+  // Mouse events
+  canvas.addEventListener('mousedown',  erMouseDown);
+  canvas.addEventListener('mousemove',  erMouseMove);
+  canvas.addEventListener('mouseup',    erMouseUp);
+  canvas.addEventListener('mouseleave', erMouseLeave);
+  canvas.addEventListener('wheel',      erWheel, {passive:false});
+  canvas.addEventListener('contextmenu',e=>e.preventDefault());
+  // Touch events
+  canvas.addEventListener('touchstart', erTouchStart, {passive:false});
+  canvas.addEventListener('touchmove',  erTouchMove,  {passive:false});
+  canvas.addEventListener('touchend',   erTouchEnd,   {passive:false});
 }
 
-function getCanvasPos(canvas, e){
-  const r=canvas.getBoundingClientRect();
-  const scaleX=canvas.width/r.width, scaleY=canvas.height/r.height;
-  return {x:(e.clientX-r.left)*scaleX, y:(e.clientY-r.top)*scaleY};
-}
-
+// ── Mouse handlers ────────────────────────────────────────────────
 function erMouseDown(e){
-  const canvas=$('er-canvas'), pos=getCanvasPos(canvas,e);
+  const canvas=$('er-canvas');
+  // Middle button → always pan
+  if(e.button===1){
+    e.preventDefault();
+    erMidPan=true;
+    erMidSX=e.clientX; erMidSY=e.clientY;
+    erMidOX=erPanX;    erMidOY=erPanY;
+    canvas.style.cursor='grabbing';
+    return;
+  }
+  if(e.button!==0) return;
+
+  if(erTool==='pan'){
+    erIsPanning=true;
+    erPanSX=e.clientX; erPanSY=e.clientY;
+    erPanOX=erPanX;    erPanOY=erPanY;
+    canvas.style.cursor='grabbing';
+    return;
+  }
+  // Select mode — hit-test nodes (back to front)
+  const wp=erToWorld(canvas,e.clientX,e.clientY);
   for(let i=ER_TABLES.length-1;i>=0;i--){
     const t=ER_TABLES[i], b=nodeBounds(t);
-    if(pos.x>=b.x&&pos.x<=b.x+b.w&&pos.y>=b.y&&pos.y<=b.y+b.h){
-      erDragging=t; erDragOX=pos.x-b.x; erDragOY=pos.y-b.y;
-      canvas.style.cursor='grabbing'; break;
+    if(wp.x>=b.x&&wp.x<=b.x+b.w&&wp.y>=b.y&&wp.y<=b.y+b.h){
+      erDragging=t; erDragOX=wp.x-b.x; erDragOY=wp.y-b.y;
+      canvas.style.cursor='grabbing'; return;
     }
   }
+  // Missed a node in select mode → start pan anyway
+  erIsPanning=true;
+  erPanSX=e.clientX; erPanSY=e.clientY;
+  erPanOX=erPanX;    erPanOY=erPanY;
+  canvas.style.cursor='grabbing';
 }
 
 function erMouseMove(e){
   const canvas=$('er-canvas');
-  if(!erDragging){ canvas.style.cursor='default'; return; }
-  e.preventDefault();
-  const pos=getCanvasPos(canvas,e);
-  erPositions[erDragging.id]={ x:Math.max(0,pos.x-erDragOX), y:Math.max(0,pos.y-erDragOY) };
-  drawER();
+  // Middle-mouse pan
+  if(erMidPan){
+    erPanX=erMidOX+(e.clientX-erMidSX);
+    erPanY=erMidOY+(e.clientY-erMidSY);
+    drawER(); return;
+  }
+  // Canvas pan
+  if(erIsPanning){
+    erPanX=erPanOX+(e.clientX-erPanSX);
+    erPanY=erPanOY+(e.clientY-erPanSY);
+    drawER(); return;
+  }
+  // Node drag
+  if(erDragging){
+    e.preventDefault();
+    const wp=erToWorld(canvas,e.clientX,e.clientY);
+    erPositions[erDragging.id]={x:wp.x-erDragOX, y:wp.y-erDragOY};
+    drawER(); return;
+  }
+  // Hover cursor
+  if(erTool==='pan'){ canvas.style.cursor='grab'; return; }
+  const wp=erToWorld(canvas,e.clientX,e.clientY);
+  const hit=ER_TABLES.some(t=>{const b=nodeBounds(t);return wp.x>=b.x&&wp.x<=b.x+b.w&&wp.y>=b.y&&wp.y<=b.y+b.h;});
+  canvas.style.cursor=hit?'grab':'default';
 }
 
-function erMouseUp(){ erDragging=null; const c=$('er-canvas'); if(c) c.style.cursor='default'; }
+function erMouseUp(e){
+  erDragging=null; erIsPanning=false; erMidPan=false;
+  const c=$('er-canvas');
+  if(c) c.style.cursor=erTool==='pan'?'grab':'default';
+}
+function erMouseLeave(){ erMidPan=false; erIsPanning=false; }
+
+// ── Wheel zoom ────────────────────────────────────────────────────
+function erWheel(e){
+  e.preventDefault();
+  const canvas=$('er-canvas');
+  const cp=erToCanvas(canvas,e.clientX,e.clientY);
+  const factor = e.deltaY<0 ? 1.12 : 1/1.12;
+  erZoomBy(factor, cp.x, cp.y);
+}
+
+// ── Touch handlers ────────────────────────────────────────────────
+let _touchDist0=0, _touchZoom0=1, _touchPX0=0, _touchPY0=0, _touchCX0=0, _touchCY0=0;
 
 function erTouchStart(e){
   e.preventDefault();
-  const t=e.touches[0];
-  erMouseDown({clientX:t.clientX, clientY:t.clientY});
+  erTouches=Array.from(e.touches);
+  if(erTouches.length===1){
+    const t=erTouches[0];
+    const canvas=$('er-canvas');
+    const wp=erToWorld(canvas,t.clientX,t.clientY);
+    for(let i=ER_TABLES.length-1;i>=0;i--){
+      const nd=ER_TABLES[i], b=nodeBounds(nd);
+      if(wp.x>=b.x&&wp.x<=b.x+b.w&&wp.y>=b.y&&wp.y<=b.y+b.h){
+        erDragging=nd; erDragOX=wp.x-b.x; erDragOY=wp.y-b.y; return;
+      }
+    }
+    // No node hit → pan
+    erIsPanning=true;
+    erPanSX=t.clientX; erPanSY=t.clientY; erPanOX=erPanX; erPanOY=erPanY;
+  } else if(erTouches.length===2){
+    erDragging=null; erIsPanning=false;
+    _touchDist0=Math.hypot(erTouches[1].clientX-erTouches[0].clientX,erTouches[1].clientY-erTouches[0].clientY);
+    _touchZoom0=erZoom;
+    _touchCX0=(erTouches[0].clientX+erTouches[1].clientX)/2;
+    _touchCY0=(erTouches[0].clientY+erTouches[1].clientY)/2;
+    _touchPX0=erPanX; _touchPY0=erPanY;
+  }
 }
 function erTouchMove(e){
   e.preventDefault();
-  const t=e.touches[0];
-  erMouseMove({clientX:t.clientX, clientY:t.clientY, preventDefault:()=>{}});
+  const touches=Array.from(e.touches);
+  const canvas=$('er-canvas');
+  if(touches.length===1){
+    const t=touches[0];
+    if(erDragging){
+      const wp=erToWorld(canvas,t.clientX,t.clientY);
+      erPositions[erDragging.id]={x:wp.x-erDragOX,y:wp.y-erDragOY};
+      drawER();
+    } else if(erIsPanning){
+      erPanX=erPanOX+(t.clientX-erPanSX);
+      erPanY=erPanOY+(t.clientY-erPanSY);
+      drawER();
+    }
+  } else if(touches.length===2){
+    const dist=Math.hypot(touches[1].clientX-touches[0].clientX,touches[1].clientY-touches[0].clientY);
+    const cx=(touches[0].clientX+touches[1].clientX)/2;
+    const cy=(touches[0].clientY+touches[1].clientY)/2;
+    const factor=dist/_touchDist0;
+    const cp=erToCanvas(canvas,_touchCX0,_touchCY0);
+    erZoom=Math.min(Math.max(_touchZoom0*factor,0.12),6);
+    erPanX=cp.x-(_touchCX0-_touchPX0*(_touchZoom0>0?erZoom/_touchZoom0:1));
+    // Simpler: recompute from scratch
+    erZoom=Math.min(Math.max(_touchZoom0*factor,0.12),6);
+    erPanX=_touchPX0+(cx-_touchCX0)+(cp.x-(cp.x-_touchPX0)*erZoom/_touchZoom0)-cp.x+cp.x;
+    // Cleanest pinch formula:
+    const nz=Math.min(Math.max(_touchZoom0*factor,0.12),6);
+    const cpx=erToCanvas(canvas,_touchCX0,_touchCY0);
+    erPanX=cpx.x-(cpx.x-_touchPX0)*(nz/_touchZoom0)+(cx-_touchCX0);
+    erPanY=cpx.y-(cpx.y-_touchPY0)*(nz/_touchZoom0)+(cy-_touchCY0);
+    erZoom=nz;
+    drawER(); erUpdateZoomLabel();
+  }
+}
+function erTouchEnd(e){
+  erDragging=null; erIsPanning=false;
+  erTouches=Array.from(e.touches);
 }
 
+// ── Draw ──────────────────────────────────────────────────────────
 function drawER(){
   const canvas=$('er-canvas'); if(!canvas) return;
   const ctx=canvas.getContext('2d');
@@ -1664,68 +1885,87 @@ function drawER(){
     pk:         s.getPropertyValue('--primary-warm').trim()||'#d97757',
     fk:         s.getPropertyValue('--success').trim()||'#2e6b3e',
     edge:       s.getPropertyValue('--primary-warm').trim()||'#d97757',
-    shadow:     'rgba(28,27,27,0.07)',
   };
 
-  ctx.clearRect(0,0,W,H);
+  // Background (no transform)
+  ctx.setTransform(1,0,0,1,0,0);
   ctx.fillStyle=C.bg; ctx.fillRect(0,0,W,H);
 
-  // Draw edges first
+  // Draw dot-grid
+  ctx.fillStyle=document.documentElement.classList.contains('dark-active')?'rgba(255,255,255,.05)':'rgba(0,0,0,.06)';
+  const gs=20*erZoom, ox=erPanX%gs, oy=erPanY%gs;
+  for(let x=ox;x<W;x+=gs) for(let y=oy;y<H;y+=gs){
+    ctx.beginPath(); ctx.arc(x,y,1,0,Math.PI*2); ctx.fill();
+  }
+
+  // Apply camera transform
+  ctx.setTransform(erZoom,0,0,erZoom,erPanX,erPanY);
+
+  // ── Edges ────────────────────────────────────────────────────────
   ctx.save();
-  ctx.strokeStyle=C.edge; ctx.lineWidth=1.5;
-  ctx.setLineDash([5,3]);
+  ctx.strokeStyle=C.edge; ctx.lineWidth=1.5/erZoom;
+  ctx.setLineDash([5/erZoom,3/erZoom]);
   ER_EDGES.forEach(edge=>{
     const fromT=ER_TABLES.find(t=>t.id===edge.from);
     const toT  =ER_TABLES.find(t=>t.id===edge.to);
     if(!fromT||!toT) return;
-    const [fromSide,toSide]=getBestSides(fromT,toT);
-    const fp=nodeSide(fromT,fromSide), tp=nodeSide(toT,toSide);
+    const [fSide,tSide]=getBestSides(fromT,toT);
+    const fp=nodeSide(fromT,fSide), tp=nodeSide(toT,tSide);
     const dx=Math.abs(tp.x-fp.x)*0.5;
     ctx.beginPath(); ctx.moveTo(fp.x,fp.y);
-    if(fromSide==='right'||fromSide==='left')
-      ctx.bezierCurveTo(fp.x+(fromSide==='right'?dx:-dx),fp.y, tp.x+(toSide==='left'?-dx:dx),tp.y, tp.x,tp.y);
+    if(fSide==='right'||fSide==='left')
+      ctx.bezierCurveTo(fp.x+(fSide==='right'?dx:-dx),fp.y, tp.x+(tSide==='left'?-dx:dx),tp.y, tp.x,tp.y);
     else
-      ctx.bezierCurveTo(fp.x,fp.y+(fromSide==='bottom'?60:-60), tp.x,tp.y+(toSide==='top'?-60:60), tp.x,tp.y);
+      ctx.bezierCurveTo(fp.x,fp.y+(fSide==='bottom'?60:-60), tp.x,tp.y+(tSide==='top'?-60:60), tp.x,tp.y);
     ctx.stroke();
     // Arrowhead
-    const angle=Math.atan2(tp.y-(fromSide==='top'||fromSide==='bottom'?tp.y+(toSide==='top'?-40:40):tp.y), tp.x-(toSide==='left'?tp.x-40:tp.x+40));
+    const angle=Math.atan2(tp.y-(tSide==='bottom'?tp.y+30:tp.y-30), tp.x-(tSide==='left'?tp.x-40:tp.x+40));
     ctx.setLineDash([]);
     ctx.beginPath();
-    ctx.moveTo(tp.x, tp.y);
-    ctx.lineTo(tp.x-8*Math.cos(angle-0.4), tp.y-8*Math.sin(angle-0.4));
-    ctx.lineTo(tp.x-8*Math.cos(angle+0.4), tp.y-8*Math.sin(angle+0.4));
+    const as=9/erZoom;
+    ctx.moveTo(tp.x,tp.y);
+    ctx.lineTo(tp.x-as*Math.cos(angle-0.42),tp.y-as*Math.sin(angle-0.42));
+    ctx.lineTo(tp.x-as*Math.cos(angle+0.42),tp.y-as*Math.sin(angle+0.42));
     ctx.closePath(); ctx.fillStyle=C.edge; ctx.fill();
-    ctx.setLineDash([5,3]);
+    ctx.setLineDash([5/erZoom,3/erZoom]);
   });
   ctx.restore();
 
-  // Draw nodes
+  // ── Nodes ────────────────────────────────────────────────────────
   ER_TABLES.forEach(node=>{
     const b=nodeBounds(node), h=nodeH(node);
-    const {x,y}=b;
-    // Shadow
-    ctx.save(); ctx.shadowBlur=8; ctx.shadowColor=C.shadow; ctx.shadowOffsetY=2;
-    ctx.fillStyle=C.card; ctx.beginPath(); roundRect(ctx,x,y,NODE_W,h,6); ctx.fill();
-    ctx.restore();
+    const {x,y}=b, isDragged=erDragging?.id===node.id;
+    // Card shadow (simulate with slightly offset fill)
+    ctx.fillStyle='rgba(28,27,27,0.06)';
+    ctx.beginPath(); roundRect(ctx,x+2,y+3,NODE_W,h,6); ctx.fill();
+    // Card fill
+    ctx.fillStyle=C.card;
+    ctx.beginPath(); roundRect(ctx,x,y,NODE_W,h,6); ctx.fill();
     // Border
-    ctx.strokeStyle=erDragging?.id===node.id?C.headerText:C.border; ctx.lineWidth=erDragging?.id===node.id?2:1;
+    ctx.strokeStyle=isDragged?C.headerText:C.border;
+    ctx.lineWidth=(isDragged?2:1)/erZoom;
     ctx.beginPath(); roundRect(ctx,x,y,NODE_W,h,6); ctx.stroke();
     // Header
-    ctx.fillStyle=C.header; ctx.beginPath(); roundRect(ctx,x,y,NODE_W,HEADER_H,6,6,0,0); ctx.fill();
-    ctx.fillStyle=C.headerText; ctx.font='bold 11.5px Manrope,sans-serif'; ctx.textAlign='center';
-    ctx.fillText(node.title,x+NODE_W/2,y+22);
+    ctx.fillStyle=isDragged?C.headerText:C.header;
+    ctx.beginPath(); roundRect(ctx,x,y,NODE_W,HEADER_H,6,6,0,0); ctx.fill();
+    ctx.fillStyle=isDragged?'#fff':C.headerText;
+    ctx.font=`bold ${12/erZoom}px Manrope,sans-serif`; ctx.textAlign='center';
+    ctx.fillText(node.title, x+NODE_W/2, y+22);
     // Columns
     node.cols.forEach((col,i)=>{
       const cy=y+HEADER_H+i*ROW_H+ROW_H*0.75;
-      if(i%2===1){ ctx.fillStyle='rgba(0,0,0,.025)'; ctx.fillRect(x+1,y+HEADER_H+i*ROW_H,NODE_W-2,ROW_H); }
+      if(i%2===1){ ctx.fillStyle='rgba(0,0,0,.03)'; ctx.fillRect(x+1,y+HEADER_H+i*ROW_H,NODE_W-2,ROW_H); }
       ctx.fillStyle=col.pk?C.pk:col.fk?C.fk:C.col;
-      ctx.font=(col.pk||col.fk?'bold ':'')+'10.5px Manrope,monospace';
+      ctx.font=(col.pk||col.fk?'bold ':'')+`${10.5/erZoom}px Manrope,monospace`;
       ctx.textAlign='left';
-      ctx.fillText((col.pk?'🔑 ':col.fk?'🔗 ':'')+col.n,x+10,cy);
-      ctx.fillStyle=C.colSub; ctx.font='9.5px Manrope,sans-serif'; ctx.textAlign='right';
-      ctx.fillText(col.t,x+NODE_W-8,cy);
+      ctx.fillText((col.pk?'🔑 ':col.fk?'🔗 ':'')+col.n, x+8, cy);
+      ctx.fillStyle=C.colSub; ctx.font=`${9/erZoom}px Manrope,sans-serif`; ctx.textAlign='right';
+      ctx.fillText(col.t, x+NODE_W-6, cy);
     });
   });
+
+  // Reset transform
+  ctx.setTransform(1,0,0,1,0,0);
 }
 
 function roundRect(ctx,x,y,w,h,r,tl,tr,bl,br){
@@ -1740,6 +1980,7 @@ function roundRect(ctx,x,y,w,h,r,tl,tr,bl,br){
 window.addEventListener('resize',debounce(()=>{ if(erInitialized) resizeER(); drawSpeedGraph(); },200));
 
 // ═══ KEYBOARD ═════════════════════════════════════════════════════
+let _erSpaceHeld = false;
 document.addEventListener('keydown',e=>{
   if(e.ctrlKey||e.metaKey){
     if(e.key==='n'){e.preventDefault();openModal();}
@@ -1748,6 +1989,23 @@ document.addEventListener('keydown',e=>{
     if(e.key==='b'){e.preventDefault();setTab('batch');}
   }
   if(e.key==='Escape') closeModal();
+
+  // ER diagram shortcuts (only when ER page is visible)
+  if(erInitialized && $('page-erdiagram').classList.contains('active')){
+    // Skip if typing in an input
+    if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA') return;
+    if(e.code==='Space'&&!_erSpaceHeld){ e.preventDefault(); _erSpaceHeld=true; setErTool('pan'); }
+    if(e.key==='h'||e.key==='H') setErTool('pan');
+    if(e.key==='s'||e.key==='S') setErTool('select');
+    if(e.key==='f'||e.key==='F') erFitView();
+    if(e.key==='+' || e.key==='=') erZoomBy(1.2);
+    if(e.key==='-' || e.key==='_') erZoomBy(1/1.2);
+  }
+});
+document.addEventListener('keyup',e=>{
+  if(e.code==='Space'&&_erSpaceHeld){
+    _erSpaceHeld=false; setErTool('select');
+  }
 });
 
 // ═══ INIT ═════════════════════════════════════════════════════════
