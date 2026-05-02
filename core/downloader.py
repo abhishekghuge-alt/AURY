@@ -1,4 +1,5 @@
 import os
+import sys
 import shutil
 import threading
 import time
@@ -7,7 +8,7 @@ from pathlib import Path
 
 import yt_dlp
 
-from core import database
+from core import database, config
 from core.config import DOWNLOAD_DIR, TEMP_DOWNLOAD_DIR, get_ydl_base_opts
 
 # ─── Global control events (singletons shared by CLI and GUI) ────────────────

@@ -1,0 +1,119 @@
+PS C:\Users\DAR AL WEFAQ\Google Drive Streaming\My Drive\cllg\AURY> pip freeze > requirements.txt
+PS C:\Users\DAR AL WEFAQ\Google Drive Streaming\My Drive\cllg\AURY> git config core.autocrlf true
+PS C:\Users\DAR AL WEFAQ\Google Drive Streaming\My Drive\cllg\AURY> git add .
+warning: in the working copy of '(.bat', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of '.gitignore', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'AURI_V1_Detailed_Report.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'README.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'cli/__init__.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'cli/main.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'cli/settings.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'cli/ui.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'core/__init__.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'core/ai.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'core/clipboard_watcher.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'core/config.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'core/database.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'core/downloader.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'gui/__init__.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'gui/analytics.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'gui/app.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'gui/charts.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'gui/dashboard.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'gui/db_report.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'gui/download_modal.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'gui/drop_overlay.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'gui/history.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'gui/queue_panel.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'gui/settings.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'gui/theme.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'gui/widgets.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'gui/windows/__init__.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'gui/windows/download_panel.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'gui/windows/history_window.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'gui/windows/main_window.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'gui/windows/settings_window.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'gui_main.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'install.bat', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'main.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'requirements_cli.txt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'requirements_gui.txt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'run.bat', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'share/bash-completion/completions/yt-dlp', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'share/doc/yt_dlp/README.txt', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'share/fish/vendor_completions.d/yt-dlp.fish', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'share/man/man1/yt-dlp.1', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'share/zsh/site-functions/_yt-dlp', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/__init__.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/test_all.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/test_db_quick.py', LF will be replaced by CRLF the next time Git touches it 
+PS C:\Users\DAR AL WEFAQ\Google Drive Streaming\My Drive\cllg\AURY> git commit -m "Initial clean upload for AURY V2 with AI placeholder"
+[master (root-commit) 566e5c2] Initial clean upload for AURY V2 with AI placeholder
+ 53 files changed, 14554 insertions(+)
+ create mode 100644 (.bat
+ create mode 100644 .gitignore
+ create mode 100644 AURI_V1_Detailed_Report.md
+ create mode 100644 AURY_CONTEXT.md
+ create mode 100644 README.md
+ create mode 100644 cli/__init__.py
+ create mode 100644 cli/main.py
+ create mode 100644 cli/settings.py
+ create mode 100644 cli/ui.py
+ create mode 100644 core/__init__.py
+ create mode 100644 core/ai.py
+ create mode 100644 core/clipboard_watcher.py
+ create mode 100644 core/config.py
+ create mode 100644 core/database.py
+ create mode 100644 core/downloader.py
+ create mode 100644 gui/__init__.py
+ create mode 100644 gui/analytics.py
+ create mode 100644 gui/app.py
+ create mode 100644 gui/charts.py
+ create mode 100644 gui/dashboard.py
+ create mode 100644 gui/db_report.py
+ create mode 100644 gui/download_modal.py
+ create mode 100644 gui/drop_overlay.py
+ create mode 100644 gui/history.py
+ create mode 100644 gui/queue_panel.py
+ create mode 100644 gui/settings.py
+ create mode 100644 gui/theme.py
+ create mode 100644 gui/widgets.py
+ create mode 100644 gui/windows/__init__.py
+ create mode 100644 gui/windows/download_panel.py
+ create mode 100644 gui/windows/history_window.py
+ create mode 100644 gui/windows/main_window.py
+ create mode 100644 gui/windows/settings_window.py
+ create mode 100644 gui_main.py
+ create mode 100644 install.bat
+ create mode 100644 main.py
+ create mode 100644 requirements.txt
+ create mode 100644 requirements_cli.txt
+ create mode 100644 requirements_gui.txt
+ create mode 100644 run.bat
+ create mode 100644 share/bash-completion/completions/yt-dlp
+ create mode 100644 share/doc/yt_dlp/README.txt
+ create mode 100644 share/fish/vendor_completions.d/yt-dlp.fish
+ create mode 100644 share/man/man1/yt-dlp.1
+ create mode 100644 share/zsh/site-functions/_yt-dlp
+ create mode 100644 tests/AURY_ULTRA_REPORT_20260430_060906.txt
+ create mode 100644 tests/AURY_ULTRA_REPORT_20260430_060925.txt
+ create mode 100644 tests/AURY_ULTRA_REPORT_20260430_061146.txt
+ create mode 100644 tests/AURY_ULTRA_REPORT_20260430_061212.txt
+ create mode 100644 tests/AURY_ULTRA_REPORT_20260430_061705.txt
+ create mode 100644 tests/__init__.py
+ create mode 100644 tests/test_all.py
+ create mode 100644 tests/test_db_quick.py
+PS C:\Users\DAR AL WEFAQ\Google Drive Streaming\My Drive\cllg\AURY> git branch -M main
+PS C:\Users\DAR AL WEFAQ\Google Drive Streaming\My Drive\cllg\AURY> git remote add origin https://github.com/abhishekghuge-alt/AURY.git
+PS C:\Users\DAR AL WEFAQ\Google Drive Streaming\My Drive\cllg\AURY> git push -u origin main
+Enumerating objects: 71, done.
+Counting objects: 100% (71/71), done.
+Delta compression using up to 8 threads
+Compressing objects: 100% (57/57), done.
+Writing objects: 100% (71/71), 188.33 KiB | 824.00 KiB/s, done.
+Total 71 (delta 6), reused 0 (delta 0), pack-reused 0 (from 0)
+remote: Resolving deltas: 100% (6/6), done.
+To https://github.com/abhishekghuge-alt/AURY.git
+ * [new branch]      main -> main
+branch 'main' set up to track 'origin/main'.
+PS C:\Users\DAR AL WEFAQ\Google Drive Streaming\My Drive\cllg\AURY> 
