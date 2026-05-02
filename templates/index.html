@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AURY — Smart Media Downloader</title>
+<link rel="icon" href="/static/favicon.ico" type="image/x-icon" />
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: { extend: { fontFamily: { mono: ['JetBrains Mono','Fira Code','monospace'] } } }
+  };
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+  * { font-family: 'Inter', sans-serif; }
+  code, pre, .mono { font-family: 'JetBrains Mono', monospace; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
+  .sse-pulse { animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+  .progress-bar { transition: width 0.4s ease; }
+  .fade-in { animation: fadeIn .25s ease; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:none} }
+  .nav-active { background: rgba(59,130,246,.15); color: #60a5fa; border-right: 2px solid #3b82f6; }
+  .card { background: #161b22; border: 1px solid #30363d; border-radius: 12px; }
+  .dark .input { background: #0d1117; border: 1px solid #30363d; color: #e6edf3; }
+  .input:focus { outline: none; border-color: #3b82f6; }
+  .btn-primary { background: #2563eb; color: #fff; }
+  .btn-primary:hover { background: #1d4ed8; }
+  .btn-ghost { background: transparent; border: 1px solid #30363d; color: #8b949e; }
+  .btn-ghost:hover { background: rgba(255,255,255,.05); }
+  .badge { font-size:11px; padding: 2px 8px; border-radius: 99px; font-weight:500; }
+  .badge-blue { background: rgba(59,130,246,.2); color: #60a5fa; }
+  .badge-green { background: rgba(63,185,80,.2); color: #3fb950; }
+  .badge-red { background: rgba(248,81,73,.2); color: #f85149; }
+  .badge-gray { background: rgba(139,148,158,.15); color: #8b949e; }
+  .badge-orange { background: rgba(240,136,62,.2); color: #f0883e; }
+  .modal-bg { background: rgba(1,4,9,.75); backdrop-filter: blur(6px); }
+  .toast { position:fixed;bottom:24px;right:24px;z-index:9999;min-width:260px;padding:12px 16px;border-radius:10px;border:1px solid #30363d;background:#161b22;color:#e6edf3;box-shadow:0 8px 32px rgba(0,0,0,.4);animation:fadeIn .2s ease; }
+</style>
+</head>
+<body class="bg-[#0d1117] text-[#e6edf3] min-h-screen flex flex-col">
+
+<!-- ─── Title bar ─────────────────────────────────────────────────────────── -->
+<header class="flex items-center justify-between px-5 py-2.5 bg-[#161b22] border-b border-[#30363d] shrink-0 z-10">
+  <div class="flex items-center gap-3">
+    <div class="flex gap-1.5">
+      <div class="w-3 h-3 rounded-full bg-[#ff5f57]"></div>
+      <div class="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
+      <div class="w-3 h-3 rounded-full bg-[#28c840]"></div>
+    </div>
+    <span class="font-bold text-sm tracking-wide">AURY</span>
+    <span class="text-xs text-[#8b949e]">Smart Media Downloader</span>
+    <span class="badge badge-blue">v2 Web</span>
+  </div>
+  <div class="flex items-center gap-3">
+    <span id="sse-indicator" class="text-xs text-[#8b949e] flex items-center gap-1.5">
+      <span class="w-1.5 h-1.5 rounded-full bg-gray-600 sse-pulse" id="sse-dot"></span>
+      <span id="sse-label">Connecting…</span>
+    </span>
+    <button onclick="openModal()" class="btn-primary flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors">
+      <i data-lucide="download" class="w-3.5 h-3.5"></i> New Download
+    </button>
+  </div>
+</header>
+
+<!-- ─── Layout ────────────────────────────────────────────────────────────── -->
+<div class="flex flex-1 overflow-hidden">
+
+  <!-- Sidebar -->
+  <nav class="w-48 shrink-0 bg-[#161b22] border-r border-[#30363d] flex flex-col py-3">
+    <button onclick="setTab('dashboard')" id="nav-dashboard" class="nav-btn nav-active flex items-center gap-3 px-4 py-2.5 text-sm text-left transition-colors">
+      <i data-lucide="layout-dashboard" class="w-4 h-4 shrink-0"></i> Dashboard
+    </button>
+    <button onclick="setTab('history')" id="nav-history" class="nav-btn flex items-center gap-3 px-4 py-2.5 text-sm text-left text-[#8b949e] hover:bg-white/5 transition-colors">
+      <i data-lucide="history" class="w-4 h-4 shrink-0"></i> History
+    </button>
+    <button onclick="setTab('analytics')" id="nav-analytics" class="nav-btn flex items-center gap-3 px-4 py-2.5 text-sm text-left text-[#8b949e] hover:bg-white/5 transition-colors">
+      <i data-lucide="bar-chart-2" class="w-4 h-4 shrink-0"></i> Analytics
+    </button>
+    <button onclick="setTab('settings')" id="nav-settings" class="nav-btn flex items-center gap-3 px-4 py-2.5 text-sm text-left text-[#8b949e] hover:bg-white/5 transition-colors">
+      <i data-lucide="settings" class="w-4 h-4 shrink-0"></i> Settings
+    </button>
+
+    <div class="mt-auto px-4 py-4 border-t border-[#30363d]">
+      <div class="text-xs text-[#8b949e] space-y-1">
+        <div id="sidebar-active" class="text-[#3fb950]">● 0 active</div>
+        <div id="sidebar-total" class="text-[#8b949e]">— total</div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <main class="flex-1 overflow-y-auto p-6">
+
+    <!-- ── Dashboard ──────────────────────────────────────────────────── -->
+    <section id="tab-dashboard" class="fade-in">
+      <h1 class="text-xl font-bold mb-5">Dashboard</h1>
+
+      <!-- Stats row -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+        <div class="card p-4">
+          <div class="text-xs text-[#8b949e] mb-1">Total Downloads</div>
+          <div class="text-2xl font-bold" id="stat-total">—</div>
+          <div class="text-xs text-[#8b949e] mt-1">All time</div>
+        </div>
+        <div class="card p-4">
+          <div class="text-xs text-[#8b949e] mb-1">Data Downloaded</div>
+          <div class="text-2xl font-bold" id="stat-bytes">—</div>
+          <div class="text-xs text-[#8b949e] mt-1">Lifetime</div>
+        </div>
+        <div class="card p-4">
+          <div class="text-xs text-[#8b949e] mb-1">Sessions</div>
+          <div class="text-2xl font-bold" id="stat-sessions">—</div>
+          <div class="text-xs text-[#8b949e] mt-1">Total</div>
+        </div>
+        <div class="card p-4">
+          <div class="text-xs text-[#8b949e] mb-1">Active Now</div>
+          <div class="text-2xl font-bold text-[#3fb950]" id="stat-active">0</div>
+          <div class="text-xs text-[#8b949e] mt-1">Downloading</div>
+        </div>
+      </div>
+
+      <!-- Queue -->
+      <div class="card p-5">
+        <div class="flex items-center justify-between mb-4">
+          <div class="font-semibold text-sm">Download Queue</div>
+          <button onclick="openModal()" class="btn-primary text-xs px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-colors">
+            <i data-lucide="plus" class="w-3 h-3"></i> Add
+          </button>
+        </div>
+        <div id="queue-list" class="space-y-3">
+          <div class="text-center text-[#8b949e] text-sm py-8">
+            <i data-lucide="inbox" class="w-10 h-10 mx-auto mb-3 opacity-30"></i>
+            <div>Queue is empty</div>
+            <div class="text-xs mt-1">Click "New Download" to get started</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── History ────────────────────────────────────────────────────── -->
+    <section id="tab-history" class="fade-in hidden">
+      <div class="flex items-center justify-between mb-5">
+        <h1 class="text-xl font-bold">Download History</h1>
+        <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2 card px-3 py-1.5 rounded-lg">
+            <i data-lucide="search" class="w-3.5 h-3.5 text-[#8b949e]"></i>
+            <input id="history-search" placeholder="Search…" class="bg-transparent outline-none text-sm w-36" oninput="debounceHistory()" />
+          </div>
+          <select id="history-platform" onchange="loadHistory()" class="input px-2 py-1.5 rounded-lg text-sm">
+            <option value="">All platforms</option>
+          </select>
+          <select id="history-status" onchange="loadHistory()" class="input px-2 py-1.5 rounded-lg text-sm">
+            <option value="">All statuses</option>
+            <option value="completed">Completed</option>
+            <option value="failed">Failed</option>
+            <option value="stopped">Stopped</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="card overflow-hidden">
+        <table class="w-full text-sm">
+          <thead class="bg-[#0d1117] text-[#8b949e] text-xs">
+            <tr>
+              <th class="text-left px-4 py-3 font-semibold">Title</th>
+              <th class="text-left px-4 py-3 font-semibold">Platform</th>
+              <th class="text-left px-4 py-3 font-semibold">Quality</th>
+              <th class="text-left px-4 py-3 font-semibold">Size</th>
+              <th class="text-left px-4 py-3 font-semibold">Date</th>
+              <th class="text-left px-4 py-3 font-semibold">Status</th>
+            </tr>
+          </thead>
+          <tbody id="history-body">
+            <tr><td colspan="6" class="text-center text-[#8b949e] py-12">
+              <i data-lucide="loader" class="w-6 h-6 mx-auto mb-2 animate-spin opacity-40"></i>
+              Loading…
+            </td></tr>
+          </tbody>
+        </table>
+        <div class="px-4 py-3 border-t border-[#30363d] flex items-center justify-between text-xs text-[#8b949e]">
+          <span id="history-count">—</span>
+          <div class="flex gap-2">
+            <button onclick="histPage(-1)" class="btn-ghost px-2 py-1 rounded text-xs">← Prev</button>
+            <span id="history-page-label">Page 1</span>
+            <button onclick="histPage(1)" class="btn-ghost px-2 py-1 rounded text-xs">Next →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Analytics ──────────────────────────────────────────────────── -->
+    <section id="tab-analytics" class="fade-in hidden">
+      <h1 class="text-xl font-bold mb-5">Analytics</h1>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <!-- Weekly bar chart -->
+        <div class="card p-5">
+          <div class="font-semibold text-sm mb-4">Downloads This Week</div>
+          <div id="bar-chart" class="flex items-end gap-2 h-36"></div>
+        </div>
+        <!-- Quality split -->
+        <div class="card p-5">
+          <div class="font-semibold text-sm mb-4">Quality Split</div>
+          <div id="quality-list" class="space-y-2.5"></div>
+        </div>
+      </div>
+      <!-- Activity 14d -->
+      <div class="card p-5 mb-4">
+        <div class="font-semibold text-sm mb-4">14-Day Activity</div>
+        <div id="activity-chart" class="flex items-end gap-1 h-20"></div>
+        <div id="activity-labels" class="flex gap-1 mt-1"></div>
+      </div>
+      <!-- Platform split -->
+      <div class="card p-5">
+        <div class="font-semibold text-sm mb-4">Platform Split</div>
+        <div id="platform-list" class="flex flex-wrap gap-4"></div>
+      </div>
+    </section>
+
+    <!-- ── Settings ───────────────────────────────────────────────────── -->
+    <section id="tab-settings" class="fade-in hidden">
+      <div class="flex items-center justify-between mb-5">
+        <h1 class="text-xl font-bold">Settings</h1>
+        <button onclick="saveSettings()" class="btn-primary px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
+          <i data-lucide="save" class="w-4 h-4"></i> Save
+        </button>
+      </div>
+      <div class="card divide-y divide-[#30363d]" id="settings-form">
+        <div class="px-5 py-4">
+          <div class="text-sm font-medium mb-1">Output Folder</div>
+          <input id="s-download_dir" class="input w-full px-3 py-2 rounded-lg text-sm mt-1" placeholder="~/Downloads/AURY" />
+        </div>
+        <div class="px-5 py-4">
+          <div class="text-sm font-medium mb-1">Default Quality</div>
+          <select id="s-default_quality" class="input px-3 py-2 rounded-lg text-sm mt-1">
+            <option value="1">4K (2160p)</option>
+            <option value="3">1440p</option>
+            <option value="4">1080p (Recommended)</option>
+            <option value="5">720p</option>
+            <option value="7">480p</option>
+            <option value="8">360p</option>
+            <option value="10">144p</option>
+          </select>
+        </div>
+        <div class="px-5 py-4">
+          <div class="text-sm font-medium mb-1">Max Parallel Workers</div>
+          <input id="s-max_workers" type="number" min="1" max="16" class="input w-28 px-3 py-2 rounded-lg text-sm mt-1" />
+        </div>
+        <div class="px-5 py-4 flex items-center justify-between">
+          <div>
+            <div class="text-sm font-medium">Turbo Mode (aria2c)</div>
+            <div class="text-xs text-[#8b949e]">Requires aria2c installed</div>
+          </div>
+          <label class="relative inline-flex cursor-pointer">
+            <input id="s-turbo_mode" type="checkbox" class="sr-only peer" />
+            <div class="w-10 h-5 bg-gray-600 rounded-full peer peer-checked:bg-blue-600 transition-colors"></div>
+            <div class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform peer-checked:translate-x-5"></div>
+          </label>
+        </div>
+        <div class="px-5 py-4 flex items-center justify-between">
+          <div>
+            <div class="text-sm font-medium">Auto-Subtitles</div>
+            <div class="text-xs text-[#8b949e]">Download subtitles when available</div>
+          </div>
+          <label class="relative inline-flex cursor-pointer">
+            <input id="s-auto_subtitles" type="checkbox" class="sr-only peer" />
+            <div class="w-10 h-5 bg-gray-600 rounded-full peer peer-checked:bg-blue-600 transition-colors"></div>
+            <div class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform peer-checked:translate-x-5"></div>
+          </label>
+        </div>
+        <div class="px-5 py-4 flex items-center justify-between">
+          <div>
+            <div class="text-sm font-medium">Clipboard Watch</div>
+            <div class="text-xs text-[#8b949e]">Auto-detect copied URLs</div>
+          </div>
+          <label class="relative inline-flex cursor-pointer">
+            <input id="s-clip_watch" type="checkbox" class="sr-only peer" />
+            <div class="w-10 h-5 bg-gray-600 rounded-full peer peer-checked:bg-blue-600 transition-colors"></div>
+            <div class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform peer-checked:translate-x-5"></div>
+          </label>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ─── Download Modal ─────────────────────────────────────────────────────── -->
+<div id="modal" class="hidden fixed inset-0 modal-bg flex items-center justify-center z-50">
+  <div class="card w-[480px] p-6 shadow-2xl">
+    <div class="flex items-center justify-between mb-4">
+      <div class="font-bold">New Download</div>
+      <button onclick="closeModal()" class="text-[#8b949e] hover:text-white transition-colors">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+    </div>
+
+    <div class="mb-3">
+      <label class="text-xs text-[#8b949e] mb-1 block">URL</label>
+      <div class="flex items-center gap-2 input rounded-lg px-3 py-2">
+        <i data-lucide="link" class="w-4 h-4 text-[#8b949e] shrink-0"></i>
+        <input id="modal-url" class="bg-transparent outline-none flex-1 text-sm" placeholder="https://youtube.com/watch?v=…" />
+        <button onclick="pasteUrl()" title="Paste from clipboard">
+          <i data-lucide="clipboard" class="w-4 h-4 text-[#8b949e] hover:text-blue-400 cursor-pointer transition-colors"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Quality picker -->
+    <div class="mb-4">
+      <label class="text-xs text-[#8b949e] mb-2 block">Quality</label>
+      <div class="grid grid-cols-4 gap-2" id="quality-grid">
+        <button onclick="setQuality('4')" data-q="4" class="q-btn active-q py-1.5 rounded-lg text-xs font-medium border border-[#30363d] text-[#8b949e] hover:border-blue-500 transition-colors">1080p</button>
+        <button onclick="setQuality('1')" data-q="1" class="q-btn py-1.5 rounded-lg text-xs font-medium border border-[#30363d] text-[#8b949e] hover:border-blue-500 transition-colors">4K</button>
+        <button onclick="setQuality('5')" data-q="5" class="q-btn py-1.5 rounded-lg text-xs font-medium border border-[#30363d] text-[#8b949e] hover:border-blue-500 transition-colors">720p</button>
+        <button onclick="setQuality('8')" data-q="8" class="q-btn py-1.5 rounded-lg text-xs font-medium border border-[#30363d] text-[#8b949e] hover:border-blue-500 transition-colors">360p</button>
+      </div>
+      <label class="flex items-center gap-2 mt-3 cursor-pointer text-sm text-[#8b949e]">
+        <input id="audio-only" type="checkbox" class="w-3.5 h-3.5 accent-blue-500" />
+        Audio only (MP3 320kbps)
+      </label>
+    </div>
+
+    <div class="flex gap-2">
+      <button onclick="closeModal()" class="btn-ghost flex-1 py-2 rounded-lg text-sm transition-colors">Cancel</button>
+      <button onclick="startDownload()" class="btn-primary flex-1 py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2">
+        <i data-lucide="zap" class="w-4 h-4"></i> Start Download
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="toast hidden"></div>
+
+<!-- ─── Script ─────────────────────────────────────────────────────────────── -->
+<script>
+lucide.createIcons();
+
+// ── State ──────────────────────────────────────────────────────────────────
+let currentTab = 'dashboard';
+let selectedQuality = '4';
+let historyPage = 1;
+let historyTotal = 0;
+const PAGE_SIZE = 20;
+let histDebounce = null;
+let queueData = {};
+
+// ── Tab navigation ──────────────────────────────────────────────────────────
+function setTab(tab) {
+  ['dashboard','history','analytics','settings'].forEach(t => {
+    document.getElementById(`tab-${t}`).classList.toggle('hidden', t !== tab);
+    const btn = document.getElementById(`nav-${t}`);
+    btn.classList.toggle('nav-active', t === tab);
+    btn.classList.toggle('text-[#8b949e]', t !== tab);
+    btn.classList.toggle('hover:bg-white/5', t !== tab);
+  });
+  currentTab = tab;
+  if (tab === 'history')   { historyPage=1; loadHistory(); }
+  if (tab === 'analytics') loadAnalytics();
+  if (tab === 'settings')  loadSettings();
+  lucide.createIcons();
+}
+
+// ── Stats ───────────────────────────────────────────────────────────────────
+async function loadStats() {
+  try {
+    const r = await fetch('/api/stats');
+    const d = await r.json();
+    document.getElementById('stat-total').textContent    = d.total_downloads ?? '—';
+    document.getElementById('stat-bytes').textContent    = d.total_bytes_fmt ?? '—';
+    document.getElementById('stat-sessions').textContent = d.total_sessions ?? '—';
+    document.getElementById('stat-active').textContent   = d.active_count ?? 0;
+    document.getElementById('sidebar-active').textContent = `● ${d.active_count ?? 0} active`;
+    document.getElementById('sidebar-total').textContent  = `${d.total_downloads ?? 0} downloads`;
+  } catch(e) { console.warn('stats error', e); }
+}
+
+// ── Queue ───────────────────────────────────────────────────────────────────
+function renderQueue() {
+  const el = document.getElementById('queue-list');
+  const items = Object.values(queueData);
+  if (!items.length) {
+    el.innerHTML = `<div class="text-center text-[#8b949e] text-sm py-8">
+      <i data-lucide="inbox" class="w-10 h-10 mx-auto mb-3 opacity-30"></i>
+      <div>Queue is empty</div>
+      <div class="text-xs mt-1">Click "New Download" to get started</div>
+    </div>`;
+    lucide.createIcons();
+    return;
+  }
+  el.innerHTML = items.map(item => {
+    const pct = Math.min(100, item.progress || 0);
+    const barColor = item.status === 'done' ? 'bg-[#3fb950]' : item.status === 'error' ? 'bg-[#f85149]' : 'bg-blue-500';
+    const badge = {
+      downloading: '<span class="badge badge-blue">Downloading</span>',
+      starting:    '<span class="badge badge-gray">Starting…</span>',
+      done:        '<span class="badge badge-green">✓ Done</span>',
+      error:       '<span class="badge badge-red">✗ Error</span>',
+      stopped:     '<span class="badge badge-orange">Stopped</span>',
+    }[item.status] || `<span class="badge badge-gray">${item.status}</span>`;
+
+    return `<div class="bg-[#0d1117] rounded-xl p-4 fade-in">
+      <div class="flex items-start justify-between mb-2">
+        <div class="flex-1 min-w-0">
+          <div class="text-sm font-medium truncate pr-4">${escHtml(item.title || item.url || '')}</div>
+          <div class="flex items-center gap-2 mt-1 text-xs text-[#8b949e]">
+            ${badge}
+            <span class="text-[#8b949e]">${escHtml(item.quality || '')}</span>
+            ${item.status === 'downloading' ? `<span class="text-blue-400">⚡ ${item.speed} · ETA ${item.eta}</span>` : ''}
+          </div>
+        </div>
+        <button onclick="stopItem('${item.key}')" class="shrink-0 p-1.5 rounded hover:bg-white/10 text-[#8b949e] hover:text-[#f85149] transition-colors" title="Stop">
+          <i data-lucide="x" class="w-3.5 h-3.5"></i>
+        </button>
+      </div>
+      <div class="w-full h-1.5 bg-[#30363d] rounded-full overflow-hidden">
+        <div class="h-full rounded-full progress-bar ${barColor}" style="width:${pct}%"></div>
+      </div>
+      <div class="text-xs text-[#8b949e] mt-1">${pct.toFixed(1)}%${item.size_fmt && item.size_fmt !== '0 B' ? ' · ' + item.size_fmt : ''}</div>
+    </div>`;
+  }).join('');
+  lucide.createIcons();
+}
+
+async function loadQueue() {
+  try {
+    const r = await fetch('/api/queue');
+    const items = await r.json();
+    queueData = {};
+    items.forEach(i => { queueData[i.key] = i; });
+    renderQueue();
+    loadStats();
+  } catch(e) {}
+}
+
+async function stopItem(key) {
+  await fetch(`/api/queue/${encodeURIComponent(key)}/stop`, { method:'POST' });
+  setTimeout(loadQueue, 500);
+}
+
+// ── SSE ─────────────────────────────────────────────────────────────────────
+function connectSSE() {
+  const es = new EventSource('/stream');
+  const dot   = document.getElementById('sse-dot');
+  const label = document.getElementById('sse-label');
+
+  es.onopen = () => {
+    dot.className   = 'w-1.5 h-1.5 rounded-full bg-[#3fb950]';
+    label.textContent = 'Live';
+  };
+  es.addEventListener('queue_update', e => {
+    const d = JSON.parse(e.data);
+    if (d.key) {
+      if (queueData[d.key]) Object.assign(queueData[d.key], d);
+      else queueData[d.key] = d;
+      renderQueue();
+      loadStats();
+    }
+  });
+  es.onerror = () => {
+    dot.className   = 'w-1.5 h-1.5 rounded-full bg-[#f85149] sse-pulse';
+    label.textContent = 'Reconnecting…';
+    es.close();
+    setTimeout(connectSSE, 3000);
+  };
+}
+
+// ── History ──────────────────────────────────────────────────────────────────
+function debounceHistory() {
+  clearTimeout(histDebounce);
+  histDebounce = setTimeout(() => { historyPage=1; loadHistory(); }, 350);
+}
+function histPage(dir) {
+  const maxPage = Math.ceil(historyTotal / PAGE_SIZE);
+  historyPage = Math.max(1, Math.min(maxPage || 1, historyPage + dir));
+  loadHistory();
+}
+
+async function loadHistory() {
+  const q  = document.getElementById('history-search')?.value || '';
+  const pl = document.getElementById('history-platform')?.value || '';
+  const st = document.getElementById('history-status')?.value || '';
+  const params = new URLSearchParams({ limit: PAGE_SIZE, page: historyPage });
+  if (q)  params.set('q', q);
+  if (pl) params.set('platform', pl);
+  if (st) params.set('status', st);
+
+  document.getElementById('history-body').innerHTML =
+    `<tr><td colspan="6" class="text-center text-[#8b949e] py-8"><div class="animate-spin w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full mx-auto"></div></td></tr>`;
+
+  try {
+    const r = await fetch('/api/history?' + params);
+    const d = await r.json();
+    historyTotal = d.total;
+
+    // Populate platform filter
+    const sel = document.getElementById('history-platform');
+    const cur = sel.value;
+    sel.innerHTML = '<option value="">All platforms</option>' +
+      (d.platforms || []).map(p => `<option value="${escHtml(p)}" ${p===cur?'selected':''}>${escHtml(p)}</option>`).join('');
+
+    document.getElementById('history-count').textContent =
+      `${d.total} record${d.total !== 1 ? 's' : ''}`;
+    document.getElementById('history-page-label').textContent =
+      `Page ${historyPage} / ${Math.max(1, Math.ceil(d.total/PAGE_SIZE))}`;
+
+    if (!d.rows.length) {
+      document.getElementById('history-body').innerHTML =
+        `<tr><td colspan="6" class="text-center text-[#8b949e] py-10">No records found</td></tr>`;
+      return;
+    }
+
+    document.getElementById('history-body').innerHTML = d.rows.map(row => {
+      const st = row.status || 'completed';
+      const badge = st === 'completed'
+        ? '<span class="badge badge-green">✓</span>'
+        : st === 'failed'
+        ? '<span class="badge badge-red">✗</span>'
+        : '<span class="badge badge-orange">—</span>';
+      const date = row.downloaded_at
+        ? new Date(row.downloaded_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})
+        : '—';
+      return `<tr class="border-b border-[#30363d] hover:bg-white/5 transition-colors cursor-pointer">
+        <td class="px-4 py-3 font-medium max-w-[200px]"><span class="block truncate" title="${escHtml(row.title||row.url||'')}">${escHtml(row.title || row.url || '—')}</span></td>
+        <td class="px-4 py-3 text-xs text-[#8b949e]">${escHtml(row.platform_name || '—')}</td>
+        <td class="px-4 py-3"><span class="badge badge-gray">${escHtml(row.quality_label || '—')}</span></td>
+        <td class="px-4 py-3 text-xs text-[#8b949e]">${escHtml(row.file_size_fmt || '—')}</td>
+        <td class="px-4 py-3 text-xs text-[#8b949e]">${escHtml(date)}</td>
+        <td class="px-4 py-3">${badge}</td>
+      </tr>`;
+    }).join('');
+  } catch(e) {
+    document.getElementById('history-body').innerHTML =
+      `<tr><td colspan="6" class="text-center text-[#f85149] py-8">Failed to load history</td></tr>`;
+  }
+}
+
+// ── Analytics ────────────────────────────────────────────────────────────────
+async function loadAnalytics() {
+  try {
+    const r = await fetch('/api/analytics');
+    const d = await r.json();
+
+    // Weekly bar chart
+    const weekly = d.weekly || {};
+    const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+    const vals = days.map((_,i) => weekly[i+1] || 0);
+    const maxV = Math.max(...vals, 1);
+    document.getElementById('bar-chart').innerHTML = vals.map((v,i) => `
+      <div class="flex flex-col items-center flex-1 gap-1">
+        <div class="text-xs text-[#8b949e]">${v||''}</div>
+        <div class="w-full rounded-t transition-all" style="height:${Math.round((v/maxV)*100)}px;background:${v ? '#3b82f6' : '#21262d'}"></div>
+        <div class="text-xs text-[#8b949e]">${days[i]}</div>
+      </div>`).join('');
+
+    // Quality split
+    const quality = d.quality || [];
+    const maxQ = Math.max(...quality.map(q=>q.count||0), 1);
+    const qColors = ['#8b5cf6','#3b82f6','#22c55e','#f59e0b','#ef4444','#06b6d4'];
+    document.getElementById('quality-list').innerHTML = quality.length
+      ? quality.map((q,i) => `
+        <div class="flex items-center gap-2 text-xs">
+          <div class="w-2 h-2 rounded-full shrink-0" style="background:${qColors[i%qColors.length]}"></div>
+          <span class="text-[#8b949e] w-32 truncate">${escHtml(q.quality_label||'Unknown')}</span>
+          <div class="flex-1 h-1.5 bg-[#21262d] rounded-full">
+            <div class="h-full rounded-full" style="width:${Math.round((q.count/maxQ)*100)}%;background:${qColors[i%qColors.length]}"></div>
+          </div>
+          <span class="text-[#8b949e] w-6 text-right">${q.count}</span>
+        </div>`).join('')
+      : '<div class="text-[#8b949e] text-xs">No data yet</div>';
+
+    // Activity 14d
+    const activity = d.activity || [];
+    const maxA = Math.max(...activity.map(a=>a.count||0), 1);
+    document.getElementById('activity-chart').innerHTML = activity.map(a =>
+      `<div class="flex-1 rounded-t" style="height:${Math.round((a.count/maxA)*64)}px;background:${a.count ? '#3b82f6' : '#21262d'}" title="${a.date}: ${a.count}"></div>`
+    ).join('');
+    document.getElementById('activity-labels').innerHTML = activity.map(a =>
+      `<div class="flex-1 text-center text-[9px] text-[#8b949e] truncate">${(a.date||'').slice(5)}</div>`
+    ).join('');
+
+    // Platform split
+    const platforms = d.platform || [];
+    const pColors = ['#ef4444','#f97316','#3b82f6','#8b5cf6','#22c55e'];
+    const totalP = platforms.reduce((s,p)=>s+(p.count||0),0) || 1;
+    document.getElementById('platform-list').innerHTML = platforms.length
+      ? platforms.map((p,i) => `
+        <div class="flex flex-col items-center px-4">
+          <div class="text-2xl font-bold" style="color:${pColors[i%pColors.length]}">${Math.round((p.count/totalP)*100)}%</div>
+          <div class="text-xs text-[#8b949e] mt-1">${escHtml(p.platform_name||'Unknown')}</div>
+          <div class="text-xs text-[#8b949e]">${p.count} dl</div>
+        </div>`).join('')
+      : '<div class="text-[#8b949e] text-xs">No data yet</div>';
+
+  } catch(e) { console.warn('analytics error', e); }
+}
+
+// ── Settings ─────────────────────────────────────────────────────────────────
+async function loadSettings() {
+  try {
+    const r = await fetch('/api/settings');
+    const d = await r.json();
+    const set = (id, val) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (el.type === 'checkbox') el.checked = val === 'true' || val === true || val === '1';
+      else el.value = val || '';
+    };
+    set('s-download_dir',    d.download_dir);
+    set('s-default_quality', d.default_quality);
+    set('s-max_workers',     d.max_workers);
+    set('s-turbo_mode',      d.turbo_mode);
+    set('s-auto_subtitles',  d.auto_subtitles);
+    set('s-clip_watch',      d.clip_watch);
+  } catch(e) { console.warn('settings load error', e); }
+}
+
+async function saveSettings() {
+  const get = id => {
+    const el = document.getElementById(id);
+    if (!el) return null;
+    return el.type === 'checkbox' ? String(el.checked) : el.value;
+  };
+  const payload = {
+    download_dir:    get('s-download_dir'),
+    default_quality: get('s-default_quality'),
+    max_workers:     get('s-max_workers'),
+    turbo_mode:      get('s-turbo_mode'),
+    auto_subtitles:  get('s-auto_subtitles'),
+    clip_watch:      get('s-clip_watch'),
+  };
+  try {
+    const r = await fetch('/api/settings', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+    const d = await r.json();
+    showToast(d.ok ? '✅ Settings saved' : '❌ Failed to save settings', d.ok ? 'green' : 'red');
+  } catch(e) { showToast('❌ Network error', 'red'); }
+}
+
+// ── Modal ────────────────────────────────────────────────────────────────────
+function openModal() {
+  document.getElementById('modal').classList.remove('hidden');
+  document.getElementById('modal-url').focus();
+}
+function closeModal() {
+  document.getElementById('modal').classList.add('hidden');
+}
+function setQuality(q) {
+  selectedQuality = q;
+  document.querySelectorAll('.q-btn').forEach(btn => {
+    const active = btn.dataset.q === q;
+    btn.classList.toggle('bg-blue-600',  active);
+    btn.classList.toggle('border-blue-500', active);
+    btn.classList.toggle('text-white',   active);
+    btn.classList.toggle('text-[#8b949e]', !active);
+  });
+}
+async function pasteUrl() {
+  try {
+    const text = await navigator.clipboard.readText();
+    document.getElementById('modal-url').value = text;
+  } catch(e) { showToast('⚠ Clipboard access denied', 'orange'); }
+}
+async function startDownload() {
+  const url = document.getElementById('modal-url').value.trim();
+  if (!url) { showToast('⚠ Please enter a URL', 'orange'); return; }
+  const audioOnly = document.getElementById('audio-only').checked;
+  closeModal();
+  document.getElementById('modal-url').value = '';
+  try {
+    const r = await fetch('/api/download', {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json' },
+      body: JSON.stringify({ url, quality: selectedQuality, audio_only: audioOnly }),
+    });
+    const d = await r.json();
+    if (d.ok) {
+      setTab('dashboard');
+      showToast(`⬇ Starting download (${d.quality})`, 'blue');
+      setTimeout(loadQueue, 400);
+    } else {
+      showToast('❌ ' + (d.error || 'Download failed'), 'red');
+    }
+  } catch(e) { showToast('❌ Network error', 'red'); }
+}
+
+// ── Keyboard shortcuts ───────────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'n') { e.preventDefault(); openModal(); }
+  if (e.key === 'Escape') { closeModal(); }
+  if ((e.ctrlKey || e.metaKey) && e.key === 'h') { e.preventDefault(); setTab('history'); }
+  if ((e.ctrlKey || e.metaKey) && e.key === ',') { e.preventDefault(); setTab('settings'); }
+});
+document.getElementById('modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('modal')) closeModal();
+});
+
+// ── Toast ────────────────────────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg, color='blue') {
+  const el = document.getElementById('toast');
+  const colors = { blue:'#3b82f6', green:'#3fb950', red:'#f85149', orange:'#f0883e' };
+  el.style.borderColor = colors[color] || colors.blue;
+  el.textContent = msg;
+  el.classList.remove('hidden');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.add('hidden'), 3500);
+}
+
+// ── Util ─────────────────────────────────────────────────────────────────────
+function escHtml(s) {
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ── Init ─────────────────────────────────────────────────────────────────────
+setQuality('4');
+loadStats();
+loadQueue();
+connectSSE();
+setInterval(loadQueue, 5000);
+setInterval(loadStats, 10000);
+</script>
+</body>
+</html>

@@ -5,11 +5,14 @@ A high-performance Python-based media downloader with a V1 Command Line Interfac
 
 ## Architecture
 - **Language**: Python 3.12
+- **Web Server**: Flask + Flask-CORS (port 5000, SSE for live progress)
+- **Frontend**: Vanilla JS + Tailwind CSS (CDN) + Lucide icons — single-page app
 - **CLI Framework**: `rich` (tables, progress bars, terminal styling)
-- **GUI Framework**: `customtkinter` + `tkinterdnd2` (desktop GUI)
+- **GUI Framework**: `customtkinter` + `tkinterdnd2` (desktop GUI, optional)
 - **Core Engine**: `yt-dlp` (primary downloader)
 - **Database**: SQLite3 (WAL mode, foreign keys, triggers, views)
 - **Entry Points**:
+  - `python3 web_server.py` → **V3 Web UI** (browser-based, port 5000) ← **main workflow**
   - `python3 main.py` → V1 CLI interactive terminal
   - `python3 gui_main.py` → V2 GUI desktop app (requires display)
 
