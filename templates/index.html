@@ -581,7 +581,9 @@ textarea.input{resize:vertical;font-family:'Manrope',monospace;font-size:12.5px}
     </div>
     <div class="card" style="display:flex;align-items:center;gap:10px;padding:11px 16px;margin-bottom:12px">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:15px;height:15px;color:var(--primary-warm);flex-shrink:0"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-      <span style="font-size:13px" id="files-path">—</span>
+      <div id="files-breadcrumb" style="display:flex;align-items:center;gap:4px;flex:1;overflow-x:auto">
+        <span style="font-size:13px" id="files-path">—</span>
+      </div>
       <span style="margin-left:auto;font-size:12px;color:var(--on-surface-variant)" id="files-meta"></span>
     </div>
     <div class="card" style="overflow:hidden;overflow-x:auto">
@@ -1555,15 +1557,65 @@ async function runBatch(){
 }
 
 // ═══ FILES ════════════════════════════════════════════════════════
-async function loadFiles(){
-  const d=await api('/api/files');
-  $('files-path').textContent=d.path||'—'; $('files-meta').textContent=`${d.count||0} files · ${d.total_bytes_fmt||'0 B'}`;
-  const tb=$('files-tbody');
-  if(!d.files?.length){tb.innerHTML='<tr><td colspan="5" style="text-align:center;padding:28px;color:var(--on-surface-variant)">No files yet</td></tr>';return;}
-  const EI={'.mp4':'🎬','.mkv':'🎬','.webm':'🎬','.mp3':'🎵','.m4a':'🎵','.opus':'🎵','.flac':'🎵','.jpg':'🖼','.png':'🖼'};
-  tb.innerHTML=d.files.map(f=>`<tr><td><div style="display:flex;align-items:center;gap:9px"><span style="font-size:17px">${EI[f.ext]||'📄'}</span><span style="font-size:13px;font-weight:500" class="truncate" title="${esc(f.name)}">${esc(f.name)}</span></div></td><td style="font-size:11px;color:var(--on-surface-variant);text-transform:uppercase">${esc(f.ext||'—')}</td><td style="font-size:13px">${f.size_fmt}</td><td style="font-size:12px;color:var(--on-surface-variant)">${f.modified}</td><td style="text-align:right"><div style="display:flex;gap:5px;justify-content:flex-end"><a href="/api/files/${encodeURIComponent(f.name)}" class="btn btn-outline btn-sm" download><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:12px;height:12px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></a><button onclick="deleteFile('${esc(f.name)}')" class="btn btn-danger btn-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:12px;height:12px"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button></div></td></tr>`).join('');
+let currentFolder = '';
+
+async function loadFiles(folder = '') {
+  currentFolder = folder;
+  const url = folder ? `/api/files?folder=${encodeURIComponent(folder)}` : '/api/files';
+  const d = await api(url);
+  $('files-path').textContent = d.path || '—';
+  $('files-meta').textContent = `${d.count || 0} files · ${d.total_bytes_fmt || '0 B'}`;
+  
+  // Render folder navigation breadcrumbs
+  let breadcrumbHtml = '<button onclick="loadFiles(\'\')" class="btn btn-ghost btn-sm">📁 downloads</button>';
+  if (folder) {
+    const parts = folder.split('/');
+    let pathAccum = '';
+    for (let i = 0; i < parts.length; i++) {
+      pathAccum += (i > 0 ? '/' : '') + parts[i];
+      breadcrumbHtml += ` <span style="color:var(--on-surface-variant)">/</span> <button onclick="loadFiles('${pathAccum}')" class="btn btn-ghost btn-sm">${parts[i]}</button>`;
+    }
+  }
+  $('files-breadcrumb').innerHTML = breadcrumbHtml;
+  
+  const tb = $('files-tbody');
+  if (!d.files?.length && !d.folders?.length) {
+    tb.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:28px;color:var(--on-surface-variant)">No files yet</td></tr>';
+    return;
+  }
+  
+  const EI = {'.mp4':'🎬','.mkv':'🎬','.webm':'🎬','.mp3':'🎵','.m4a':'🎵','.opus':'🎵','.flac':'🎵','.jpg':'🖼','.png':'🖼'};
+  
+  let html = '';
+  
+  // Render folders first
+  if (d.folders?.length) {
+    for (const fld of d.folders) {
+      html += `<tr><td colspan="5"><div style="display:flex;align-items:center;gap:9px;padding:8px 0;cursor:pointer" onclick="loadFiles('${fld.path}')"><span style="font-size:17px">📁</span><span style="font-size:13px;font-weight:600;color:var(--primary)">${esc(fld.name)}</span></div></td></tr>`;
+    }
+  }
+  
+  // Render files
+  if (d.files?.length) {
+    for (const f of d.files) {
+      const filePath = f.folder ? `${f.folder}/${f.name}` : f.name;
+      html += `<tr><td><div style="display:flex;align-items:center;gap:9px"><span style="font-size:17px">${EI[f.ext]||'📄'}</span><span style="font-size:13px;font-weight:500" class="truncate" title="${esc(f.name)}">${esc(f.name)}</span></div></td><td style="font-size:11px;color:var(--on-surface-variant);text-transform:uppercase">${esc(f.ext||'—')}</td><td style="font-size:13px">${f.size_fmt}</td><td style="font-size:12px;color:var(--on-surface-variant)">${f.modified}</td><td style="text-align:right"><div style="display:flex;gap:5px;justify-content:flex-end"><a href="/api/files/${encodeURIComponent(filePath)}" class="btn btn-outline btn-sm" download><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:12px;height:12px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></a><button onclick="deleteFile('${filePath}')" class="btn btn-danger btn-sm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:12px;height:12px"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg></button></div></td></tr>`;
+    }
+  }
+  
+  tb.innerHTML = html;
 }
-async function deleteFile(name){ if(!confirm(`Delete "${name}"?`)) return; const d=await api('/api/files/'+encodeURIComponent(name),{method:'DELETE'}); if(d.ok){showToast('Deleted','info');loadFiles();}else showToast(d.error||'Error','error'); }
+
+async function deleteFile(name) {
+  if (!confirm(`Delete "${name}"?`)) return;
+  const d = await api('/api/files/' + encodeURIComponent(name), { method: 'DELETE' });
+  if (d.ok) {
+    showToast('Deleted', 'info');
+    loadFiles(currentFolder);
+  } else {
+    showToast(d.error || 'Error', 'error');
+  }
+}
 
 // ═══ NOTIFICATIONS ════════════════════════════════════════════════
 async function loadNotifications(){
