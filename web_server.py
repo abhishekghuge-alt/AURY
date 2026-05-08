@@ -565,11 +565,37 @@ def api_dl_tags_remove(dl_id, tag_id):
 @_require_auth
 def api_files():
     dl_dir = Path(config.DOWNLOAD_DIR)
-    if not dl_dir.exists():
-        return jsonify({"files": [], "path": str(dl_dir), "count": 0, "total_bytes": 0})
+    folder = request.args.get("folder", "")  # Optional subfolder (video, audio, etc.)
+    
+    if folder:
+        target_dir = dl_dir / folder
+        # Security: ensure folder is within DOWNLOAD_DIR
+        try:
+            target_dir = target_dir.resolve()
+            if not str(target_dir).startswith(str(dl_dir.resolve())):
+                return jsonify({"error": "Invalid folder path"}), 400
+        except Exception:
+            return jsonify({"error": "Invalid folder path"}), 400
+    else:
+        target_dir = dl_dir
+    
+    if not target_dir.exists():
+        return jsonify({"files": [], "folders": [], "path": str(target_dir), "count": 0, "total_bytes": 0})
+    
     files = []
+    folders = []
     total_bytes = 0
-    for f in sorted(dl_dir.iterdir(), key=lambda x: x.stat().st_mtime, reverse=True):
+    
+    # List subfolders first
+    for item in sorted(target_dir.iterdir(), key=lambda x: x.name.lower()):
+        if item.is_dir():
+            folders.append({
+                "name": item.name,
+                "path": item.name if not folder else f"{folder}/{item.name}",
+            })
+    
+    # List files
+    for f in sorted(target_dir.iterdir(), key=lambda x: x.stat().st_mtime, reverse=True):
         if f.is_file():
             stat = f.stat()
             total_bytes += stat.st_size
@@ -580,15 +606,24 @@ def api_files():
                 "ext":         f.suffix.lower(),
                 "modified":    datetime.fromtimestamp(stat.st_mtime).strftime("%Y-%m-%d %H:%M"),
                 "modified_ts": int(stat.st_mtime),
+                "folder":      folder,
             })
-    return jsonify({"files": files, "path": str(dl_dir),
-                    "count": len(files), "total_bytes_fmt": _fmt_bytes(total_bytes)})
+    
+    return jsonify({
+        "files": files,
+        "folders": folders,
+        "path": str(target_dir),
+        "current_folder": folder,
+        "count": len(files),
+        "total_bytes_fmt": _fmt_bytes(total_bytes)
+    })
 
 
 @app.route("/api/files/<path:filename>")
 @_require_auth
 def api_file_download(filename):
     dl_dir = Path(config.DOWNLOAD_DIR)
+    # Support folder prefix in filename (e.g., "video/file.mp4")
     fp = (dl_dir / filename).resolve()
     if not fp.exists() or not str(fp).startswith(str(dl_dir.resolve())):
         return jsonify({"error": "File not found"}), 404
@@ -599,8 +634,11 @@ def api_file_download(filename):
 @_require_auth
 def api_file_delete(filename):
     dl_dir = Path(config.DOWNLOAD_DIR)
+    # Support folder prefix in filename (e.g., "video/file.mp4")
     fp = (dl_dir / filename).resolve()
     try:
+        if not str(fp).startswith(str(dl_dir.resolve())):
+            return jsonify({"error": "Invalid file path"}), 400
         fp.unlink(missing_ok=True)
         return jsonify({"ok": True})
     except Exception as e:
